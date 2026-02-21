@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Casa 🏠</title>
+
+<!-- FULLCALENDAR -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+<!-- CSS -->
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ================= LOGIN / REGISTRO / UNIRSE ================= -->
+<div id="authScreen" class="auth-container">
+
+
+  <h1>Mi Casa 🏠</h1>
+  <p class="subtitle">Organiza tu hogar en un solo lugar</p>
+
+  <!-- LOGIN -->
+  <div id="loginBox" class="auth-box">
+    <input type="email" id="email" placeholder="Correo electrónico">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button id="loginBtn">Entrar</button>
+  </div>
+
+  <div class="divider">o</div>
+
+  <div id="authActions" class="auth-actions">
+    <button id="showRegisterBtn">Crear nueva casa</button>
+    <button id="showJoinBtn">Unirme con código</button>
+  </div>
+
+  <!-- REGISTRO -->
+  <div id="registerForm" class="auth-box hidden">
+    <h2>Crear nueva casa</h2>
+    <input type="text" id="name" placeholder="Nombre">
+    <input type="email" id="regEmail" placeholder="Correo electrónico">
+    <input type="password" id="regPassword" placeholder="Contraseña">
+    <button id="registerBtn">Crear</button>
+    <button id="backFromRegister" class="secondary">Volver</button>
+  </div>
+
+  <!-- UNIRSE -->
+  <div id="joinForm" class="auth-box hidden">
+    <h2>Unirse con código</h2>
+    <input type="text" id="joinName" placeholder="Nombre">
+    <input type="email" id="joinEmail" placeholder="Correo electrónico">
+    <input type="password" id="joinPassword" placeholder="Contraseña">
+    <input type="text" id="inviteCode" placeholder="Código de invitación">
+    <button id="joinHouseholdBtn">Unirse</button>
+    <button id="backFromJoin" class="secondary">Volver</button>
+  </div>
+</div>
+
+<!-- ================= APP PRINCIPAL ================= -->
+<div id="app" class="hidden">
+
+  <!-- HEADER APP -->
+  <div id="appHeader" class="hidden">
+  <div id="homeName" class="editable-home-name">
+  <span id="houseNameText">Mi Casa</span>
+  <span class="editIcon">✏️</span>
+</div>
+
+
+
+    <div id="userArea">
+      <span id="currentUserName"></span>
+      <div id="membersDropdown" class="members-dropdown"></div>
+
+    </div>
+    <div class="header-actions">
+      <button id="inviteBtn" class="icon-btn">➕</button>
+      <button id="logoutBtn" class="icon-btn">⎋</button>
+    </div>
+  </div>
+
+  <!-- PANTALLAS -->
+  <main id="homeScreen" class="screen">
+
+<div id="welcomeBlock">
+  <div id="welcomeText"></div>
+  <div id="dateRow">
+    <span id="dateTime"></span>
+    <span id="welcomeIcon"></span>
+  </div>
+</div>
+
+
+
+    <div class="home-grid">
+<button class="home-btn" data-screen="agendaScreen">
+  <span class="icon">🗂️</span>
+  <span class="label">Agenda</span>
+</button>
+
+<button class="home-btn" data-screen="calendarScreen">
+  <span class="icon">🗓️</span>
+  <span class="label">Calendario</span>
+</button>
+
+<button class="home-btn" data-screen="compraScreen">
+  <span class="icon">🛒</span>
+  <span class="label">Compras</span>
+</button>
+
+<button class="home-btn" data-screen="notesScreen">
+  <span class="icon">📝</span>
+  <span class="label">Notas</span>
+</button>
+
+    </div>
+  </main>
+
+  <!-- AGENDA -->
+  <div id="agendaScreen" class="screen hidden">
+    <button class="backHome">⬅ Volver</button>
+    <div id="agendaBlock">
+      <div class="card">
+        <button id="addEventBtn" class="icon-btn">➕ Añadir evento</button>
+      </div>
+      <div class="card">
+        <h3>Próximos eventos</h3>
+        <ul id="agendaList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDARIO -->
+  <div id="calendarScreen" class="screen hidden">
+    <button class="backHome">⬅ Volver</button>
+    <div id="calendar"></div>
+  </div>
+
+  <!-- COMPRAS -->
+  <div id="compraScreen" class="screen hidden">
+    <button class="backHome">⬅ Volver</button>
+    <h2>Lista de la compra</h2>
+    <input type="text" id="productName" placeholder="Producto">
+    <input type="number" id="productQty" placeholder="Cantidad" min="1" value="1">
+    <input type="number" id="productPrice" placeholder="Precio €" min="0" step="0.01">
+    <button id="addProductBtn">Añadir</button>
+    <ul id="shoppingList"></ul>
+    <div id="totalPrice">Total: 0 €</div>
+  </div>
+
+  <!-- NOTAS -->
+  <div id="notesScreen" class="screen hidden">
+    <button class="backHome">⬅ Volver</button>
+    <h2>Bloc de notas</h2>
+    <input type="text" id="noteTitle" placeholder="Título">
+    <textarea id="noteContent" rows="6"></textarea>
+    <button id="addNoteBtn" disabled>Guardar nota</button>
+    <ul id="notesList"></ul>
+  </div>
+
+</div>
+
+<!-- MODAL INVITACIÓN -->
+<div id="inviteModal" class="modal hidden">
+  <div class="modal-card">
+    <h3>Código de invitación</h3>
+    <p>Comparte este código con el nuevo miembro del hogar:</p>
+    <div id="inviteCodeBox" style="
+      font-size: 1.4rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 0.8rem;
+      background: #f1f1f1;
+      border-radius: 8px;
+      margin: 1rem 0;
+    "></div>
+    <button id="closeInviteModal">Cerrar</button>
+  </div>
+</div>
+
+<!-- MODAL CAMBIAR NOMBRE DEL HOGAR -->
+<div id="renameModal" class="modal hidden">
+  <div class="modal-card">
+    <h3>Renombrar hogar</h3>
+    <input type="text" id="newHouseName" placeholder="Nuevo nombre del hogar">
+    <button id="saveHouseNameBtn">Guardar</button>
+    <button id="closeRenameModal">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL AÑADIR EVENTO -->
+<div id="addEventModal" class="modal hidden">
+  <div class="modal-card">
+    <h3>Nuevo evento</h3>
+
+    <label>Fecha</label>
+    <input type="date" id="eventDate">
+
+    <label>Hora</label>
+    <input type="time" id="eventTime">
+
+    <label>Descripción</label>
+    <textarea id="eventDescription"></textarea>
+
+    <label>Categoría</label>
+    <select id="eventCategory">
+      <option value="padres">Padres</option>
+      <option value="hijos">Hijos</option>
+      <option value="casa">Casa</option>
+    </select>
+
+    <button id="saveEventBtn" type="button">Guardar evento</button>
+    <button id="closeEventModal" class="secondary">Cancelar</button>
+  </div>
+</div>
+
+
+<!-- MODAL VER / EDITAR EVENTO -->
+<div id="eventDetailsModal" class="modal hidden">
+  <div class="modal-card">
+    <h3>Evento</h3>
+
+    <p><strong>Fecha:</strong> <span id="detailDate"></span></p>
+    <p><strong>Hora:</strong> <span id="detailTime"></span></p>
+    <p><strong>Descripción:</strong> <span id="detailDescription"></span></p>
+    <p><strong>Categoría:</strong> <span id="detailCategory"></span></p>
+
+    <button id="deleteEventBtn">Eliminar</button>
+    <button id="closeEventDetails" class="secondary">Cerrar</button>
+  </div>
+</div>
+
+
+<!-- JS -->
+<script type="module" src="./js/auth.js"></script>
+
+</body>
+</html>
