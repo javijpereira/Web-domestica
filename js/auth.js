@@ -353,7 +353,7 @@ updateWelcomeBlock();
     homeName.textContent = snap.empty ? "Mi Casa  " : snap.docs[0].data().name ;
 
     loadMembers();
-    loadAgenda();
+    loadAgendaEvents();
     loadCalendarEvents();
     loadShopping();
     loadNotes();
