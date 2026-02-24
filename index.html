@@ -124,8 +124,11 @@
         <button id="addEventBtn" class="icon-btn">➕ Añadir evento</button>
       </div>
       <div class="card">
-        <h3>Próximos eventos</h3>
-        <ul id="agendaList"></ul>
+        <h3>HOY</h3>
+       <div id="todayAlert" class="today-alert hidden"></div>
+       <ul id="todayEventsList" class="today-events hidden"></ul>
+       <h3 class="agenda-title">Próximos eventos</h3>
+       <ul id="agendaList"></ul>
       </div>
     </div>
   </div>
@@ -199,14 +202,18 @@
     <label>Hora</label>
     <input type="time" id="eventTime">
 
+    <label>Título corto</label>
+   <input type="text" id="eventShortTitle" placeholder="">
+
+
     <label>Descripción</label>
     <textarea id="eventDescription"></textarea>
 
     <label>Categoría</label>
     <select id="eventCategory">
-      <option value="padres">Padres</option>
-      <option value="hijos">Hijos</option>
-      <option value="casa">Casa</option>
+      <option value="padres">Padre/Madre 👨‍👩‍👧</option>
+      <option value="hijos">Hij@s 👧👦</option>
+      <option value="casa">Casa 🏠</option>
     </select>
 
     <button id="saveEventBtn" type="button">Guardar evento</button>
@@ -230,9 +237,38 @@
   </div>
 </div>
 
+<div id="editEventModal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Editar evento</h2>
+
+    <label>Título corto</label>
+    <input type="text" id="editShortTitle">
+
+    <label>Fecha</label>
+    <input type="date" id="editDate">
+
+    <label>Hora</label>
+    <input type="time" id="editTime">
+
+    <label>Categoría</label>
+    <select id="editCategory">
+      <option value="padre">Padre/Madre 👨‍👩‍👧</option>
+      <option value="hijos">Hij@s 👧👦</option>
+      <option value="casa">Casa 🏠</option>
+    </select>
+
+    <label>Descripción</label>
+    <textarea id="editDescription"></textarea>
+
+    <button id="saveEditEventBtn">Guardar cambios</button>
+    <button id="closeEditEventModal">Cancelar</button>
+  </div>
+</div>
+
+
 
 <!-- JS -->
-<script type="module" src="js/auth.js"></script>
+<script type="module" src="./js/auth.js"></script>
 
 </body>
 </html>
