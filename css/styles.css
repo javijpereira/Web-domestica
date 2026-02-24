@@ -110,10 +110,11 @@ textarea {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.55);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 9999;
 }
 
 .modal-card {
@@ -123,6 +124,26 @@ textarea {
   width: 90%;
   max-width: 400px;
 }
+
+.modal-content { 
+  background: #fff; 
+  padding: 20px; 
+  border-radius: 12px; 
+  width: 90%; 
+  max-width: 400px; 
+  box-shadow: 0 0 20px rgba(0,0,0,0.3); 
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
 
 /* ================= LISTAS ================= */
 #agendaList, #notesList, #shoppingList {
@@ -323,12 +344,13 @@ textarea {
 }
 
 /* Eventos */
-.fc-event {
-  border: none !important;
-  border-radius: 6px !important;
-  padding: 2px 4px !important;
-  font-size: 0.75rem !important;
-  color: white !important;
+.fc-event { 
+  padding: 4px 6px !important; 
+  border-radius: 6px !important; 
+  font-size: 13px !important; 
+  font-weight: 600 !important; 
+  color: #000 !important; 
+  white-space: normal !important; 
 }
 
 /* Quitar bordes feos */
@@ -340,6 +362,14 @@ textarea {
 /* Espaciado más limpio */
 .fc-daygrid-day-frame {
   padding: 6px !important;
+}
+
+.fc-event-title { 
+  color: #000 !important; 
+}
+
+.fc-daygrid-event-dot { 
+  display: none !important; /* Oculta el puntito feo */ 
 }
 
 
@@ -670,3 +700,145 @@ textarea {
   border-radius: 12px;
   z-index: 100000 !important;
 }
+
+
+/* Fondo negro para las celdas del calendario */
+.fc-daygrid-day {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+/* Números de los días en blanco */
+.fc-daygrid-day-number {
+  color: #fff !important;
+  font-weight: 600;
+}
+
+/* Día actual destacado en gris */
+.fc-day-today {
+  background-color: #9f9e9e !important;   /* gris oscuro */
+  color: #fff !important;              /* números en blanco */
+  border: 1px solid #555 !important;   /* borde suave */
+}
+
+/* Número del día actual en blanco */
+.fc-day-today .fc-daygrid-day-number {
+  color: #fff !important;
+  font-weight: 700;
+}
+
+
+/* Bordes más discretos */
+.fc-theme-standard td, 
+.fc-theme-standard th {
+  border: 1px solid #333 !important;
+}
+
+/* Eventos como pastillas de color */
+.fc-event {
+  padding: 4px 6px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #000 !important;
+  white-space: normal !important;
+}
+
+/* Ocultar el puntito de evento */
+.fc-daygrid-event-dot {
+  display: none !important;
+}
+
+/* Título del evento siempre visible */
+.fc-event-title {
+  color: #000 !important;
+}
+
+
+
+/* Contenedor del item */
+#agendaList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 6px;
+  border-bottom: 1px solid #333;
+}
+
+/* Contenedor de botones */
+.agenda-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Botones */
+.agenda-actions button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+/* Iconos elegantes */
+.icon-edit::before {
+  content: "✎";
+  font-size: 18px;
+  color: #4dabf7; /* azul suave */
+}
+
+.icon-delete::before {
+  content: "🗑";
+  font-size: 18px;
+  color: #ff6b6b; /* rojo suave */
+}
+
+/* Hover */
+.agenda-actions button:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+
+.today-alert {
+  background: #333;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  border-left: 5px solid #4dabf7;
+}
+
+.today-alert.hidden,
+.today-events.hidden {
+  display: none;
+}
+
+.today-events {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 15px 0;
+}
+
+.today-events li {
+  background: #222;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  border-left: 5px solid #4dabf7;
+  color: #fff;
+}
+
+.today-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #222;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
