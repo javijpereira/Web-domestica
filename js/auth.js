@@ -181,15 +181,19 @@ updateWelcomeBlock();
   //  NAVEGACIÓN ENTRE PANTALLAS
   // ======================================================
 
-  document.querySelectorAll(".home-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const target = btn.getAttribute("data-screen");
+document.querySelectorAll(".home-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const target = btn.getAttribute("data-screen");
 
- document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
- document.getElementById(target).classList.remove("hidden");
+    document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
+    document.getElementById(target).classList.remove("hidden");
 
-    });
+    if (target === "calendarScreen" && calendar) {
+      setTimeout(() => calendar.updateSize(), 50);
+    }
   });
+});
+
 
   document.querySelectorAll(".backHome").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -354,10 +358,11 @@ updateWelcomeBlock();
 
     loadMembers();
     loadAgendaEvents();
-    loadCalendarEvents();
+    loadCalendarEventsForMonth(new Date());
     loadShopping();
     loadNotes();
   });
+
 
   // ======================================================
   //  MIEMBROS
@@ -448,6 +453,8 @@ saveEventBtn.addEventListener("click", async () => {
   const time = document.getElementById("eventTime").value;
   const description = document.getElementById("eventDescription").value;
   const category = document.getElementById("eventCategory").value;
+  const shortTitle = document.getElementById("eventShortTitle").value;
+
   
 
 
@@ -463,26 +470,34 @@ saveEventBtn.addEventListener("click", async () => {
     casa: "#51cf66"
   };
 
-  await addDoc(collection(db, "households", currentHouseholdId, "events"), {
-    date,
-    time,
-    description,
-    category,
-    color: colors[category],
-    createdAt: serverTimestamp()
-  });
+await addDoc(collection(db, "households", currentHouseholdId, "events"), {
+  date,
+  time,
+  description,
+  shortTitle,
+  category,
+  color: colors[category],
+  createdAt: serverTimestamp()
+});
+
 
   addEventModal.classList.add("hidden");
   loadAgendaEvents();
-  loadCalendarEvents();
+  loadCalendarEventsForMonth(new Date());
 });
 
 
 async function loadAgendaEvents() {
   const list = document.getElementById("agendaList");
+  const todayAlert = document.getElementById("todayAlert");
+  const todayEventsList = document.getElementById("todayEventsList");
+
   list.innerHTML = "";
+  todayEventsList.innerHTML = "";
 
   const today = new Date();
+  const todayStr = today.toISOString().split("T")[0];
+
   const start = new Date(today.setDate(today.getDate() - today.getDay() + 1));
   const end = new Date(today.setDate(start.getDate() + 6));
 
@@ -494,33 +509,160 @@ async function loadAgendaEvents() {
 
   const snap = await getDocs(q);
 
+  let todayEvents = [];
+
   snap.forEach(docu => {
     const ev = docu.data();
     const evDate = new Date(ev.date);
 
-    if (evDate >= start && evDate <= end) {
+    // --- EVENTOS DE HOY ---
+    if (ev.date === todayStr) {
+      todayEvents.push({ id: docu.id, ...ev });
+    }
+
+    // --- EVENTOS DE LA SEMANA ---
+    if (evDate >= start && evDate <= end && ev.date !== todayStr) {
       const li = document.createElement("li");
       li.style.borderLeft = `6px solid ${ev.color}`;
       li.innerHTML = `
-        <div>
+        <div class="agenda-info">
           <strong>${ev.date} ${ev.time}</strong><br>
           ${ev.description}
         </div>
-        <button class="deleteEventBtn" data-id="${docu.id}">🗑️</button>
+
+        <div class="agenda-actions">
+          <button class="editEventBtn" data-id="${docu.id}" title="Editar">
+            <i class="icon-edit"></i>
+          </button>
+
+          <button class="deleteEventBtn" data-id="${docu.id}" title="Eliminar">
+            <i class="icon-delete"></i>
+          </button>
+        </div>
       `;
       list.appendChild(li);
     }
+  });
+
+  // --- MOSTRAR BLOQUE HOY ---
+  if (todayEvents.length > 0) {
+    todayAlert.classList.remove("hidden");
+    todayEventsList.classList.remove("hidden");
+
+    todayAlert.textContent =
+      todayEvents.length === 1
+        ? "Hoy tienes 1 evento:"
+        : `Hoy tienes ${todayEvents.length} eventos:`;
+
+todayEvents.forEach(ev => {
+  const li = document.createElement("li");
+  li.classList.add("today-item");
+  li.style.borderLeft = `6px solid ${ev.color}`;
+  li.innerHTML = `
+    <div class="agenda-info">
+      <strong>${ev.time}</strong><br>
+      ${ev.shortTitle || ev.description}
+    </div>
+
+    <div class="agenda-actions">
+      <button class="editEventBtn" data-id="${ev.id}" title="Editar">
+        <i class="icon-edit"></i>
+      </button>
+
+      <button class="deleteEventBtn" data-id="${ev.id}" title="Eliminar">
+        <i class="icon-delete"></i>
+      </button>
+    </div>
+  `;
+  todayEventsList.appendChild(li);
+});
+
+
+  } else {
+    todayAlert.classList.add("hidden");
+    todayEventsList.classList.add("hidden");
+  }
+
+  // --- LISTENERS DE EDITAR Y BORRAR ---
+  document.querySelectorAll(".editEventBtn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
+      const snap = await getDoc(doc(db, "households", currentHouseholdId, "events", id));
+      openEditEvent({ id, ...snap.data() });
+    });
   });
 
   document.querySelectorAll(".deleteEventBtn").forEach(btn => {
     btn.addEventListener("click", async () => {
       await deleteDoc(doc(db, "households", currentHouseholdId, "events", btn.dataset.id));
       loadAgendaEvents();
-      loadCalendarEvents();
+      loadCalendarEventsForMonth(new Date());
     });
   });
 }
 
+function openEditEvent(event) {
+  const modal = document.getElementById("editEventModal");
+  modal.dataset.eventId = event.id;
+
+  // Si viene del calendario → tiene startStr
+  if (event.startStr) {
+    const [date, time] = event.startStr.split("T");
+    document.getElementById("editDate").value = date;
+    document.getElementById("editTime").value = time.slice(0,5);
+    document.getElementById("editShortTitle").value = event.title;
+    document.getElementById("editCategory").value = event.extendedProps.category;
+    document.getElementById("editDescription").value = event.extendedProps.description;
+  }
+
+  // Si viene de la agenda → viene con datos directos
+  else {
+    document.getElementById("editDate").value = event.date;
+    document.getElementById("editTime").value = event.time;
+    document.getElementById("editShortTitle").value = event.shortTitle;
+    document.getElementById("editCategory").value = event.category;
+    document.getElementById("editDescription").value = event.description;
+  }
+
+  modal.classList.remove("hidden");
+}
+
+
+
+document.getElementById("saveEditEventBtn").addEventListener("click", async () => {
+  const modal = document.getElementById("editEventModal");
+  const id = modal.dataset.eventId;
+
+  const shortTitle = document.getElementById("editShortTitle").value;
+  const date = document.getElementById("editDate").value;
+  const time = document.getElementById("editTime").value;
+  const category = document.getElementById("editCategory").value;
+  const description = document.getElementById("editDescription").value;
+
+  const colors = {
+    padres: "#ff6b6b",
+    hijos: "#4dabf7",
+    casa: "#51cf66"
+  };
+
+  await updateDoc(doc(db, "households", currentHouseholdId, "events", id), {
+    shortTitle,
+    date,
+    time,
+    category,
+    description,
+    color: colors[category]
+  });
+
+  modal.classList.add("hidden");
+
+  loadAgendaEvents();
+  loadCalendarEventsForMonth(new Date());
+});
+
+document.getElementById("closeEditEventModal").addEventListener("click", () => {
+  document.getElementById("editEventModal").classList.add("hidden");
+});
 
 
   // ======================================================
@@ -528,7 +670,13 @@ async function loadAgendaEvents() {
   // ======================================================
 let calendar; // referencia global
 
-async function loadCalendarEvents() {
+// ===============================
+// CARGAR EVENTOS DEL MES ACTUAL
+// ===============================
+async function loadCalendarEventsForMonth(date) {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+
   const eventsRef = collection(db, "households", currentHouseholdId, "events");
   const snap = await getDocs(eventsRef);
 
@@ -537,41 +685,65 @@ async function loadCalendarEvents() {
   snap.forEach(docu => {
     const ev = docu.data();
 
-    events.push({
-      id: docu.id,
-      title: ev.description,
-      start: `${ev.date}T${ev.time}`,
-      backgroundColor: ev.color,
-      borderColor: ev.color
-    });
+    // Convertir a fecha real
+    const evDateObj = new Date(`${ev.date}T${ev.time}`);
+    const evYear = evDateObj.getFullYear();
+    const evMonth = evDateObj.getMonth() + 1;
+
+    if (evYear === year && evMonth === month) {
+events.push({
+  id: docu.id,
+  title: ev.shortTitle || ev.description,
+  start: new Date(`${ev.date}T${ev.time}`),
+  backgroundColor: ev.color,
+  borderColor: ev.color,
+  extendedProps: {
+    description: ev.description,
+    category: ev.category,
+    color: ev.color
+  }
+});
+
+
+    }
   });
 
-  // Si el calendario ya existe, solo actualizamos eventos
   if (calendar) {
     calendar.removeAllEvents();
     calendar.addEventSource(events);
     return;
   }
 
-  // Crear calendario por primera vez
   const calendarEl = document.getElementById("calendar");
 
-  calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: "dayGridMonth",
-    locale: "es",
-    height: "auto",
-    events: events,
+calendar = new FullCalendar.Calendar(calendarEl, {
+  initialView: "dayGridMonth",
+  locale: "es",
+  height: "auto",
+  firstDay: 1,
+  showNonCurrentDates: false,
+  eventDisplay: "block",
+  editable: true,               // ← permite arrastrar
+  eventDurationEditable: false, // ← evita cambiar duración
+  events: events,
+  datesSet: function(info) {
+    loadCalendarEventsForMonth(info.start);
+  },
+  eventClick: function(info) {
+    openEditEvent(info.event);
+  },
+  eventDrop: handleEventDrop     // ← manejador al soltar
+});
 
-    // Pulsar un evento → abrir modal de edición
-    eventClick: function(info) {
-      openEventDetails(info.event);
-    }
-  });
+
 
   calendar.render();
 }
 
 
+// ===============================
+// ABRIR DETALLES DE EVENTO
+// ===============================
 function openEventDetails(event) {
   const modal = document.getElementById("eventDetailsModal");
 
@@ -579,7 +751,8 @@ function openEventDetails(event) {
 
   document.getElementById("detailDate").textContent = date;
   document.getElementById("detailTime").textContent = time;
-  document.getElementById("detailDescription").textContent = event.title;
+ document.getElementById("detailDescription").textContent =
+  event.extendedProps.description || "";
   document.getElementById("detailCategory").textContent =
     event.extendedProps.category || "";
 
@@ -587,11 +760,16 @@ function openEventDetails(event) {
   modal.classList.remove("hidden");
 }
 
-
+// ===============================
+// CERRAR MODAL DETALLES
+// ===============================
 document.getElementById("closeEventDetails").addEventListener("click", () => {
   document.getElementById("eventDetailsModal").classList.add("hidden");
 });
 
+// ===============================
+// BORRAR EVENTO
+// ===============================
 document.getElementById("deleteEventBtn").addEventListener("click", async () => {
   const modal = document.getElementById("eventDetailsModal");
   const id = modal.dataset.eventId;
@@ -600,8 +778,32 @@ document.getElementById("deleteEventBtn").addEventListener("click", async () => 
 
   modal.classList.add("hidden");
   loadAgendaEvents();
-  loadCalendarEvents();
+  loadCalendarEventsForMonth(new Date());
 });
+
+async function handleEventDrop(info) {
+  const event = info.event;
+
+  // Nueva fecha tras arrastrar
+  const newDate = event.start.toISOString().split("T")[0];
+
+  // Hora original (no cambia al arrastrar)
+  const originalTime = event.extendedProps.time || event.startStr.split("T")[1].slice(0,5);
+
+  // Actualizar en Firestore
+  await updateDoc(
+    doc(db, "households", currentHouseholdId, "events", event.id),
+    {
+      date: newDate,
+      time: originalTime
+    }
+  );
+
+  // Recargar agenda y calendario
+  loadAgendaEvents();
+  loadCalendarEventsForMonth(event.start);
+}
+
 
 
 
@@ -675,3 +877,4 @@ document.getElementById("deleteEventBtn").addEventListener("click", async () => 
   showLogin();
 
 });
+
