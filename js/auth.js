@@ -720,6 +720,8 @@ calendar = new FullCalendar.Calendar(calendarEl, {
   initialView: "dayGridMonth",
   locale: "es",
   height: "auto",
+  contentHeight: "auto",
+  handleWindowResize: true,
   firstDay: 1,
   showNonCurrentDates: false,
   eventDisplay: "block",
