@@ -842,3 +842,33 @@ textarea {
   color: #fff;
 }
 
+/* Ajustes SOLO para pantallas pequeñas */
+@media (max-width: 480px) {
+
+  /* Reducir padding de las celdas */
+  .fc-daygrid-day-frame {
+    padding: 2px !important;
+  }
+
+  /* Hacer que los eventos ocupen una sola línea */
+  .fc-event {
+    font-size: 11px !important;
+    padding: 2px 4px !important;
+    border-radius: 4px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* Reducir tamaño del número del día */
+  .fc-daygrid-day-number {
+    font-size: 12px !important;
+    padding: 0 2px !important;
+  }
+
+  /* Evitar que los eventos se salgan de la celda */
+  .fc-daygrid-day-events {
+    margin-top: 2px !important;
+  }
+}
+
