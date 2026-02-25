@@ -10,6 +10,9 @@
 
 <!-- CSS -->
 <link rel="stylesheet" href="css/styles.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
 </head>
 <body>
 
@@ -57,27 +60,27 @@
 </div>
 
 <!-- ================= APP PRINCIPAL ================= -->
+
+<!-- HEADER APP -->
 <div id="app" class="hidden">
+<div id="appHeader" class="hidden">
+ <!-- Botón menú familia -->
+  <div id="familyMenuBtn" class="family-menu-btn">👥</div>
+  <div id="familyMenu" class="family-menu hidden"></div>
 
-  <!-- HEADER APP -->
-  <div id="appHeader" class="hidden">
+
+  <!-- Nombre del hogar -->
   <div id="homeName" class="editable-home-name">
-  <span id="houseNameText">Mi Casa</span>
-  <span class="editIcon">✏️</span>
-</div>
+    <span id="houseNameText">Mi Casa</span>
+    <span class="editIcon">✏️</span>
+  </div>
 
-
-
-    <div id="userArea">
-      <span id="currentUserName"></span>
-      <div id="membersDropdown" class="members-dropdown"></div>
-
-    </div>
     <div class="header-actions">
       <button id="inviteBtn" class="icon-btn">➕</button>
       <button id="logoutBtn" class="icon-btn">⎋</button>
     </div>
   </div>
+
 
   <!-- PANTALLAS -->
   <main id="homeScreen" class="screen">
@@ -234,6 +237,8 @@
 
     <button id="deleteEventBtn">Eliminar</button>
     <button id="closeEventDetails" class="secondary">Cerrar</button>
+</button>
+
   </div>
 </div>
 
@@ -266,9 +271,29 @@
 </div>
 
 
+<!-- MODAL PERFIL DE USUARIO -->
+<div id="profileModal" class="modal hidden">
+  <div class="modal-card">
+    <h3>Perfil del miembro</h3>
 
-<!-- JS -->
-<script type="module" src="./js/auth.js"></script>
+    <div class="profile-photo-container">
+      <img id="profilePhoto" class="profile-photo" src="img/default.png" alt="Foto de perfil">
+      <input type="file" id="profilePhotoInput" accept="image/*">
+    </div>
 
-</body>
-</html>
+    <label>Nombre</label>
+    <input type="text" id="profileName">
+
+    <label>Rol</label>
+    <select id="profileRole">
+      <option value="padre">Padre</option>
+      <option value="madre">Madre</option>
+      <option value="hijo">Hijo</option>
+      <option value="invitado">Invitado</option>
+    </select>
+
+    <button id="saveProfileBtn">Guardar cambios</button>
+    <button id="closeProfileModal" class="secondary">Cerrar</button>
+  </div>
+</div>
+
