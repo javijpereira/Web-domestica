@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const homeName = document.getElementById("homeName");
   const currentUserName = document.getElementById("currentUserName");
-  const membersDropdown = document.getElementById("membersDropdown");
+ 
 
   // LOGIN
   const emailInput = document.getElementById("email");
@@ -242,14 +242,15 @@ document.querySelectorAll(".home-btn").forEach(btn => {
     appHeader.classList.add("hidden");
   }
 
-  function showApp() {
-    authScreen.classList.add("hidden");
-    app.classList.remove("hidden");
-    appHeader.classList.remove("hidden");
+ function showApp() {
+  authScreen.classList.add("hidden");
+  app.classList.remove("hidden");
+  appHeader.classList.remove("hidden");
 
-    document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
-    screens.home.classList.remove("hidden");
-  }
+  document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
+  screens.home.classList.remove("hidden");
+}
+
 
   // ======================================================
   //  LOGIN
@@ -331,53 +332,98 @@ document.querySelectorAll(".home-btn").forEach(btn => {
   //  CAMBIO DE USUARIO
   // ======================================================
   onAuthStateChanged(auth, async (user) => {
-    if (!user) return showLogin();
+  if (!user) {
+    showLogin();
+    return;
+  }
 
-    showApp();
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    currentUserNameValue = userDoc.data().name;
+  // 1. Mostrar app
+  showApp();
 
+  // 2. Cargar datos del usuario
+  const userDoc = await getDoc(doc(db, "users", user.uid));
+  currentUserNameValue = userDoc.data().name;
 
+  // 3. Buscar hogar del usuario
+  const q = query(
+    collection(db, "households"),
+    where(`members.${user.uid}`, "==", true)
+  );
 
-    const q = query(collection(db, "households"), where(`members.${user.uid}`, "==", true));
-    const snap = await getDocs(q);
+  const snap = await getDocs(q);
 
-    if (snap.empty) {
-      await setDoc(doc(db, "households", user.uid), {
-        name: "Mi Casa",
-        owner: user.uid,
-        members: { [user.uid]: true },
-        createdAt: serverTimestamp()
-      });
-      currentHouseholdId = user.uid;
-    } else {
-      currentHouseholdId = snap.docs[0].id;
-    }
+  if (snap.empty) {
+    // Crear hogar si no existe
+    await setDoc(doc(db, "households", user.uid), {
+      name: "Mi Casa",
+      owner: user.uid,
+      members: { [user.uid]: true },
+      createdAt: serverTimestamp()
+    });
 
-    homeName.textContent = snap.empty ? "Mi Casa  " : snap.docs[0].data().name ;
+    currentHouseholdId = user.uid;
+    homeName.textContent = "Mi Casa";
+  } else {
+    currentHouseholdId = snap.docs[0].id;
+    homeName.textContent = snap.docs[0].data().name;
+  }
 
+  // 4. Esperar a que el DOM actualice visibilidad
+  setTimeout(() => {
     loadMembers();
     loadAgendaEvents();
     loadCalendarEventsForMonth(new Date());
     loadShopping();
     loadNotes();
-  });
+  }, 50);
+});
+
 
 
   // ======================================================
   //  MIEMBROS
   // ======================================================
-  async function loadMembers() {
-    const snap = await getDoc(doc(db, "households", currentHouseholdId));
-    membersDropdown.innerHTML = "";
+async function loadMembers() {
 
-    for (const uid in snap.data().members) {
-      const u = await getDoc(doc(db, "users", uid));
-      const div = document.createElement("div");
-      div.textContent = `${u.data().name} (${u.data().email})`;
-      membersDropdown.appendChild(div);
-    }
+  
+  console.log("Household ID:", currentHouseholdId);
+
+  const snap = await getDoc(doc(db, "households", currentHouseholdId));
+  console.log("Members:", snap.data().members);
+
+
+  const familyMenu = document.getElementById("familyMenu");
+  familyMenu.innerHTML = "";
+
+  for (const uid in snap.data().members) {
+    const u = await getDoc(doc(db, "users", uid));
+    const name = u.data().name;
+    const email = u.data().email;
+
+  
+
+    // Menú nuevo 👥
+    const item = document.createElement("div");
+    item.classList.add("family-member");
+    item.textContent = name;
+    familyMenu.appendChild(item);
+    item.addEventListener("click", () => openProfile(uid));
   }
+}
+
+
+document.getElementById("familyMenuBtn").addEventListener("click", () => {
+  document.getElementById("familyMenu").classList.toggle("hidden");
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#familyMenu") && !e.target.closest("#familyMenuBtn")) {
+    document.getElementById("familyMenu").classList.add("hidden");
+  }
+});
+
+
+
 
   // ======================================================
 //  INVITAR MIEMBROS (CORREGIDO)
@@ -516,12 +562,28 @@ async function loadAgendaEvents() {
     const evDate = new Date(ev.date);
 
     // --- EVENTOS DE HOY ---
-    if (ev.date === todayStr) {
-      todayEvents.push({ id: docu.id, ...ev });
-    }
+if (ev.date === todayStr) {
+  const now = new Date();
+  const eventDateTime = new Date(`${ev.date}T${ev.time}`);
+
+  if (eventDateTime >= now) {
+    todayEvents.push({ id: docu.id, ...ev });
+  }
+}
+
 
     // --- EVENTOS DE LA SEMANA ---
-    if (evDate >= start && evDate <= end && ev.date !== todayStr) {
+   // --- OCULTAR EVENTOS PASADOS ---
+const now = new Date();
+const eventDateTime = new Date(`${ev.date}T${ev.time}`);
+
+if (eventDateTime < now) {
+  return; // ← NO mostrar en agenda
+}
+
+// --- EVENTOS DE LA SEMANA (solo futuros) ---
+if (evDate >= start && evDate <= end && ev.date !== todayStr) {
+
       const li = document.createElement("li");
       li.style.borderLeft = `6px solid ${ev.color}`;
       li.innerHTML = `
@@ -531,12 +593,16 @@ async function loadAgendaEvents() {
         </div>
 
         <div class="agenda-actions">
+          <button class="viewEventBtn" data-id="${docu.id}" title="Ver detalles">
+            <i class="material-icons">visibility</i>
+          </button>
+
           <button class="editEventBtn" data-id="${docu.id}" title="Editar">
-            <i class="icon-edit"></i>
+            <i class="material-icons">edit</i>
           </button>
 
           <button class="deleteEventBtn" data-id="${docu.id}" title="Eliminar">
-            <i class="icon-delete"></i>
+            <i class="material-icons">delete</i>
           </button>
         </div>
       `;
@@ -554,36 +620,39 @@ async function loadAgendaEvents() {
         ? "Hoy tienes 1 evento:"
         : `Hoy tienes ${todayEvents.length} eventos:`;
 
-todayEvents.forEach(ev => {
-  const li = document.createElement("li");
-  li.classList.add("today-item");
-  li.style.borderLeft = `6px solid ${ev.color}`;
-  li.innerHTML = `
-    <div class="agenda-info">
-      <strong>${ev.time}</strong><br>
-      ${ev.shortTitle || ev.description}
-    </div>
+    todayEvents.forEach(ev => {
+      const li = document.createElement("li");
+      li.classList.add("today-item");
+      li.style.borderLeft = `6px solid ${ev.color}`;
+      li.innerHTML = `
+        <div class="agenda-info">
+          <strong>${ev.time}</strong><br>
+          ${ev.shortTitle || ev.description}
+        </div>
 
-    <div class="agenda-actions">
-      <button class="editEventBtn" data-id="${ev.id}" title="Editar">
-        <i class="icon-edit"></i>
-      </button>
+        <div class="agenda-actions">
+          <button class="viewEventBtn" data-id="${ev.id}" title="Ver detalles">
+            <i class="material-icons">visibility</i>
+          </button>
 
-      <button class="deleteEventBtn" data-id="${ev.id}" title="Eliminar">
-        <i class="icon-delete"></i>
-      </button>
-    </div>
-  `;
-  todayEventsList.appendChild(li);
-});
+          <button class="editEventBtn" data-id="${ev.id}" title="Editar">
+            <i class="material-icons">edit</i>
+          </button>
 
+          <button class="deleteEventBtn" data-id="${ev.id}" title="Eliminar">
+            <i class="material-icons">delete</i>
+          </button>
+        </div>
+      `;
+      todayEventsList.appendChild(li);
+    });
 
   } else {
     todayAlert.classList.add("hidden");
     todayEventsList.classList.add("hidden");
   }
 
-  // --- LISTENERS DE EDITAR Y BORRAR ---
+  // --- LISTENERS ---
   document.querySelectorAll(".editEventBtn").forEach(btn => {
     btn.addEventListener("click", async () => {
       const id = btn.dataset.id;
@@ -599,7 +668,28 @@ todayEvents.forEach(ev => {
       loadCalendarEventsForMonth(new Date());
     });
   });
+
+  document.querySelectorAll(".viewEventBtn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
+      const snap = await getDoc(doc(db, "households", currentHouseholdId, "events", id));
+      const ev = snap.data();
+
+      openEventDetails({
+        id,
+        startStr: `${ev.date}T${ev.time}`,
+        extendedProps: {
+          description: ev.description,
+          category: ev.category
+        }
+      });
+    });
+  });
 }
+
+
+
+
 
 function openEditEvent(event) {
   const modal = document.getElementById("editEventModal");
@@ -807,6 +897,35 @@ async function handleEventDrop(info) {
 }
 
 
+async function openProfile(uid) {
+  const snap = await getDoc(doc(db, "users", uid));
+  const data = snap.data();
+
+  document.getElementById("profileName").value = data.name || "";
+  document.getElementById("profileRole").value = data.role || "invitado";
+  document.getElementById("profilePhoto").src = data.photoURL || "img/default.png";
+
+  const modal = document.getElementById("profileModal");
+  modal.dataset.uid = uid;
+  modal.classList.remove("hidden");
+}
+
+document.getElementById("closeProfileModal").addEventListener("click", () => {
+  document.getElementById("profileModal").classList.add("hidden");
+});
+
+document.getElementById("saveProfileBtn").addEventListener("click", async () => {
+  const modal = document.getElementById("profileModal");
+  const uid = modal.dataset.uid;
+
+  await updateDoc(doc(db, "users", uid), {
+    name: document.getElementById("profileName").value,
+    role: document.getElementById("profileRole").value
+  });
+
+  modal.classList.add("hidden");
+  loadMembers(); // refrescar lista
+});
 
 
   // ======================================================
@@ -879,4 +998,5 @@ async function handleEventDrop(info) {
   showLogin();
 
 });
+
 
