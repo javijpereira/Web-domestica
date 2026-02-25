@@ -842,6 +842,53 @@ textarea {
   color: #fff;
 }
 
+#appHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  position: relative;
+}
+
+.family-menu-btn {
+  font-size: 22px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.family-menu-btn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.family-menu {
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  background: #f7f4f4;
+  color: #0b0b0b;
+  padding: 12px;
+  border-radius: 8px;
+  width: 200px;
+  box-shadow: 0 0 10px rgba(244, 242, 242, 0.4);
+  z-index: 9999;
+}
+
+.family-member {
+  padding: 10px 8px;
+  border-bottom: 1px solid #ccc;
+  font-size: 1rem;
+  color: #111 !important;
+  cursor: default;
+}
+
+.family-member:hover {
+  background: #e9e9e9;
+  border-radius: 6px;
+}
+
+
 /* Ajustes SOLO para pantallas pequeñas */
 @media (max-width: 480px) {
 
@@ -870,5 +917,43 @@ textarea {
   .fc-daygrid-day-events {
     margin-top: 2px !important;
   }
+}
+
+
+.agenda-actions button {
+  background: #f2f2f2;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  margin-left: 4px;
+}
+
+.agenda-actions i {
+  color: #333;
+  font-size: 20px;
+}
+
+
+.profile-photo-container {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.profile-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+  margin-bottom: 0.5rem;
+}
+
+#profilePhotoInput {
+  display: block;
+  margin: 0.5rem auto;
 }
 
