@@ -11,8 +11,6 @@
 <!-- CSS -->
 <link rel="stylesheet" href="css/styles.css">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-
 </head>
 <body>
 
@@ -66,7 +64,14 @@
 <div id="appHeader" class="hidden">
  <!-- Botón menú familia -->
   <div id="familyMenuBtn" class="family-menu-btn">👥</div>
-  <div id="familyMenu" class="family-menu hidden"></div>
+  <div id="familyMenu" class="family-menu hidden">
+  <div id="familyMembersList"></div>
+
+  <button id="inviteBtnInside" class="invite-inside-btn">
+    ➕ Invitar miembro
+  </button>
+</div>
+
 
 
   <!-- Nombre del hogar -->
@@ -76,7 +81,7 @@
   </div>
 
     <div class="header-actions">
-      <button id="inviteBtn" class="icon-btn">➕</button>
+     
       <button id="logoutBtn" class="icon-btn">⎋</button>
     </div>
   </div>
@@ -219,8 +224,14 @@
       <option value="casa">Casa 🏠</option>
     </select>
 
-    <button id="saveEventBtn" type="button">Guardar evento</button>
-    <button id="closeEventModal" class="secondary">Cancelar</button>
+    <h4 class="notify-title">Notificar a:</h4>
+    <div id="notifyList" class="notify-list"></div>
+
+   <div class="modal-buttons"> 
+    <button id="saveEventBtn" class="save-btn">Guardar</button> 
+    <button id="closeEventModal" class="cancel-btn">Cancelar</button> 
+  
+  </div>
   </div>
 </div>
 
@@ -272,14 +283,13 @@
 
 
 <!-- MODAL PERFIL DE USUARIO -->
+<!-- MODAL PERFIL DE USUARIO -->
 <div id="profileModal" class="modal hidden">
   <div class="modal-card">
     <h3>Perfil del miembro</h3>
 
-    <div class="profile-photo-container">
-      <img id="profilePhoto" class="profile-photo" src="img/default.png" alt="Foto de perfil">
-      <input type="file" id="profilePhotoInput" accept="image/*">
-    </div>
+    <!-- Vista previa del avatar -->
+    <div id="profileAvatarPreview" class="avatar-preview"></div>
 
     <label>Nombre</label>
     <input type="text" id="profileName">
@@ -292,11 +302,38 @@
       <option value="invitado">Invitado</option>
     </select>
 
+    <label>Avatar</label>
+    <select id="profileAvatar">
+      <option value="padre1">Padre</option>
+      <option value="madre1">Madre</option>
+      <option value="nino1">Niño</option>
+      <option value="nina1">Niña</option>
+      <option value="abuelo1">Abuelo</option>
+      <option value="abuela1">Abuela</option>
+      <option value="mascota1">Mascota</option>
+    </select>
+
     <button id="saveProfileBtn">Guardar cambios</button>
+    <button id="deleteMemberBtn" class="danger-btn hidden">Eliminar miembro</button>
     <button id="closeProfileModal" class="secondary">Cerrar</button>
   </div>
 </div>
+
+  </div>
+</div>
+
+
+
+
+
+
 <!-- JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init("0sPny-acy_XcDU9mn");
+</script>
+
 <script type="module" src="js/auth.js"></script>
 
 </body>
