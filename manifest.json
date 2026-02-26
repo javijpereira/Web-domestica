@@ -1,13 +1,13 @@
 {
   "name": "Mi Casa",
   "short_name": "MiCasa",
-  "start_url": "Web-domestica/",
+  "start_url": "/Web-domestica/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
   "icons": [
     {
-      "src": "Web-domestica/icon.png",
+      "src": "/Web-domestica/icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
