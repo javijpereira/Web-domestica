@@ -23,9 +23,72 @@ import {
   deleteDoc,
   serverTimestamp,
   orderBy,
+  deleteField,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  // ===============================
+// AVATARES SVG (SIN IMÁGENES)
+// ===============================
+const AVATARS = {
+padre1: `
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="8" r="4" fill="#8E9AAF"/>
+  <rect x="6" y="13" width="12" height="8" rx="4" fill="#4C5C68"/>
+</svg>
+`,
+
+
+
+
+
+madre1: `
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="8" r="4" fill="#F4A9C4"/>
+  <rect x="6" y="13" width="12" height="8" rx="4" fill="#C06C84"/>
+</svg>
+`,
+
+nino1: `
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="8" r="3.5" fill="#F2DDA4"/>
+  <rect x="7" y="13" width="10" height="7" rx="3.5" fill="#81B29A"/>
+</svg>
+`,
+
+nina1: `
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="8" r="3.5" fill="#F7C5A8"/>
+  <rect x="7" y="13" width="10" height="7" rx="3.5" fill="#E9C46A"/>
+</svg>
+`,
+
+abuelo1: `
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="8" r="4" fill="#D3D3D3"/>
+  <rect x="6" y="13" width="12" height="8" rx="4" fill="#6C757D"/>
+</svg>
+`,
+
+abuela1: `
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="8" r="4" fill="#E8D4C8"/>
+  <rect x="6" y="13" width="12" height="8" rx="4" fill="#9A8C98"/>
+</svg>
+`,
+
+mascota1: `
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="10" r="4" fill="#A47148"/>
+  <circle cx="10" cy="8" r="1" fill="#5C3D2E"/>
+  <circle cx="14" cy="8" r="1" fill="#5C3D2E"/>
+  <rect x="8" y="14" width="8" height="5" rx="2.5" fill="#8D6E63"/>
+</svg>
+`,
+
+};
+
 
   let currentHouseholdId = null;
   let currentUserNameValue = "";
@@ -65,7 +128,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const joinHouseholdBtn = document.getElementById("joinHouseholdBtn");
 
   // INVITACIONES
-  const inviteBtn = document.getElementById("inviteBtn");
+  const inviteBtnInside = document.getElementById("inviteBtnInside");
+
   const inviteModal = document.getElementById("inviteModal");
   const inviteCodeBox = document.getElementById("inviteCodeBox");
   const closeInviteModal = document.getElementById("closeInviteModal");
@@ -76,15 +140,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const backFromRegister = document.getElementById("backFromRegister");
   const backFromJoin = document.getElementById("backFromJoin");
 
+     const avatarSelect = document.getElementById("profileAvatar");
+const avatarPreview = document.getElementById("profileAvatarPreview");
+
+avatarSelect.addEventListener("change", (e) => {
+  avatarPreview.src = `img/avatars/${e.target.value}.png`;
+});
+
   // PANTALLAS
   const screens = {
     home: document.getElementById("homeScreen"),
     agenda: document.getElementById("agendaScreen"),
     calendar: document.getElementById("calendarScreen"),
     compra: document.getElementById("compraScreen"),
-    notes: document.getElementById("notesScreen")
-
-    // ===============================
+    notes: document.getElementById("notesScreen"),
   };
 
 // ===============================
@@ -384,32 +453,33 @@ document.querySelectorAll(".home-btn").forEach(btn => {
   //  MIEMBROS
   // ======================================================
 async function loadMembers() {
-
-  
-  console.log("Household ID:", currentHouseholdId);
-
   const snap = await getDoc(doc(db, "households", currentHouseholdId));
-  console.log("Members:", snap.data().members);
-
-
-  const familyMenu = document.getElementById("familyMenu");
-  familyMenu.innerHTML = "";
+  const familyList = document.getElementById("familyMembersList");
+  familyList.innerHTML = "";
 
   for (const uid in snap.data().members) {
     const u = await getDoc(doc(db, "users", uid));
-    const name = u.data().name;
-    const email = u.data().email;
+    const data = u.data();
 
-  
+    const name = data.name;
+    const avatar = data.avatar || "padre1";
 
-    // Menú nuevo 👥
     const item = document.createElement("div");
     item.classList.add("family-member");
-    item.textContent = name;
-    familyMenu.appendChild(item);
+
+    item.innerHTML = `
+      <div class="family-avatar">${AVATARS[avatar]}</div>
+      <span>${name}</span>
+    `;
+
+    familyList.appendChild(item);
+
     item.addEventListener("click", () => openProfile(uid));
   }
 }
+
+
+
 
 
 document.getElementById("familyMenuBtn").addEventListener("click", () => {
@@ -429,7 +499,8 @@ document.addEventListener("click", (e) => {
 //  INVITAR MIEMBROS (CORREGIDO)
 // ======================================================
 
-inviteBtn.addEventListener("click", async () => {
+inviteBtnInside.addEventListener("click", async () => {
+
   if (!currentHouseholdId || !auth.currentUser) {
     alert("No se ha cargado el hogar actual.");
     return;
@@ -454,6 +525,13 @@ inviteBtn.addEventListener("click", async () => {
 closeInviteModal.addEventListener("click", () => {
   inviteModal.classList.add("hidden");
 });
+
+const closeEventModal = document.getElementById("closeEventModal");
+
+closeEventModal.addEventListener("click", () => {
+  document.getElementById("addEventModal").classList.add("hidden");
+});
+
 
   // ======================================================
   //  AGENDA
@@ -483,15 +561,38 @@ closeInviteModal.addEventListener("click", () => {
 const addEventModal = document.getElementById("addEventModal");
 
 const saveEventBtn = document.getElementById("saveEventBtn");
-const closeEventModal = document.getElementById("closeEventModal");
 
 addEventBtn.addEventListener("click", () => {
+  loadNotifyList(); // ← AQUÍ CARGAMOS LOS MIEMBROS
   addEventModal.classList.remove("hidden");
 });
+async function loadNotifyList() {
+  const snap = await getDoc(doc(db, "households", currentHouseholdId));
+  const members = snap.data().members;
 
-closeEventModal.addEventListener("click", () => {
-  addEventModal.classList.add("hidden");
-});
+  const notifyList = document.getElementById("notifyList");
+  notifyList.innerHTML = "";
+
+  for (const uid in members) {
+    if (uid === auth.currentUser.uid) continue; // No te notificas a ti mismo
+
+    const u = await getDoc(doc(db, "users", uid));
+    const data = u.data();
+
+    const div = document.createElement("div");
+    div.classList.add("notify-item");
+
+    div.innerHTML = `
+      <label>
+        <input type="checkbox" class="notify-check" data-email="${data.email}" data-name="${data.name}">
+        ${data.name} (${data.email})
+      </label>
+    `;
+
+    notifyList.appendChild(div);
+  }
+}
+
 
 // Guardar evento
 saveEventBtn.addEventListener("click", async () => {
@@ -501,7 +602,7 @@ saveEventBtn.addEventListener("click", async () => {
   const category = document.getElementById("eventCategory").value;
   const shortTitle = document.getElementById("eventShortTitle").value;
 
-  
+
 
 
 
@@ -524,6 +625,22 @@ await addDoc(collection(db, "households", currentHouseholdId, "events"), {
   category,
   color: colors[category],
   createdAt: serverTimestamp()
+});
+
+  // 1. Recoger los miembros seleccionados
+const checks = document.querySelectorAll(".notify-check:checked");
+
+// 2. Enviar email a cada uno
+checks.forEach(chk => {
+  emailjs.send("service_2yful4g", "template_rg45ekn", {
+    to_email: chk.dataset.email,
+    to_name: chk.dataset.name,
+    from_name: currentUserNameValue,
+    event_title: shortTitle,
+    event_date: date,
+    event_time: time,
+    description: description,
+  });
 });
 
 
@@ -729,6 +846,20 @@ document.getElementById("saveEditEventBtn").addEventListener("click", async () =
   const category = document.getElementById("editCategory").value;
   const description = document.getElementById("editDescription").value;
 
+  const checks = document.querySelectorAll(".notify-check:checked");
+
+checks.forEach(chk => {
+  emailjs.send("service_id", "template_id", {
+    to_email: chk.dataset.email,
+    to_name: chk.dataset.name,
+    from_name: currentUserNameValue,
+    event_title: shortTitle || description,
+    event_date: date,
+    event_time: time
+  });
+});
+
+
   const colors = {
     padres: "#ff6b6b",
     hijos: "#4dabf7",
@@ -790,9 +921,11 @@ events.push({
   extendedProps: {
     description: ev.description,
     category: ev.category,
-    color: ev.color
+    color: ev.color,
+    time: ev.time   // ← NECESARIO PARA ARRASTRAR
   }
 });
+
 
 
     }
@@ -901,14 +1034,55 @@ async function openProfile(uid) {
   const snap = await getDoc(doc(db, "users", uid));
   const data = snap.data();
 
-  document.getElementById("profileName").value = data.name || "";
-  document.getElementById("profileRole").value = data.role || "invitado";
-  document.getElementById("profilePhoto").src = data.photoURL || "img/default.png";
-
   const modal = document.getElementById("profileModal");
   modal.dataset.uid = uid;
+
+  // Rellenar datos
+  document.getElementById("profileName").value = data.name || "";
+  document.getElementById("profileRole").value = data.role || "invitado";
+  const avatar = data.avatar || "padre1";
+document.getElementById("profileAvatar").value = avatar;
+document.getElementById("profileAvatarPreview").innerHTML = AVATARS[avatar];
+
+
+// Vista previa del avatar al cambiar el selector
+document.getElementById("profileAvatar").addEventListener("change", (e) => {
+  document.getElementById("profileAvatarPreview").innerHTML =
+    AVATARS[e.target.value];
+});
+
+const deleteBtn = document.getElementById("deleteMemberBtn");
+
+const householdSnap = await getDoc(doc(db, "households", currentHouseholdId));
+const isOwner = householdSnap.data().owner === auth.currentUser.uid;
+
+if (isOwner && uid !== auth.currentUser.uid) {
+  deleteBtn.classList.remove("hidden");
+} else {
+  deleteBtn.classList.add("hidden");
+}
+
+
+
+  const saveBtn = document.getElementById("saveProfileBtn");
+
+  // 🔒 Solo puede editar su propio perfil
+  if (uid !== auth.currentUser.uid) {
+    document.getElementById("profileName").disabled = true;
+    document.getElementById("profileRole").disabled = true;
+    document.getElementById("profileAvatar").disabled = true;
+    saveBtn.classList.add("hidden");
+  } else {
+    document.getElementById("profileName").disabled = false;
+    document.getElementById("profileRole").disabled = false;
+    document.getElementById("profileAvatar").disabled = false;
+    saveBtn.classList.remove("hidden");
+  }
+
   modal.classList.remove("hidden");
 }
+
+
 
 document.getElementById("closeProfileModal").addEventListener("click", () => {
   document.getElementById("profileModal").classList.add("hidden");
@@ -918,15 +1092,35 @@ document.getElementById("saveProfileBtn").addEventListener("click", async () => 
   const modal = document.getElementById("profileModal");
   const uid = modal.dataset.uid;
 
+  if (uid !== auth.currentUser.uid) return;
+
+  const name = document.getElementById("profileName").value;
+  const role = document.getElementById("profileRole").value;
+  const avatar = document.getElementById("profileAvatar").value;
+
   await updateDoc(doc(db, "users", uid), {
-    name: document.getElementById("profileName").value,
-    role: document.getElementById("profileRole").value
+    name,
+    role,
+    avatar
   });
 
   modal.classList.add("hidden");
-  loadMembers(); // refrescar lista
+  loadMembers();
 });
 
+document.getElementById("deleteMemberBtn").addEventListener("click", async () => {
+  const modal = document.getElementById("profileModal");
+  const uid = modal.dataset.uid;
+
+  if (!confirm("¿Seguro que quieres eliminar a este miembro del hogar?")) return;
+
+  await updateDoc(doc(db, "households", currentHouseholdId), {
+    [`members.${uid}`]: deleteField()
+  });
+
+  modal.classList.add("hidden");
+  loadMembers();
+});
 
   // ======================================================
   //  COMPRAS
