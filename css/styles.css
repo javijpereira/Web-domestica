@@ -938,22 +938,115 @@ textarea {
 }
 
 
-.profile-photo-container {
-  text-align: center;
-  margin-bottom: 1rem;
+.family-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  cursor: pointer;
 }
 
-.profile-photo {
-  width: 90px;
-  height: 90px;
+.family-member:hover {
+  background: #f0f0f0;
+}
+
+.family-avatar {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ccc;
-  margin-bottom: 0.5rem;
 }
 
-#profilePhotoInput {
+.avatar-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
   display: block;
-  margin: 0.5rem auto;
+  margin-bottom: 8px;
 }
 
+.invite-inside-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #e8f0fe;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.invite-inside-btn:hover {
+  background: #d2e3fc;
+}
+
+
+/* Contenedor general */
+.notify-list {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f5f5f7;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Cada miembro */
+.notify-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e6e6e6;
+  transition: background 0.2s, border 0.2s;
+}
+
+/* Hover */
+.notify-item:hover {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+/* Checkbox */
+.notify-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 12px;
+  accent-color: #4f46e5; /* Material You purple */
+}
+
+/* Texto */
+.notify-item label {
+  font-size: 0.95rem;
+  color: #333;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Título */
+.notify-title {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #444;
+}
+
+
+.danger-btn {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.danger-btn:hover {
+  background: #e63939;
+}
