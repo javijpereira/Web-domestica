@@ -40,6 +40,9 @@
     <button id="showJoinBtn">Unirme con código</button>
   </div>
 
+  <p id="forgotPasswordLink" class="forgot-link">¿Has olvidado tu contraseña?</p>
+
+
   <!-- REGISTRO -->
   <div id="registerForm" class="auth-box hidden">
     <h2>Crear nueva casa</h2>
@@ -61,6 +64,18 @@
     <button id="backFromJoin" class="secondary">Volver</button>
   </div>
 </div>
+
+
+<div id="resetModal" class="hidden">
+  <div class="modal-content">
+    <h3>Restablecer contraseña</h3>
+    <input type="email" id="resetEmail" placeholder="Introduce tu correo">
+    <button id="sendResetBtn">Enviar enlace</button>
+    <button id="closeResetModal">Cancelar</button>
+  </div>
+</div>
+
+
 
 <!-- ================= APP PRINCIPAL ================= -->
 
@@ -142,9 +157,19 @@
        <ul id="todayEventsList" class="today-events hidden"></ul>
        <h3 class="agenda-title">Próximos eventos</h3>
        <ul id="agendaList"></ul>
+
+  <div id="futureEventsContainer">
+  <div id="futureEventsHeader">
+    <span>Futuros eventos</span>
+    <i id="futureEventsArrow" class="material-icons">expand_more</i>
+  </div>
+  <ul id="futureEventsList" class="hidden"></ul>
+</div>
+
       </div>
     </div>
   </div>
+
 
   <!-- CALENDARIO -->
   <div id="calendarScreen" class="screen hidden">
@@ -152,17 +177,109 @@
     <div id="calendar"></div>
   </div>
 
-  <!-- COMPRAS -->
-  <div id="compraScreen" class="screen hidden">
-    <button class="backHome">⬅ Volver</button>
-    <h2>Lista de la compra</h2>
+<!-- COMPRAS -->
+<div id="compraScreen" class="screen hidden">
+
+  <button class="backHome">⬅ Volver</button>
+
+  <h2>Lista de la compra</h2>
+
+  <div class="shopping-header">
+
+    <button id="createListBtn">Nueva lista</button>
+
+    <h2 id="currentListTitle" class="current-list-title hidden">
+      🛒 Lista
+    </h2>
+
+  </div>
+
+  <!-- LISTAS -->
+  <div id="listsView">
+    <div id="listsContainer"></div>
+  </div>
+
+  <!-- MODAL CREAR LISTA -->
+<div id="createListModal" class="modal hidden">
+
+  <div class="modal-content">
+
+    <h3>📋 Crear nueva lista</h3>
+
+    <input type="text"
+           id="newListName"
+           placeholder="Nombre de la lista">
+
+    <div class="modal-actions">
+      <button id="saveNewListBtn">Crear</button>
+      <button id="closeListModalBtn">Cancelar</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- MODAL CONFIRMAR ELIMINAR LISTA -->
+<div id="deleteListModal" class="modal hidden">
+
+  <div class="modal-content">
+
+    <h3>⚠️ ¿Eliminar esta lista?</h3>
+
+    <p>Esta acción eliminará la lista y todos sus productos.</p>
+
+    <div class="modal-actions">
+
+      <button id="confirmDeleteListBtn">
+        Sí, eliminar
+      </button>
+
+      <button id="cancelDeleteListBtn">
+        Cancelar
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+  <!-- PRODUCTOS -->
+  <div id="productsView" class="hidden">
+
+    <ul id="shoppingList"></ul>
+
+<button id="openAddProductModal">➕ Añadir producto</button>
+
+<!-- MODAL AÑADIR PRODUCTO -->
+<div id="addProductModal" class="modal hidden">
+
+  <div class="modal-content">
+
+    <h3>Añadir producto</h3>
+
     <input type="text" id="productName" placeholder="Producto">
     <input type="number" id="productQty" placeholder="Cantidad" min="1" value="1">
     <input type="number" id="productPrice" placeholder="Precio €" min="0" step="0.01">
-    <button id="addProductBtn">Añadir</button>
-    <ul id="shoppingList"></ul>
-    <div id="totalPrice">Total: 0 €</div>
+
+    <div class="modal-actions">
+      <button id="saveProductBtn">Guardar</button>
+      <button id="closeAddProductModal">Cancelar</button>
+    </div>
+
   </div>
+
+</div>
+
+    <button id="backToListsBtn">⬅ Volver a listas</button>
+
+    <div id="totalPrice">Total: 0 €</div>
+
+  </div>
+
+</div>
+
+
 
   <!-- NOTAS -->
   <div id="notesScreen" class="screen hidden">
@@ -273,7 +390,7 @@
 
     <label>Categoría</label>
     <select id="editCategory">
-      <option value="padre">Padre/Madre 👨‍👩‍👧</option>
+      <option value="padres">Padre/Madre 👨‍👩‍👧</option>
       <option value="hijos">Hij@s 👧👦</option>
       <option value="casa">Casa 🏠</option>
     </select>
@@ -328,12 +445,16 @@
 </div>
 
 
+
+
+
+
 <!-- JS -->
 
-  <script>
+<script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/Web-domestica/sw.js")
+   navigator.serviceWorker.register("/Web-domestica/sw.js")
       .then(() => console.log("Service Worker registrado"))
       .catch(err => console.error("SW error:", err));
   });
