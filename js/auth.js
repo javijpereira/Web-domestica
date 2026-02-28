@@ -26,6 +26,47 @@ import {
   deleteField,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+import 
+{ sendPasswordResetEmail 
+
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+const resetModal = document.getElementById("resetModal");
+const resetEmail = document.getElementById("resetEmail");
+const sendResetBtn = document.getElementById("sendResetBtn");
+const closeResetModal = document.getElementById("closeResetModal");
+
+// Abrir modal
+forgotPasswordLink.addEventListener("click", () => {
+  resetModal.classList.remove("hidden");
+});
+
+// Cerrar modal
+closeResetModal.addEventListener("click", () => {
+  resetModal.classList.add("hidden");
+});
+
+// Enviar email de reseteo
+sendResetBtn.addEventListener("click", async () => {
+  const email = resetEmail.value.trim();
+
+  if (!email) {
+    alert("Introduce tu correo.");
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    alert("Se ha enviado un enlace para restablecer tu contraseña.");
+    resetModal.classList.add("hidden");
+    resetEmail.value = "";
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
+});
+
+
 document.addEventListener("DOMContentLoaded", () => {
 
   // ===============================
@@ -38,10 +79,6 @@ padre1: `
   <rect x="6" y="13" width="12" height="8" rx="4" fill="#4C5C68"/>
 </svg>
 `,
-
-
-
-
 
 madre1: `
 <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
@@ -196,6 +233,18 @@ saveHouseNameBtn.addEventListener("click", async () => {
 // Cerrar modal
 closeRenameModal.addEventListener("click", () => {
   renameModal.classList.add("hidden");
+});
+
+
+const futureHeader = document.getElementById("futureEventsHeader");
+const futureList = document.getElementById("futureEventsList");
+const futureArrow = document.getElementById("futureEventsArrow");
+
+futureHeader.addEventListener("click", () => {
+  futureList.classList.toggle("hidden");
+  futureArrow.style.transform = futureList.classList.contains("hidden")
+    ? "rotate(0deg)"
+    : "rotate(180deg)";
 });
 
 
@@ -442,7 +491,7 @@ document.querySelectorAll(".home-btn").forEach(btn => {
     loadMembers();
     loadAgendaEvents();
     loadCalendarEventsForMonth(new Date());
-    loadShopping();
+    loadShoppingLists();
     loadNotes();
   }, 50);
 });
@@ -651,18 +700,28 @@ checks.forEach(chk => {
 
 
 async function loadAgendaEvents() {
+
   const list = document.getElementById("agendaList");
   const todayAlert = document.getElementById("todayAlert");
   const todayEventsList = document.getElementById("todayEventsList");
+  const futureList = document.getElementById("futureEventsList");
 
   list.innerHTML = "";
   todayEventsList.innerHTML = "";
+  futureList.innerHTML = "";
 
   const today = new Date();
+  today.setHours(0,0,0,0);
   const todayStr = today.toISOString().split("T")[0];
 
-  const start = new Date(today.setDate(today.getDate() - today.getDay() + 1));
-  const end = new Date(today.setDate(start.getDate() + 6));
+  const now = new Date();
+
+  // Semana actual
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay() + 1);
+
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
 
   const q = query(
     collection(db, "households", currentHouseholdId, "events"),
@@ -673,36 +732,49 @@ async function loadAgendaEvents() {
   const snap = await getDocs(q);
 
   let todayEvents = [];
+  let futureByMonth = {};
+
+  // ======================================================
+  // RECORRER EVENTOS
+  // ======================================================
 
   snap.forEach(docu => {
+
     const ev = docu.data();
-    const evDate = new Date(ev.date);
+    const evDate = new Date(ev.date + "T00:00:00");
+    const eventDateTime = new Date(`${ev.date}T${ev.time}`);
+
+    // --- FUTUROS (más allá de esta semana) ---
+if (evDate > weekEnd) {
+  const monthKey = evDate.toLocaleDateString("es-ES", {
+    month: "long",
+    year: "numeric"
+  });
+
+  if (!futureByMonth[monthKey]) {
+    futureByMonth[monthKey] = [];
+  }
+
+  futureByMonth[monthKey].push({ id: docu.id, ...ev });
+  // ❌ NO return aquí
+}
+
 
     // --- EVENTOS DE HOY ---
-if (ev.date === todayStr) {
-  const now = new Date();
-  const eventDateTime = new Date(`${ev.date}T${ev.time}`);
+    if (ev.date === todayStr && eventDateTime >= now) {
+      todayEvents.push({ id: docu.id, ...ev });
+      return;
+    }
 
-  if (eventDateTime >= now) {
-    todayEvents.push({ id: docu.id, ...ev });
-  }
-}
-
+    // --- OCULTAR PASADOS ---
+    if (eventDateTime < now) return;
 
     // --- EVENTOS DE LA SEMANA ---
-   // --- OCULTAR EVENTOS PASADOS ---
-const now = new Date();
-const eventDateTime = new Date(`${ev.date}T${ev.time}`);
-
-if (eventDateTime < now) {
-  return; // ← NO mostrar en agenda
-}
-
-// --- EVENTOS DE LA SEMANA (solo futuros) ---
-if (evDate >= start && evDate <= end && ev.date !== todayStr) {
+    if (evDate >= weekStart && evDate <= weekEnd) {
 
       const li = document.createElement("li");
       li.style.borderLeft = `6px solid ${ev.color}`;
+
       li.innerHTML = `
         <div class="agenda-info">
           <strong>${ev.date} ${ev.time}</strong><br>
@@ -710,25 +782,30 @@ if (evDate >= start && evDate <= end && ev.date !== todayStr) {
         </div>
 
         <div class="agenda-actions">
-          <button class="viewEventBtn" data-id="${docu.id}" title="Ver detalles">
+          <button class="viewEventBtn" data-id="${docu.id}">
             <i class="material-icons">visibility</i>
           </button>
-
-          <button class="editEventBtn" data-id="${docu.id}" title="Editar">
+          <button class="editEventBtn" data-id="${docu.id}">
             <i class="material-icons">edit</i>
           </button>
-
-          <button class="deleteEventBtn" data-id="${docu.id}" title="Eliminar">
+          <button class="deleteEventBtn" data-id="${docu.id}">
             <i class="material-icons">delete</i>
           </button>
         </div>
       `;
+
       list.appendChild(li);
     }
-  });
 
-  // --- MOSTRAR BLOQUE HOY ---
+  }); // ← AQUÍ SE CIERRA EL FOREACH CORRECTAMENTE
+
+
+  // ======================================================
+  // MOSTRAR EVENTOS DE HOY
+  // ======================================================
+
   if (todayEvents.length > 0) {
+
     todayAlert.classList.remove("hidden");
     todayEventsList.classList.remove("hidden");
 
@@ -738,9 +815,11 @@ if (evDate >= start && evDate <= end && ev.date !== todayStr) {
         : `Hoy tienes ${todayEvents.length} eventos:`;
 
     todayEvents.forEach(ev => {
+
       const li = document.createElement("li");
       li.classList.add("today-item");
       li.style.borderLeft = `6px solid ${ev.color}`;
+
       li.innerHTML = `
         <div class="agenda-info">
           <strong>${ev.time}</strong><br>
@@ -748,19 +827,18 @@ if (evDate >= start && evDate <= end && ev.date !== todayStr) {
         </div>
 
         <div class="agenda-actions">
-          <button class="viewEventBtn" data-id="${ev.id}" title="Ver detalles">
+          <button class="viewEventBtn" data-id="${ev.id}">
             <i class="material-icons">visibility</i>
           </button>
-
-          <button class="editEventBtn" data-id="${ev.id}" title="Editar">
+          <button class="editEventBtn" data-id="${ev.id}">
             <i class="material-icons">edit</i>
           </button>
-
-          <button class="deleteEventBtn" data-id="${ev.id}" title="Eliminar">
+          <button class="deleteEventBtn" data-id="${ev.id}">
             <i class="material-icons">delete</i>
           </button>
         </div>
       `;
+
       todayEventsList.appendChild(li);
     });
 
@@ -769,7 +847,51 @@ if (evDate >= start && evDate <= end && ev.date !== todayStr) {
     todayEventsList.classList.add("hidden");
   }
 
-  // --- LISTENERS ---
+
+  // ======================================================
+  // FUTUROS POR MES
+  // ======================================================
+
+  for (const month in futureByMonth) {
+
+    const header = document.createElement("h3");
+    header.textContent = month.charAt(0).toUpperCase() + month.slice(1);
+    header.classList.add("month-header");
+    futureList.appendChild(header);
+
+    futureByMonth[month].forEach(ev => {
+
+      const li = document.createElement("li");
+      li.style.borderLeft = `6px solid ${ev.color}`;
+
+      li.innerHTML = `
+        <div class="agenda-info">
+          <strong>${ev.date} ${ev.time}</strong><br>
+          ${ev.shortTitle || ev.description}
+        </div>
+
+        <div class="agenda-actions">
+          <button class="viewEventBtn" data-id="${ev.id}">
+            <i class="material-icons">visibility</i>
+          </button>
+          <button class="editEventBtn" data-id="${ev.id}">
+            <i class="material-icons">edit</i>
+          </button>
+          <button class="deleteEventBtn" data-id="${ev.id}">
+            <i class="material-icons">delete</i>
+          </button>
+        </div>
+      `;
+
+      futureList.appendChild(li);
+    });
+  }
+
+
+  // ======================================================
+  // LISTENERS (UNA SOLA VEZ)
+  // ======================================================
+
   document.querySelectorAll(".editEventBtn").forEach(btn => {
     btn.addEventListener("click", async () => {
       const id = btn.dataset.id;
@@ -802,11 +924,8 @@ if (evDate >= start && evDate <= end && ev.date !== todayStr) {
       });
     });
   });
+
 }
-
-
-
-
 
 function openEditEvent(event) {
   const modal = document.getElementById("editEventModal");
@@ -866,14 +985,15 @@ checks.forEach(chk => {
     casa: "#51cf66"
   };
 
-  await updateDoc(doc(db, "households", currentHouseholdId, "events", id), {
-    shortTitle,
-    date,
-    time,
-    category,
-    description,
-    color: colors[category]
-  });
+
+await updateDoc(doc(db, "households", currentHouseholdId, "events", id), {
+  shortTitle,
+  date,
+  time,
+  category,
+  description,
+  color: colors [category]
+});
 
   modal.classList.add("hidden");
 
@@ -1123,35 +1243,423 @@ document.getElementById("deleteMemberBtn").addEventListener("click", async () =>
 });
 
   // ======================================================
-  //  COMPRAS
-  // ======================================================
-  const shoppingList = document.getElementById("shoppingList");
-  const addProductBtn = document.getElementById("addProductBtn");
+// ======================================================
+//  COMPRAS (MULTILISTAS)
+// ======================================================
 
-  async function loadShopping() {
-    shoppingList.innerHTML = "";
+const addProductBtn = document.getElementById("addProductBtn");
+const createListBtn = document.getElementById("createListBtn");
+const toggleListsBtn = document.getElementById("toggleListsBtn");
+const listsContainer = document.getElementById("listsContainer");
 
-    const q = query(collection(db, "shopping"), where("householdId", "==", currentHouseholdId));
-    const snap = await getDocs(q);
+const deleteListModal = document.getElementById("deleteListModal");
+const confirmDeleteListBtn = document.getElementById("confirmDeleteListBtn");
+const cancelDeleteListBtn = document.getElementById("cancelDeleteListBtn");
 
-    snap.forEach(docu => {
-      const li = document.createElement("li");
-      li.textContent = `${docu.data().qty}x ${docu.data().name}`;
-      shoppingList.appendChild(li);
-    });
-  }
+let currentListId = null;
+let listIdToDelete = null;
 
-  addProductBtn.addEventListener("click", async () => {
-    await addDoc(collection(db, "shopping"), {
-      householdId: currentHouseholdId,
-      name: document.getElementById("productName").value,
-      qty: document.getElementById("productQty").value,
-      price: document.getElementById("productPrice").value
-    });
+/* =====================================================
+   CREAR LISTA (MODAL)
+===================================================== */
 
-    loadShopping();
+createListBtn?.addEventListener("click", () => {
+
+  const modal = document.getElementById("createListModal");
+  modal?.classList.remove("hidden");
+
+});
+
+const saveNewListBtn = document.getElementById("saveNewListBtn");
+const newListNameInput = document.getElementById("newListName");
+const createListModal = document.getElementById("createListModal");
+const closeListModalBtn = document.getElementById("closeListModalBtn");
+
+saveNewListBtn?.addEventListener("click", async () => {
+
+  const name = newListNameInput.value.trim();
+  if (!name || !currentHouseholdId) return;
+
+  await addDoc(collection(db, "shoppingLists"), {
+    name,
+    householdId: currentHouseholdId,
+    createdAt: serverTimestamp()
   });
 
+  newListNameInput.value = "";
+  createListModal?.classList.add("hidden");
+
+  loadShoppingLists();
+});
+
+closeListModalBtn?.addEventListener("click", () => {
+  createListModal?.classList.add("hidden");
+});
+
+
+/* =====================================================
+   CARGAR LISTAS
+===================================================== */
+
+async function loadShoppingLists() {
+
+  if (!listsContainer) return;
+
+  listsContainer.innerHTML = "";
+
+  const q = query(
+    collection(db, "shoppingLists"),
+    where("householdId", "==", currentHouseholdId)
+  );
+
+  const snap = await getDocs(q);
+
+  snap.forEach(docu => {
+
+    const div = document.createElement("div");
+    div.classList.add("shopping-list-card");
+
+    div.innerHTML = `
+      <div class="list-row">
+
+        <h3 class="list-name">
+          ${docu.data().name}
+        </h3>
+
+        <div class="list-actions">
+
+          <button class="openListBtn" data-id="${docu.id}">
+            📁
+          </button>
+
+          <button class="deleteListBtn" data-id="${docu.id}">
+            🗑
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+    listsContainer.appendChild(div);
+  });
+
+}
+
+
+/* =====================================================
+   ABRIR LISTA
+===================================================== */
+
+function openList(listId) {
+
+  currentListId = listId;
+
+  getDoc(doc(db, "shoppingLists", listId)).then(snapshot => {
+
+    const listName = snapshot.data().name;
+
+    const title = document.getElementById("currentListTitle");
+    title.textContent = "🛒 " + listName;
+    title.classList.remove("hidden");
+
+  });
+
+  document.getElementById("listsView")?.classList.add("hidden");
+  document.getElementById("productsView")?.classList.remove("hidden");
+
+  loadProducts();
+}
+
+
+/* =====================================================
+   CLICK EN LISTAS (ABRIR / BORRAR)
+===================================================== */
+
+listsContainer?.addEventListener("click", (e) => {
+
+  const openBtn = e.target.closest(".openListBtn");
+  if (openBtn) {
+    openList(openBtn.dataset.id);
+
+    // cerrar listas automáticamente
+    listsContainer.classList.add("hidden");
+  }
+
+  const deleteBtn = e.target.closest(".deleteListBtn");
+  if (deleteBtn) {
+
+    listIdToDelete = deleteBtn.dataset.id;
+    deleteListModal?.classList.remove("hidden");
+
+  }
+
+});
+
+
+/* =====================================================
+   CONFIRMAR BORRAR LISTA
+===================================================== */
+
+confirmDeleteListBtn?.addEventListener("click", async () => {
+
+  if (!listIdToDelete) return;
+
+  try {
+
+    const productsSnap = await getDocs(
+      collection(db, "shoppingLists", listIdToDelete, "products")
+    );
+
+    for (const productDoc of productsSnap.docs) {
+
+      await deleteDoc(
+        doc(db, "shoppingLists", listIdToDelete, "products", productDoc.id)
+      );
+
+    }
+
+    await deleteDoc(doc(db, "shoppingLists", listIdToDelete));
+
+    deleteListModal?.classList.add("hidden");
+    listIdToDelete = null;
+
+    loadShoppingLists();
+
+  } catch (error) {
+    console.error("Error eliminando lista:", error);
+  }
+
+});
+
+
+/* =====================================================
+   CANCELAR BORRAR LISTA
+===================================================== */
+
+cancelDeleteListBtn?.addEventListener("click", () => {
+
+  deleteListModal?.classList.add("hidden");
+  listIdToDelete = null;
+
+});
+
+
+/* =====================================================
+   VOLVER A LISTAS
+===================================================== */
+
+const backToListsBtn = document.getElementById("backToListsBtn");
+
+  backToListsBtn?.addEventListener("click", () => {
+
+  document.getElementById("productsView")?.classList.add("hidden");
+  document.getElementById("listsView")?.classList.remove("hidden");
+
+  document.getElementById("currentListTitle")?.classList.add("hidden");
+
+  // 🔥 IMPORTANTE: mostrar el contenedor de listas
+  const listsContainer = document.getElementById("listsContainer");
+  listsContainer?.classList.remove("hidden");
+
+  currentListId = null;
+
+  // 🔥 IMPORTANTE: volver a cargar las listas
+  loadShoppingLists();
+
+});
+
+
+/* =====================================================
+/* =====================================================
+   CARGAR PRODUCTOS
+===================================================== */
+
+async function loadProducts() {
+
+  if (!currentListId) return;
+
+  const list = document.getElementById("shoppingList");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  const q = query(
+    collection(db, "shoppingLists", currentListId, "products"),
+    orderBy("createdAt", "desc")
+  );
+
+  const snap = await getDocs(q);
+
+  snap.forEach(docu => {
+
+    const data = docu.data();
+
+    const li = document.createElement("li");
+    li.classList.add("shopping-item");
+
+    const completedClass = data.completed ? "completed" : "";
+
+    li.innerHTML = `
+      <span class="${completedClass}">
+        ${data.qty}x ${data.name}
+      </span>
+
+      <div class="product-actions">
+        <button class="toggleCompleteBtn" data-id="${docu.id}">
+          ✔
+        </button>
+
+        <button class="deleteProductBtn" data-id="${docu.id}">
+          🗑
+        </button>
+      </div>
+    `;
+
+    list.appendChild(li);
+
+  });
+
+  // 🔥 Delegación de eventos (MUY IMPORTANTE)
+  list.onclick = async (e) => {
+
+    const toggleBtn = e.target.closest(".toggleCompleteBtn");
+    if (toggleBtn) {
+
+      const productId = toggleBtn.dataset.id;
+
+      const productRef = doc(
+        db,
+        "shoppingLists",
+        currentListId,
+        "products",
+        productId
+      );
+
+      const snap = await getDoc(productRef);
+      const currentStatus = snap.data().completed || false;
+
+      await updateDoc(productRef, {
+        completed: !currentStatus
+      });
+
+      loadProducts();
+      calculateTotal();
+
+    }
+
+    const deleteBtn = e.target.closest(".deleteProductBtn");
+    if (deleteBtn) {
+
+      const productId = deleteBtn.dataset.id;
+
+      await deleteDoc(
+        doc(db, "shoppingLists", currentListId, "products", productId)
+      );
+
+      loadProducts();
+      calculateTotal();
+
+    }
+
+  };
+
+  // 🔥 Calcular total después de cargar productos
+  calculateTotal();
+
+}
+
+
+/* =====================================================
+   CALCULAR TOTAL (CORREGIDO)
+===================================================== */
+
+async function calculateTotal() {
+
+  if (!currentListId) return;
+
+  const totalElement = document.getElementById("totalPrice");
+  if (!totalElement) return;
+
+  const snap = await getDocs(
+    collection(db, "shoppingLists", currentListId, "products")
+  );
+
+  let total = 0;
+
+  snap.forEach(docu => {
+
+    const data = docu.data();
+
+    if (!data.completed) {
+
+      const qty = Number(data.qty) || 0;
+      const price = Number(data.price) || 0;
+
+      total += qty * price;
+    }
+
+  });
+
+  totalElement.textContent = "Total: " + total.toFixed(2) + " €";
+
+}
+
+
+
+/* =====================================================
+   AÑADIR PRODUCTO
+===================================================== */
+
+const openAddProductModalBtn = document.getElementById("openAddProductModal");
+const addProductModal = document.getElementById("addProductModal");
+const saveProductBtn = document.getElementById("saveProductBtn");
+const closeAddProductModalBtn = document.getElementById("closeAddProductModal");
+
+/* ABRIR MODAL */
+openAddProductModalBtn?.addEventListener("click", () => {
+  addProductModal?.classList.remove("hidden");
+});
+
+/* CERRAR MODAL */
+closeAddProductModalBtn?.addEventListener("click", () => {
+  addProductModal?.classList.add("hidden");
+});
+
+/* GUARDAR PRODUCTO */
+saveProductBtn?.addEventListener("click", async () => {
+
+  if (!currentListId) return;
+
+  const nameInput = document.getElementById("productName");
+  const qtyInput = document.getElementById("productQty");
+  const priceInput = document.getElementById("productPrice");
+
+  if (!nameInput.value || !qtyInput.value) {
+    alert("Completa nombre y cantidad");
+    return;
+  }
+
+  await addDoc(
+    collection(db, "shoppingLists", currentListId, "products"),
+    {
+      name: nameInput.value,
+      qty: qtyInput.value,
+      price: priceInput.value || 0,
+      completed: false,
+      createdAt: serverTimestamp()
+    }
+  );
+
+  nameInput.value = "";
+  qtyInput.value = "";
+  priceInput.value = "";
+
+  addProductModal.classList.add("hidden");
+
+  loadProducts();
+  calculateTotal();
+});
   // ======================================================
   //  NOTAS
   // ======================================================
@@ -1192,5 +1700,6 @@ document.getElementById("deleteMemberBtn").addEventListener("click", async () =>
   showLogin();
 
 });
+
 
 
