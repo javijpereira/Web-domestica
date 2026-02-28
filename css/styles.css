@@ -1050,3 +1050,411 @@ textarea {
 .danger-btn:hover {
   background: #e63939;
 }
+
+
+/* Fondo oscuro difuminado */
+#resetModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.25s ease-out;
+}
+
+/* Caja del modal */
+#resetModal .modal-content {
+  background: #ffffff;
+  padding: 28px;
+  width: 90%;
+  max-width: 380px;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.25s ease-out;
+  text-align: center;
+}
+
+/* Título */
+#resetModal h3 {
+  margin-bottom: 16px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Input */
+#resetModal input[type="email"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  margin-bottom: 18px;
+  transition: 0.2s;
+}
+
+#resetModal input[type="email"]:focus {
+  border-color: #4dabf7;
+  box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.25);
+  outline: none;
+}
+
+/* Botones */
+#resetModal button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: 0.2s;
+}
+
+/* Botón principal */
+#sendResetBtn {
+  background: #4dabf7;
+  color: white;
+  font-weight: 600;
+}
+
+#sendResetBtn:hover {
+  background: #339af0;
+}
+
+/* Botón cerrar */
+#closeResetModal {
+  background: #e9ecef;
+  color: #333;
+}
+
+#closeResetModal:hover {
+  background: #dee2e6;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Oculto */
+.hidden {
+  display: none !important;
+}
+
+
+#futureEventsContainer {
+  margin-top: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 10px 15px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#futureEventsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 8px 0;
+}
+
+#futureEventsHeader:hover {
+  opacity: 0.8;
+}
+
+#futureEventsArrow {
+  transition: transform 0.25s ease;
+}
+
+#futureEventsList {
+  margin-top: 10px;
+  list-style: none;
+  padding-left: 0;
+}
+
+#futureEventsList li {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 6px solid #ccc;
+}
+
+#futureEventsList li .agenda-info {
+  flex: 1;
+}
+
+#futureEventsList li .agenda-actions button {
+  margin-left: 6px;
+}
+
+
+.shopping-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.deleteProductBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.shopping-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.current-list-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  flex: 1;
+}
+
+.hidden {
+  display: none;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  min-width: 200px;
+  max-height: 250px;
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.dropdown-content button {
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+
+.list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f5dbdb;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: 0.2s;
+}
+
+.list-row:hover {
+  background: #f1f1f1;
+}
+
+.list-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.list-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.list-actions button {
+  border: none;
+  
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+.list-actions button:hover {
+  transform: scale(1.1);
+  background: #eaeaea;
+}
+
+/* Botón borrar más elegante */
+.deleteListBtn {
+  color: #d32f2f;
+}
+
+.deleteListBtn:hover {
+  background: #ffe5e5;
+}
+
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin: 15px 0;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-actions button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#saveNewListBtn {
+  background: #4CAF50;
+  color: white;
+}
+
+#saveNewListBtn:hover {
+  background: #45a049;
+}
+
+#closeListModalBtn {
+  background: #f44336;
+  color: white;
+}
+
+#closeListModalBtn:hover {
+  background: #d32f2f;
+}
+
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.completed {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+
+.shopping-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  margin-bottom: 8px;
+}
+
+.product-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.product-actions button {
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.toggleCompleteBtn {
+  background: #4caf50;
+  color: rgb(56, 239, 28);
+}
+
+.toggleCompleteBtn:hover {
+  background: #43a047;
+}
+
+.deleteProductBtn {
+  background: #e53935;
+  color: white;
+}
+
+.deleteProductBtn:hover {
+  background: #c62828;
+}
