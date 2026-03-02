@@ -311,6 +311,8 @@ document.querySelectorAll(".home-btn").forEach(btn => {
     if (target === "calendarScreen" && calendar) {
       setTimeout(() => calendar.updateSize(), 50);
     }
+
+
   });
 });
 
@@ -1673,6 +1675,9 @@ function loadTasks() {
 
   if (!currentHouseholdId) return;
 
+  const list = document.getElementById("tasksList");
+  if (!list) return;
+
   if (unsubscribeTasks) unsubscribeTasks();
 
   const q = query(
@@ -1682,7 +1687,7 @@ function loadTasks() {
 
   unsubscribeTasks = onSnapshot(q, (snap) => {
 
-    tasksList.innerHTML = "";
+    list.innerHTML = "";
 
     let pendingCount = 0;
     const tasks = [];
@@ -1691,7 +1696,6 @@ function loadTasks() {
       tasks.push({ id: docu.id, ...docu.data() });
     });
 
-    // Pendientes primero
     tasks.sort((a, b) => a.completed - b.completed);
 
     tasks.forEach(task => {
@@ -1714,13 +1718,40 @@ function loadTasks() {
         </button>
       `;
 
-      tasksList.appendChild(li);
+      list.appendChild(li);
     });
 
-    document.getElementById("tasksCounter").textContent =
-      pendingCount === 0
-        ? "Todo al día 🎉"
-        : `${pendingCount} pendientes`;
+    const counter = document.getElementById("tasksCounter");
+    if (counter) {
+      counter.textContent =
+        pendingCount === 0
+          ? "Todo al día 🎉"
+          : `${pendingCount} pendientes`;
+    }
+
+    // 🔥 Delegación de eventos (MUY IMPORTANTE)
+    list.onclick = async (e) => {
+
+      const check = e.target.closest(".task-check");
+      if (check) {
+        await updateDoc(
+          doc(db, "households", currentHouseholdId, "tasks", check.dataset.id),
+          { completed: check.checked }
+        );
+      }
+
+      const deleteBtn = e.target.closest(".deleteTaskBtn");
+      if (deleteBtn) {
+        await deleteDoc(
+          doc(db, "households", currentHouseholdId, "tasks", deleteBtn.dataset.id)
+        );
+      }
+
+    };
+
+  });
+
+}
 
     // Checkbox
     document.querySelectorAll(".task-check").forEach(check => {
@@ -1741,9 +1772,7 @@ function loadTasks() {
       });
     });
 
-  });
 
-}
 
 // Añadir tarea
 addTaskBtn.addEventListener("click", async () => {
