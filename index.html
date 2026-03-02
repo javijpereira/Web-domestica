@@ -136,9 +136,9 @@
   <span class="label">Compras</span>
 </button>
 
-<button class="home-btn" data-screen="notesScreen">
+<button class="home-btn" data-screen="tareasScreen">
   <span class="icon">📝</span>
-  <span class="label">Notas</span>
+  <span class="label">Tareas</span>
 </button>
 
     </div>
@@ -281,17 +281,32 @@
 
 
 
-  <!-- NOTAS -->
-  <div id="notesScreen" class="screen hidden">
-    <button class="backHome">⬅ Volver</button>
-    <h2>Bloc de notas</h2>
-    <input type="text" id="noteTitle" placeholder="Título">
-    <textarea id="noteContent" rows="6"></textarea>
-    <button id="addNoteBtn" disabled>Guardar nota</button>
-    <ul id="notesList"></ul>
+<!-- ====================================================== -->
+<!--  TAREAS -->
+<!-- ====================================================== -->
+
+<section id="tasksSection">
+<button class="backHome">⬅ Volver</button>
+  <div class="tasks-header">
+    <h2>✅ Tareas</h2>
+    <span id="tasksCounter"></span>
   </div>
 
-</div>
+  <div class="task-input-container">
+    <input 
+      type="text" 
+      id="taskInput" 
+      placeholder="¿Qué hay que hacer?"
+    >
+    <button id="addTaskBtn" disabled>
+      +
+    </button>
+
+  </div>
+
+  <ul id="tasksList" class="tasks-list"></ul>
+
+</section>
 
 <!-- MODAL INVITACIÓN -->
 <div id="inviteModal" class="modal hidden">
