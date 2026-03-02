@@ -24,6 +24,7 @@ import {
   serverTimestamp,
   orderBy,
   deleteField,
+  onSnapshot,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import 
@@ -129,6 +130,7 @@ mascota1: `
 
   let currentHouseholdId = null;
   let currentUserNameValue = "";
+  let unsubscribeTasks = null;
 
 
   // ======================================================
@@ -492,7 +494,7 @@ document.querySelectorAll(".home-btn").forEach(btn => {
     loadAgendaEvents();
     loadCalendarEventsForMonth(new Date());
     loadShoppingLists();
-    loadNotes();
+    loadTasks();
   }, 50);
 });
 
@@ -712,7 +714,7 @@ async function loadAgendaEvents() {
 
   const today = new Date();
   today.setHours(0,0,0,0);
-  const todayStr = today.toISOString().split("T")[0];
+ const todayStr = today.toLocaleDateString("sv-SE");
 
   const now = new Date();
 
@@ -738,50 +740,33 @@ async function loadAgendaEvents() {
   // RECORRER EVENTOS
   // ======================================================
 
-  snap.forEach(docu => {
+snap.forEach(docu => {
 
-    const ev = docu.data();
-    const evDate = new Date(ev.date + "T00:00:00");
-    const eventDateTime = new Date(`${ev.date}T${ev.time}`);
+  const ev = docu.data();
+  const evDate = new Date(ev.date + "T00:00:00");
 
-    // --- FUTUROS (más allá de esta semana) ---
-if (evDate > weekEnd) {
-  const monthKey = evDate.toLocaleDateString("es-ES", {
-    month: "long",
-    year: "numeric"
-  });
+  // --- OCULTAR PASADOS ---
+  if (evDate < today) return;
 
-  if (!futureByMonth[monthKey]) {
-    futureByMonth[monthKey] = [];
+  // --- EVENTOS DE HOY (PRIMERO) ---
+  if (ev.date === todayStr) {
+    todayEvents.push({ id: docu.id, ...ev });
+    return;
   }
 
-  futureByMonth[monthKey].push({ id: docu.id, ...ev });
-  // ❌ NO return aquí
-}
+  // --- EVENTOS DE ESTA SEMANA ---
+  if (evDate >= weekStart && evDate <= weekEnd) {
 
+    const li = document.createElement("li");
+    li.style.borderLeft = `6px solid ${ev.color}`;
 
-    // --- EVENTOS DE HOY ---
-    if (ev.date === todayStr && eventDateTime >= now) {
-      todayEvents.push({ id: docu.id, ...ev });
-      return;
-    }
+    li.innerHTML = `
+      <div class="agenda-info">
+        <strong>${ev.date} ${ev.time}</strong><br>
+        ${ev.shortTitle || ev.description}
+      </div>
 
-    // --- OCULTAR PASADOS ---
-    if (eventDateTime < now) return;
-
-    // --- EVENTOS DE LA SEMANA ---
-    if (evDate >= weekStart && evDate <= weekEnd) {
-
-      const li = document.createElement("li");
-      li.style.borderLeft = `6px solid ${ev.color}`;
-
-      li.innerHTML = `
-        <div class="agenda-info">
-          <strong>${ev.date} ${ev.time}</strong><br>
-          ${ev.description}
-        </div>
-
-        <div class="agenda-actions">
+          <div class="agenda-actions">
           <button class="viewEventBtn" data-id="${docu.id}">
             <i class="material-icons">visibility</i>
           </button>
@@ -792,12 +777,28 @@ if (evDate > weekEnd) {
             <i class="material-icons">delete</i>
           </button>
         </div>
-      `;
+    `;
 
-      list.appendChild(li);
+    list.appendChild(li);
+    return;
+  }
+
+  // --- FUTUROS (DESPUÉS DE LA SEMANA) ---
+  if (evDate > weekEnd) {
+
+    const monthKey = evDate.toLocaleDateString("es-ES", {
+      month: "long",
+      year: "numeric"
+    });
+
+    if (!futureByMonth[monthKey]) {
+      futureByMonth[monthKey] = [];
     }
 
-  }); // ← AQUÍ SE CIERRA EL FOREACH CORRECTAMENTE
+    futureByMonth[monthKey].push({ id: docu.id, ...ev });
+  }
+
+});
 
 
   // ======================================================
@@ -1314,35 +1315,32 @@ async function loadShoppingLists() {
 
   const snap = await getDocs(q);
 
-  snap.forEach(docu => {
+ snap.forEach(docu => {
 
-    const div = document.createElement("div");
-    div.classList.add("shopping-list-card");
+  const div = document.createElement("div");
+  div.classList.add("shopping-list-card");
+  div.dataset.id = docu.id;   // 👈 guardamos el id aquí
 
-    div.innerHTML = `
-      <div class="list-row">
+  div.innerHTML = `
+    <div class="list-row">
 
-        <h3 class="list-name">
-          ${docu.data().name}
-        </h3>
+      <h3 class="list-name">
+        ${docu.data().name}
+      </h3>
 
-        <div class="list-actions">
+      <div class="list-actions">
 
-          <button class="openListBtn" data-id="${docu.id}">
-            📁
-          </button>
-
-          <button class="deleteListBtn" data-id="${docu.id}">
-            🗑
-          </button>
-
-        </div>
+        <button class="deleteListBtn" data-id="${docu.id}">
+          🗑
+        </button>
 
       </div>
-    `;
 
-    listsContainer.appendChild(div);
-  });
+    </div>
+  `;
+
+  listsContainer.appendChild(div);
+});
 
 }
 
@@ -1378,20 +1376,19 @@ function openList(listId) {
 
 listsContainer?.addEventListener("click", (e) => {
 
-  const openBtn = e.target.closest(".openListBtn");
-  if (openBtn) {
-    openList(openBtn.dataset.id);
-
-    // cerrar listas automáticamente
-    listsContainer.classList.add("hidden");
-  }
-
+  // 🔥 Si se pulsa borrar
   const deleteBtn = e.target.closest(".deleteListBtn");
   if (deleteBtn) {
-
     listIdToDelete = deleteBtn.dataset.id;
     deleteListModal?.classList.remove("hidden");
+    return;
+  }
 
+  // 🔥 Si se pulsa cualquier parte del bloque
+  const card = e.target.closest(".shopping-list-card");
+  if (card) {
+    openList(card.dataset.id);
+    listsContainer.classList.add("hidden");
   }
 
 });
@@ -1462,6 +1459,11 @@ const backToListsBtn = document.getElementById("backToListsBtn");
   const listsContainer = document.getElementById("listsContainer");
   listsContainer?.classList.remove("hidden");
 
+  if (unsubscribeProducts) {
+  unsubscribeProducts();
+  unsubscribeProducts = null;
+}
+
   currentListId = null;
 
   // 🔥 IMPORTANTE: volver a cargar las listas
@@ -1475,52 +1477,62 @@ const backToListsBtn = document.getElementById("backToListsBtn");
    CARGAR PRODUCTOS
 ===================================================== */
 
-async function loadProducts() {
+let unsubscribeProducts = null;
+
+function loadProducts() {
 
   if (!currentListId) return;
 
   const list = document.getElementById("shoppingList");
   if (!list) return;
 
-  list.innerHTML = "";
+  // 🔥 Si ya había un listener, lo eliminamos
+  if (unsubscribeProducts) {
+    unsubscribeProducts();
+  }
 
   const q = query(
     collection(db, "shoppingLists", currentListId, "products"),
     orderBy("createdAt", "desc")
   );
 
-  const snap = await getDocs(q);
+  unsubscribeProducts = onSnapshot(q, (snapshot) => {
 
-  snap.forEach(docu => {
+    list.innerHTML = "";
 
-    const data = docu.data();
+    snapshot.forEach(docu => {
 
-    const li = document.createElement("li");
-    li.classList.add("shopping-item");
+      const data = docu.data();
 
-    const completedClass = data.completed ? "completed" : "";
+      const li = document.createElement("li");
+      li.classList.add("shopping-item");
 
-    li.innerHTML = `
-      <span class="${completedClass}">
-        ${data.qty}x ${data.name}
-      </span>
+      const completedClass = data.completed ? "completed" : "";
 
-      <div class="product-actions">
-        <button class="toggleCompleteBtn" data-id="${docu.id}">
-          ✔
-        </button>
+      li.innerHTML = `
+        <span class="${completedClass}">
+          ${data.qty}x ${data.name}
+        </span>
 
-        <button class="deleteProductBtn" data-id="${docu.id}">
-          🗑
-        </button>
-      </div>
-    `;
+        <div class="product-actions">
+          <button class="toggleCompleteBtn" data-id="${docu.id}">
+            ✔
+          </button>
 
-    list.appendChild(li);
+          <button class="deleteProductBtn" data-id="${docu.id}">
+            🗑
+          </button>
+        </div>
+      `;
 
+      list.appendChild(li);
+
+    });
+
+    calculateTotal();
   });
 
-  // 🔥 Delegación de eventos (MUY IMPORTANTE)
+  // Delegación de eventos
   list.onclick = async (e) => {
 
     const toggleBtn = e.target.closest(".toggleCompleteBtn");
@@ -1542,10 +1554,6 @@ async function loadProducts() {
       await updateDoc(productRef, {
         completed: !currentStatus
       });
-
-      loadProducts();
-      calculateTotal();
-
     }
 
     const deleteBtn = e.target.closest(".deleteProductBtn");
@@ -1556,20 +1564,10 @@ async function loadProducts() {
       await deleteDoc(
         doc(db, "shoppingLists", currentListId, "products", productId)
       );
-
-      loadProducts();
-      calculateTotal();
-
     }
-
   };
-
-  // 🔥 Calcular total después de cargar productos
-  calculateTotal();
-
 }
-
-
+   
 /* =====================================================
    CALCULAR TOTAL (CORREGIDO)
 ===================================================== */
@@ -1591,18 +1589,14 @@ async function calculateTotal() {
 
     const data = docu.data();
 
-    if (!data.completed) {
+    const qty = Number(data.qty) || 0;
+    const price = Number(data.price) || 0;
 
-      const qty = Number(data.qty) || 0;
-      const price = Number(data.price) || 0;
-
-      total += qty * price;
-    }
+    total += qty * price;
 
   });
 
   totalElement.textContent = "Total: " + total.toFixed(2) + " €";
-
 }
 
 
@@ -1661,38 +1655,116 @@ saveProductBtn?.addEventListener("click", async () => {
   calculateTotal();
 });
   // ======================================================
-  //  NOTAS
-  // ======================================================
-  const notesList = document.getElementById("notesList");
-  const addNoteBtn = document.getElementById("addNoteBtn");
+// ======================================================
+//  TAREAS
+// ======================================================
 
-  // Habilitar botón cuando se escribe algo
-  document.getElementById("noteContent").addEventListener("input", () => {
-    addNoteBtn.disabled = false;
-  });
+const tasksList = document.getElementById("tasksList");
+const addTaskBtn = document.getElementById("addTaskBtn");
+const taskInput = document.getElementById("taskInput");
 
-  async function loadNotes() {
-    notesList.innerHTML = "";
+// Activar botón si hay texto
+taskInput.addEventListener("input", () => {
+  addTaskBtn.disabled = taskInput.value.trim() === "";
+});
 
-    const q = query(collection(db, "notes"), where("householdId", "==", currentHouseholdId));
-    const snap = await getDocs(q);
+// Cargar tareas
+function loadTasks() {
+
+  if (!currentHouseholdId) return;
+
+  if (unsubscribeTasks) unsubscribeTasks();
+
+  const q = query(
+    collection(db, "households", currentHouseholdId, "tasks"),
+    orderBy("createdAt", "desc")
+  );
+
+  unsubscribeTasks = onSnapshot(q, (snap) => {
+
+    tasksList.innerHTML = "";
+
+    let pendingCount = 0;
+    const tasks = [];
 
     snap.forEach(docu => {
+      tasks.push({ id: docu.id, ...docu.data() });
+    });
+
+    // Pendientes primero
+    tasks.sort((a, b) => a.completed - b.completed);
+
+    tasks.forEach(task => {
+
+      if (!task.completed) pendingCount++;
+
       const li = document.createElement("li");
-      li.textContent = docu.data().title;
-      notesList.appendChild(li);
-    });
-  }
+      li.classList.add("task-item");
 
-  addNoteBtn.addEventListener("click", async () => {
-    await addDoc(collection(db, "notes"), {
-      householdId: currentHouseholdId,
-      title: document.getElementById("noteTitle").value,
-      content: document.getElementById("noteContent").value
+      li.innerHTML = `
+        <label class="task-label">
+          <input type="checkbox" class="task-check" data-id="${task.id}" ${task.completed ? "checked" : ""}>
+          <span class="${task.completed ? "task-done" : ""}">
+            ${task.title}
+          </span>
+        </label>
+
+        <button class="deleteTaskBtn" data-id="${task.id}">
+          🗑
+        </button>
+      `;
+
+      tasksList.appendChild(li);
     });
 
-    loadNotes();
+    document.getElementById("tasksCounter").textContent =
+      pendingCount === 0
+        ? "Todo al día 🎉"
+        : `${pendingCount} pendientes`;
+
+    // Checkbox
+    document.querySelectorAll(".task-check").forEach(check => {
+      check.addEventListener("change", async () => {
+        await updateDoc(
+          doc(db, "households", currentHouseholdId, "tasks", check.dataset.id),
+          { completed: check.checked }
+        );
+      });
+    });
+
+    // Borrar
+    document.querySelectorAll(".deleteTaskBtn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        await deleteDoc(
+          doc(db, "households", currentHouseholdId, "tasks", btn.dataset.id)
+        );
+      });
+    });
+
   });
+
+}
+
+// Añadir tarea
+addTaskBtn.addEventListener("click", async () => {
+
+  const title = taskInput.value.trim();
+  if (!title) return;
+
+  await addDoc(
+    collection(db, "households", currentHouseholdId, "tasks"),
+    {
+      title,
+      completed: false,
+      createdAt: serverTimestamp()
+    }
+  );
+
+  taskInput.value = "";
+  addTaskBtn.disabled = true;
+
+  
+});
 
   // ======================================================
   //  INICIALIZAR
