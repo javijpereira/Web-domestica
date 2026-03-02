@@ -1,5 +1,5 @@
 // ======================================================
-//  AUTH + NAVEGACIÓN + AGENDA + CALENDARIO + COMPRAS + NOTAS
+//  AUTH + NAVEGACIÓN + AGENDA + CALENDARIO + COMPRAS + TAREAS
 // ======================================================
 
 import { auth, db } from "./firebase.js";
