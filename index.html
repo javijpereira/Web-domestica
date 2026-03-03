@@ -76,6 +76,7 @@
 </div>
 
 
+
 <!-- ================= APP PRINCIPAL ================= -->
 
 <!-- HEADER APP -->
@@ -284,28 +285,28 @@
 <!--  TAREAS -->
 <!-- ====================================================== -->
 
-<section id="tasksSection" class="screen hidden">
-<button class="backHome">⬅ Volver</button>
-  <div class="tasks-header">
-    <h2>✅ Tareas</h2>
-    <span id="tasksCounter"></span>
-  </div>
 
-  <div class="task-input-container">
-    <input 
-      type="text" 
-      id="taskInput" 
-      placeholder="¿Qué hay que hacer?"
-    >
-    <button id="addTaskBtn" disabled>
-      +
-    </button>
 
-  </div>
+<div id="tasksSection" class="screen hidden">
+  <button class="backHome">⬅ Volver</button>
 
-  <ul id="tasksList" class="tasks-list"></ul>
+  <section class="tasks-section">
 
-</section>
+    <div class="tasks-header">
+      <h2>📝 Tareas</h2>
+      <span id="tasksCounter"></span>
+    </div>
+
+    <div class="task-input-container">
+      <input type="text" id="taskInput" placeholder="Añadir nueva tarea...">
+      <button id="addTaskBtn" disabled>➕</button>
+    </div>
+
+    <ul id="tasksList" class="tasks-list"></ul>
+
+  </section>
+</div>
+
 
 <!-- MODAL INVITACIÓN -->
 <div id="inviteModal" class="modal hidden">
