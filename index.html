@@ -117,31 +117,32 @@
     <span id="welcomeIcon"></span>
   </div>
 </div>
+<!-- 🔥 NUEVAS SECCIONES DASHBOARD -->
 
+  <div class="dashboard-card modern-card">
 
+    <div class="dashboard-card modern-card card-today">
 
-    <div class="home-grid">
-<button class="home-btn" data-screen="agendaScreen">
-  <span class="icon">🗂️</span>
-  <span class="label">Agenda</span>
-</button>
-
-<button class="home-btn" data-screen="calendarScreen">
-  <span class="icon">🗓️</span>
-  <span class="label">Calendario</span>
-</button>
-
-<button class="home-btn" data-screen="compraScreen">
-  <span class="icon">🛒</span>
-  <span class="label">Compras</span>
-</button>
-
-<button class="home-btn" data-screen="tasksSection">
-  <span class="icon">📝</span>
-  <span class="label">Tareas</span>
-</button>
-
+      <h3>📅 Eventos de hoy</h3>
+      <ul id="homeTodayEvents"></ul>
+      <p id="noTodayEventsMsg" class="hidden">
+        ❌ No hay eventos para hoy
+      </p>
     </div>
+
+    <div class="dashboard-card modern-card card-week">
+      <h3>🗓 Eventos esta semana</h3>
+      <ul id="homeWeekEvents"></ul>
+    </div>
+
+    <div class="dashboard-card modern-card card-tasks">
+      <h3>📝 Tareas pendientes</h3>
+      <ul id="homeTasks"></ul>
+    </div>
+
+  </div>
+
+
   </main>
 
   <!-- AGENDA -->
@@ -305,6 +306,47 @@
     <ul id="tasksList" class="tasks-list"></ul>
 
   </section>
+</div>
+
+<!-- 🔥 BARRA INFERIOR FIJA -->
+<div class="bottom-nav">
+
+  <button class="nav-btn" id="menuNav">
+    <span class="nav-icon">☰</span>
+    <span class="nav-text">Menú</span>
+  </button>
+
+  <button class="home-btn" data-screen="agendaScreen">
+    <span class="nav-icon">🗂️</span>
+    <span class="nav-text">Agenda</span>
+  </button>
+
+  <button class="home-btn home-nav" data-screen="homeScreen">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-text">Inicio</span>
+  </button>
+
+  <button class="home-btn" data-screen="calendarScreen">
+     <span class="nav-icon">🗓️</span>
+     <span class="nav-text">Calendario</span>
+  </button>
+
+  <button class="home-btn" data-screen="compraScreen">
+     <span class="nav-icon">🛒</span>
+     <span class="nav-text">Compras</span>
+  </button>
+
+</div>
+
+<!-- 🔥 MENU DESPLEGABLE -->
+<div id="bottomMenuPanel" class="bottom-menu">
+
+  <button class="menu-item" data-screen="homeScreen">🏠 Inicio</button>
+  <button class="menu-item" data-screen="agendaScreen">🗂 Agenda</button>
+  <button class="menu-item" data-screen="calendarScreen">🗓 Calendario</button>
+  <button class="menu-item" data-screen="compraScreen">🛒 Compras</button>
+  <button class="menu-item" data-screen="tasksSection">📝 Tareas</button>
+
 </div>
 
 
