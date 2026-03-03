@@ -1,5 +1,5 @@
 // ======================================================
-//  AUTH + NAVEGACIÓN + AGENDA + CALENDARIO + COMPRAS + TAREAS
+//  AUTH + NAVEGACIÓN + AGENDA + CALENDARIO + COMPRAS + NOTAS
 // ======================================================
 
 import { auth, db } from "./firebase.js";
@@ -308,14 +308,32 @@ document.querySelectorAll(".home-btn").forEach(btn => {
     document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
     document.getElementById(target).classList.remove("hidden");
 
+    updateBottomNavActive(target);
+
     if (target === "calendarScreen" && calendar) {
       setTimeout(() => calendar.updateSize(), 50);
     }
-
-
   });
 });
 
+// ======================================================
+//  ACTUALIZAR BARRA INFERIOR ACTIVA
+// ======================================================
+
+function updateBottomNavActive(screenId) {
+
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.classList.remove("nav-active");
+  });
+
+  const activeBtn = document.querySelector(
+    `.nav-btn[data-screen="${screenId}"]`
+  );
+
+  if (activeBtn) {
+    activeBtn.classList.add("nav-active");
+  }
+}
 
   document.querySelectorAll(".backHome").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -497,6 +515,7 @@ document.querySelectorAll(".home-btn").forEach(btn => {
     loadCalendarEventsForMonth(new Date());
     loadShoppingLists();
     loadTasks();
+    loadHomeDashboardRealtime();
   }, 50);
 });
 
@@ -532,18 +551,66 @@ async function loadMembers() {
 }
 
 
-
-
-
 document.getElementById("familyMenuBtn").addEventListener("click", () => {
   document.getElementById("familyMenu").classList.toggle("hidden");
 });
+
+// ======================================================
+// ======================================================
+// ======================================================
+//  MENÚ DESPLEGABLE DE LA BARRA
+// ======================================================
+
+const menuNav = document.getElementById("menuNav");
+const bottomMenuPanel = document.getElementById("bottomMenuPanel");
+
+if (menuNav && bottomMenuPanel) {
+
+  // 🔥 Abrir / cerrar menú
+  menuNav.addEventListener("click", (e) => {
+    e.stopPropagation();
+    bottomMenuPanel.classList.toggle("show");
+  });
+
+  // 🔥 Navegar desde el menú
+  bottomMenuPanel.addEventListener("click", async (e) => {
+
+    const btn = e.target.closest(".menu-item");
+    if (!btn) return;
+
+    const screenId = btn.dataset.screen;
+
+    // Ocultar todas las pantallas
+    document.querySelectorAll(".screen").forEach(s => {
+      s.classList.add("hidden");
+    });
+
+    // Mostrar la seleccionada
+    const target = document.getElementById(screenId);
+    if (target) target.classList.remove("hidden");
+
+    // Cerrar menú
+    bottomMenuPanel.classList.remove("show");
+
+    // 🔥 Actualizar barra activa
+    updateBottomNavActive(screenId);
+  });
+
+  document.addEventListener("click", (e) => {
+  if (!e.target.closest("#bottomMenuPanel") && 
+      !e.target.closest("#menuNav")) {
+    bottomMenuPanel?.classList.remove("show");
+  }
+});
+
+}
 
 document.addEventListener("click", (e) => {
   if (!e.target.closest("#familyMenu") && !e.target.closest("#familyMenuBtn")) {
     document.getElementById("familyMenu").classList.add("hidden");
   }
 });
+
 
 
 
@@ -1705,18 +1772,18 @@ function loadTasks() {
       const li = document.createElement("li");
       li.classList.add("task-item");
 
-      li.innerHTML = `
-        <label class="task-label">
-          <input type="checkbox" class="task-check" data-id="${task.id}" ${task.completed ? "checked" : ""}>
-          <span class="${task.completed ? "task-done" : ""}">
-            ${task.title}
-          </span>
-        </label>
+li.innerHTML = `
+  <div class="task-label">
+    <input type="checkbox" class="task-check" data-id="${task.id}" ${task.completed ? "checked" : ""}>
+    <span class="${task.completed ? "task-done" : ""}">
+      ${task.title}
+    </span>
+  </div>
 
-        <button class="deleteTaskBtn" data-id="${task.id}">
-          🗑
-        </button>
-      `;
+  <button class="deleteTaskBtn" data-id="${task.id}">
+    🗑
+  </button>
+`;
 
       list.appendChild(li);
     });
@@ -1753,24 +1820,7 @@ function loadTasks() {
 
 }
 
-    // Checkbox
-    document.querySelectorAll(".task-check").forEach(check => {
-      check.addEventListener("change", async () => {
-        await updateDoc(
-          doc(db, "households", currentHouseholdId, "tasks", check.dataset.id),
-          { completed: check.checked }
-        );
-      });
-    });
 
-    // Borrar
-    document.querySelectorAll(".deleteTaskBtn").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        await deleteDoc(
-          doc(db, "households", currentHouseholdId, "tasks", btn.dataset.id)
-        );
-      });
-    });
 
 
 
@@ -1795,12 +1845,135 @@ addTaskBtn.addEventListener("click", async () => {
   
 });
 
+
+
+// ======================================================
+// ======================================================
+//  DASHBOARD HOME (TIEMPO REAL)
+// ======================================================
+
+function loadHomeDashboardRealtime() {
+
+  if (!currentHouseholdId) return;
+
+  const todayList = document.getElementById("homeTodayEvents");
+  const weekList = document.getElementById("homeWeekEvents");
+  const tasksList = document.getElementById("homeTasks");
+  const noTodayMsg = document.getElementById("noTodayEventsMsg");
+
+  todayList.innerHTML = "";
+  weekList.innerHTML = "";
+  tasksList.innerHTML = "";
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const weekEnd = new Date(today);
+  weekEnd.setDate(today.getDate() + 7);
+
+  let todayEventsFound = false;
+
+  // 🔥 LISTENER EN TIEMPO REAL PARA EVENTOS
+  onSnapshot(
+    collection(db, "households", currentHouseholdId, "events"),
+    (snapshot) => {
+
+      todayList.innerHTML = "";
+      weekList.innerHTML = "";
+
+      todayEventsFound = false;
+
+      snapshot.forEach(docu => {
+
+        const ev = docu.data();
+        const evDate = new Date(ev.date);
+
+        // 🎯 HOY
+        if (evDate.toDateString() === today.toDateString()) {
+
+          todayEventsFound = true;
+
+        const li = document.createElement("li");
+
+li.classList.add("dashboard-event-item");
+li.textContent = `${ev.time} - ${ev.shortTitle || ev.description}`;
+
+// 🔥 HACER CLICABLE
+li.addEventListener("click", async () => {
+
+  const eventSnap = await getDoc(
+    doc(db, "households", currentHouseholdId, "events", docu.id)
+  );
+
+  const eventData = eventSnap.data();
+
+  openEventDetails({
+    id: docu.id,
+    startStr: `${eventData.date}T${eventData.time}`,
+    extendedProps: {
+      description: eventData.description,
+      category: eventData.category
+    }
+  });
+
+});
+
+todayList.appendChild(li);
+}
+
+        // 🎯 ESTA SEMANA
+        if (evDate >= today && evDate <= weekEnd) {
+
+          const li = document.createElement("li");
+          li.textContent = `${ev.date} - ${ev.shortTitle || ev.description}`;
+          weekList.appendChild(li);
+        }
+
+      });
+
+      // Mostrar / ocultar mensaje
+      if (!todayEventsFound) {
+        noTodayMsg.classList.remove("hidden");
+      } else {
+        noTodayMsg.classList.add("hidden");
+      }
+
+    }
+  );
+
+// 🔥 LISTENER EN TIEMPO REAL PARA TAREAS
+  onSnapshot(
+    collection(db, "households", currentHouseholdId, "tasks"),
+    (snapshot) => {
+
+      tasksList.innerHTML = "";
+
+      snapshot.forEach(docu => {
+
+        const task = docu.data();
+
+        if (!task.completed) {
+
+          const li = document.createElement("li");
+          li.textContent = task.title;
+
+          tasksList.appendChild(li);
+        }
+
+      });
+
+    }
+  );
+
+}
+
   // ======================================================
   //  INICIALIZAR
   // ======================================================
   showLogin();
 
 });
+
 
 
 
