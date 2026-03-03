@@ -1690,29 +1690,21 @@ textarea {
 
 .bottom-menu {
   position: fixed;
-
-  /* 🔥 Se coloca justo encima del botón menú */
-  bottom: 80px;
-  left: 16px;   /* 👈 alineado a la izquierda */
-
-  width: 220px;  /* 👈 tamaño compacto */
-  
+  bottom: 90px;
+  left: 16px;
+  width: 240px;
   background: white;
   border-radius: 18px;
-
   padding: 14px;
-
   display: flex;
   flex-direction: column;
   gap: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  transform: translateY(150%);
+  transition: transform 0.3s ease;
 
-  /* 🔥 Oculto abajo inicialmente */
-  transform: translateY(120%);
-  transition: transform 0.25s ease;
-
-  z-index: 1000;
+  z-index: 999999; /* 🔥 MUY IMPORTANTE */
 }
 
 /* 🔥 Cuando se abre */
