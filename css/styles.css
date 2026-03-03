@@ -1473,7 +1473,6 @@ textarea {
 #tasksSection {
   max-width: 500px;
   margin: 30px auto;
-  display: none;
 }
 
 .tasks-header {
@@ -1569,3 +1568,5 @@ textarea {
   background: #fa5252;
   transform: scale(1.1);
 }
+
+/* ========================= */
