@@ -702,29 +702,72 @@ textarea {
 }
 
 
-/* Fondo negro para las celdas del calendario */
+/* ============================= */
+/* CALENDARIO MODERNO CLARO */
+/* ============================= */
+
+/* Fondo general */
+.fc {
+  
+  border-radius: 18px;
+  padding: 10px;
+}
+
+/* Celdas */
 .fc-daygrid-day {
-  background-color: #000 !important;
-  color: #fff !important;
+  background: #dbdada;
+  transition: background 0.2s ease;
 }
 
-/* Números de los días en blanco */
+/* Hover suave */
+.fc-daygrid-day:hover {
+  background: #e9f2ff;
+}
+
+/* Número del día */
 .fc-daygrid-day-number {
-  color: #fff !important;
   font-weight: 600;
+  color: #333;
+  font-size: 14px;
 }
 
-/* Día actual destacado en gris */
+/* Día actual destacado moderno */
 .fc-day-today {
-  background-color: #9f9e9e !important;   /* gris oscuro */
-  color: #fff !important;              /* números en blanco */
-  border: 1px solid #555 !important;   /* borde suave */
+  background: linear-gradient(135deg, #35eb10, #aef36e) !important;
+  color: white !important;
 }
 
-/* Número del día actual en blanco */
 .fc-day-today .fc-daygrid-day-number {
-  color: #fff !important;
-  font-weight: 700;
+  color: white !important;
+}
+
+/* Quitar bordes feos */
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border: none !important;
+}
+
+.fc-event {
+  border: none !important;
+  padding: 4px 8px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: white !important;
+
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Hover elegante */
+.fc-event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+
+/* Quitar puntito */
+.fc-daygrid-event-dot {
+  display: none !important;
 }
 
 
@@ -1628,11 +1671,21 @@ textarea {
 
 }
 
+* {
+  box-sizing: border-box;
+  max-width: 100%;
+}
 
 
 /* ============================= */
 /* ===== BARRA INFERIOR NUEVA ===== */
 /* ============================= */
+
+/* ============================= */
+/* ===== BARRA INFERIOR MODERNA ===== */
+/* ============================= */
+
+/* ================= BOTTOM NAV ================= */
 
 .bottom-nav {
   position: fixed;
@@ -1640,56 +1693,93 @@ textarea {
   left: 0;
   width: 100%;
   height: 75px;
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+
+  background: rgba(6, 6, 6, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
   display: flex;
   justify-content: space-around;
   align-items: center;
-  border-top: 1px solid rgba(0,0,0,0.08);
-  z-index: 1000;
+  border-top: 1px solid rgba(237, 235, 235, 0.05);
+  z-index: 999999;
 }
+
+/* 🔥 BOTONES SIN RECUADRO */
+.home-btn[data-screen] {
+  background: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+
+  padding: 0;
+  margin: 0;
+
+  color: #f9f6f6;
+  font-size: 12px;      /* 👈 texto más pequeño */
+  font-weight: 400;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  cursor: pointer;
+}
+
+/* Quitar efecto azul al pulsar en móvil */
+.home-btn[data-screen]:focus,
+.home-btn[data-screen]:active {
+  background: none;
+  outline: none;
+}
+
+
 
 /* Botones */
 .nav-btn {
   background: none;
   border: none;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  cursor: pointer;
-  color: #666;
-  transition: all 0.2s ease;
-}
 
-/* Icono */
-.nav-icon {
-  font-size: 20px;
-  margin-bottom: 4px;
-}
-
-/* Texto */
-.nav-text {
   font-size: 12px;
+  color: #f4f1f1;
+
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* Iconos más grandes */
+.nav-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+  transition: transform 0.2s ease;
 }
 
 /* Hover */
-.nav-btn:hover {
-  transform: translateY(-2px);
-  color: #4CAF50;
+.nav-btn:hover .nav-icon {
+  transform: translateY(-3px);
 }
 
 /* Activo */
 .nav-active {
-  color: #4CAF50;
-  font-weight: bold;
+  color: #000;
+  font-weight: 600;
 }
 
-/* Casa (centro) más destacada */
-.home-nav .nav-icon {
-  font-size: 26px;
+/* 🔥 Indicador moderno debajo del botón activo */
+.nav-active::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  width: 6px;
+  height: 6px;
+  background: #4CAF50;
+  border-radius: 50%;
 }
 
 
@@ -1717,24 +1807,28 @@ textarea {
   position: fixed;
   bottom: 90px;
   left: 16px;
+
   width: 240px;
+
   background: white;
   border-radius: 18px;
   padding: 14px;
+
   display: flex;
   flex-direction: column;
   gap: 8px;
+
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 
   opacity: 0;
   transform: translateY(20px);
   pointer-events: none;
-  transition: transform 0.3s ease;
 
-  z-index: 999999; /* 🔥 MUY IMPORTANTE */
+  transition: opacity 0.25s ease, transform 0.25s ease;
+
+  z-index: 999999;
 }
 
-/* 🔥 Cuando se abre */
 .bottom-menu.show {
   opacity: 1;
   transform: translateY(0);
@@ -1915,4 +2009,86 @@ textarea {
 
 .card-item:hover {
   transform: translateY(-2px);
+}
+
+
+/* ================================= */
+/* CALENDARIO MES COMPLETO EN MÓVIL */
+/* ================================= */
+
+#calendar {
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (max-width: 480px) {
+
+  .fc {
+    font-size: 12px;
+  }
+
+  /* Toolbar compacta */
+  .fc-toolbar {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .fc-toolbar-title {
+    font-size: 16px !important;
+  }
+
+  .fc-button {
+    padding: 4px 6px !important;
+    font-size: 12px !important;
+  }
+
+  /* Ajustar altura de celdas */
+  .fc-daygrid-day {
+    min-height: 65px !important;
+  }
+
+  /* Número del día */
+  .fc-daygrid-day-number {
+    font-size: 11px !important;
+  }
+
+  /* Eventos compactos */
+  .fc-event {
+    font-size: 9px !important;
+    padding: 2px 4px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Evitar scroll horizontal */
+  .fc-scroller {
+    overflow-x: hidden !important;
+  }
+
+  /* Reducir padding interno */
+  .fc-daygrid-day-frame {
+    padding: 2px !important;
+  }
+}
+
+
+.fc-toolbar {
+  background: transparent;
+  box-shadow: none;
+  padding: 10px 0;
+}
+
+.fc-toolbar-title {
+  font-size: 18px !important;
+  text-align: center;
+}
+
+.fc-button {
+  background: rgb(10, 10, 10) !important;
+  border-radius: 50% !important;
+  width: 36px;
+  height: 36px;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
