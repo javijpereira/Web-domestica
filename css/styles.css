@@ -1605,6 +1605,29 @@ textarea {
 }
 
 
+/* =============================== */
+/* 🔥 AJUSTES TAREAS PARA MÓVIL */
+/* =============================== */
+
+@media (max-width: 480px) {
+
+  .tasks-section {
+    margin: 10px;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .task-input-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #addTaskBtn {
+    width: 100%;
+  }
+
+}
+
 /* ============================= */
 /* ===== BARRA INFERIOR NUEVA ===== */
 /* ============================= */
