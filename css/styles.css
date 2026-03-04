@@ -1628,6 +1628,11 @@ textarea {
 
 }
 
+* {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
 /* ============================= */
 /* ===== BARRA INFERIOR NUEVA ===== */
 /* ============================= */
