@@ -1132,6 +1132,16 @@ events.push({
 calendar = new FullCalendar.Calendar(calendarEl, {
   initialView: "dayGridMonth",
   locale: "es",
+  headerToolbar: {
+    left: "prev,next",
+    center: "title",
+    right: "today"
+  },
+
+  buttonText: {
+    today: "Hoy"
+  },
+
   height: "auto",
   contentHeight: "auto",
   handleWindowResize: true,
@@ -1141,6 +1151,8 @@ calendar = new FullCalendar.Calendar(calendarEl, {
   editable: true,               // ← permite arrastrar
   eventDurationEditable: false, // ← evita cambiar duración
   events: events,
+  fixedWeekCount: false,
+   expandRows: true,
   datesSet: function(info) {
     loadCalendarEventsForMonth(info.start);
   },
@@ -1149,8 +1161,6 @@ calendar = new FullCalendar.Calendar(calendarEl, {
   },
   eventDrop: handleEventDrop     // ← manejador al soltar
 });
-
-
 
   calendar.render();
 }
@@ -1868,8 +1878,13 @@ function loadHomeDashboardRealtime() {
   const today = new Date();
   today.setHours(0,0,0,0);
 
-  const weekEnd = new Date(today);
-  weekEnd.setDate(today.getDate() + 7);
+// 🔥 FIN DE LA SEMANA ACTUAL (domingo 23:59)
+const weekEnd = new Date(today);
+const dayOfWeek = weekEnd.getDay(); // 0 = domingo
+const daysUntilSunday = (7 - dayOfWeek) % 7;
+
+weekEnd.setDate(weekEnd.getDate() + daysUntilSunday);
+weekEnd.setHours(23,59,59,999);
 
   let todayEventsFound = false;
 
@@ -1886,7 +1901,8 @@ function loadHomeDashboardRealtime() {
       snapshot.forEach(docu => {
 
         const ev = docu.data();
-        const evDate = new Date(ev.date);
+       const evDate = new Date(ev.date);
+        evDate.setHours(0,0,0,0); // 🔥 IMPORTANTE
 
         // 🎯 HOY
         if (evDate.toDateString() === today.toDateString()) {
@@ -1922,7 +1938,11 @@ todayList.appendChild(li);
 }
 
         // 🎯 ESTA SEMANA
-        if (evDate >= today && evDate <= weekEnd) {
+       // 🎯 FUTUROS DE ESTA SEMANA (sin incluir hoy)
+if (
+  evDate > today &&
+  evDate <= weekEnd
+) {
 
           const li = document.createElement("li");
           li.textContent = `${ev.date} - ${ev.shortTitle || ev.description}`;
