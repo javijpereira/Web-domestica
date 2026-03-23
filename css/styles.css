@@ -1,4 +1,13 @@
 /* ================= GLOBAL ================= */
+* {
+  box-sizing: border-box;
+}
+
+img, video {
+  max-width: 100%;
+}
+
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -29,7 +38,6 @@ input, select, textarea {
   padding: 0.4rem;
   margin: 0.3rem 0;
   width: 100%;
-  box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -65,475 +73,7 @@ textarea {
   margin-top: 0.5rem;
 }
 
-/* ================= APP HEADER ================= */
-
-
-#householdName {
-  font-weight: bold;
-}
-
-#membersDropdown {
-  position: absolute;
-  background: white;
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-top: 0.3rem;
-  padding: 0.3rem;
-  z-index: 100;
-}
-
-/* ================= SCREENS ================= */
-.screen {
-  padding: 1rem;
-}
-
-.home-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-/* ================= CARDS ================= */
-.card {
-  background: white;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* ================= MODAL ================= */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.55);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.modal-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-}
-
-.modal-content { 
-  background: #fff; 
-  padding: 20px; 
-  border-radius: 12px; 
-  width: 90%; 
-  max-width: 400px; 
-  box-shadow: 0 0 20px rgba(0,0,0,0.3); 
-}
-
-.closeBtn {
-  background: transparent;
-  border: none;
-  font-size: 22px;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-}
-
-
-/* ================= LISTAS ================= */
-#agendaList, #shoppingList {
-  list-style: none;
-  padding: 0;
-}
-
-#agendaList li, #shoppingList li {
-  padding: 0.5rem;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-}
-
-.event-actions button {
-  margin-left: 0.5rem;
-  background: #555;
-}
-
-/* ================= TEXTAREA Y INPUT ================= */
-#notes, #noteContent {
-  width: 100%;
-  margin-bottom: 0.5rem;
-}
-
-/* ============================
-   HOME TIPO APP MÓVIL
-============================ */
-
-.home-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 12px;
-  height: calc(100vh - 140px); /* Ajusta según tu header */
-  padding: 12px;
-}
-
-.home-btn {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  font-size: 1.6rem;
-  font-weight: bold;
-
-  border-radius: 18px;
-  border: none;
-  color: white;
-
-  transition: transform 0.15s ease;
-}
-
-/* Efecto táctil */
-.home-btn:active {
-  transform: scale(0.96);
-}
-
-/* Colores personalizados */
-.home-btn[data-screen="agendaScreen"] {
-  background: #f0aeae; /* rojo suave */
-}
-
-.home-btn[data-screen="calendarScreen"] {
-  background: #4dabf7; /* azul */
-}
-
-.home-btn[data-screen="compraScreen"] {
-  background: #51cf66; /* verde */
-}
-
-.home-btn[data-screen="notesScreen"] {
-  background: #845ef7; /* morado */
-}
-
-/* ============================
-   PANTALLAS INTERNAS
-============================ */
-
-.screen {
-  padding: 16px;
-  height: calc(100vh - 120px);
-  overflow-y: auto;
-}
-
-/* Botón volver */
-.backHome {
-  background: #333;
-  color: white;
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 12px;
-  font-size: 1rem;
-}
-
-/* ============================
-   ESTILO APP PARA TODAS LAS SECCIONES
-============================ */
-
-/* HEADER DE CADA SECCIÓN */
-.screen h2, 
-.screen h3 {
-  margin-top: 0;
-  font-weight: bold;
-}
-
-/* Tarjetas */
-.card {
-  background: white;
-  padding: 16px;
-  border-radius: 14px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  margin-bottom: 16px;
-}
-
-/* Inputs estilo app */
-.screen input,
-.screen textarea {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  font-size: 1rem;
-}
-
-/* Botones internos */
-.screen button {
-  background: #333;
-  color: white;
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: none;
-  margin-top: 8px;
-  font-size: 1rem;
-}
-
-/* Botón volver */
-.backHome {
-  background: #222;
-  color: white;
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 16px;
-  font-size: 1rem;
-}
-
-/* ============================
-   COLORES POR SECCIÓN
-============================ */
-
-#agendaScreen {
-  background: #ffe3e3;
-}
-
-#calendarScreen {
-  background: #e7f2ff;
-}
-
-#compraScreen {
-  background: #e6ffe9;
-}
-
-#notesScreen {
-  background: #f3e8ff;
-}
-
-/* ============================
-   LISTAS
-============================ */
-
-#agendaList li,
-#shoppingList li,
-#notesList li {
-  background: white;
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  font-size: 1rem;
-}
-
-/* ============================
-   CALENDARIO
-============================ */
-
-/* ============================
-   CALENDARIO ESTILO APP
-============================ */
-
-/* Día actual */
-.fc-day-today {
-  background: #d4f8d4 !important; /* verde suave */
-  border-radius: 8px;
-}
-
-/* Eventos */
-.fc-event { 
-  padding: 4px 6px !important; 
-  border-radius: 6px !important; 
-  font-size: 13px !important; 
-  font-weight: 600 !important; 
-  color: #000 !important; 
-  white-space: normal !important; 
-}
-
-/* Quitar bordes feos */
-.fc-theme-standard td, 
-.fc-theme-standard th {
-  border: none !important;
-}
-
-/* Espaciado más limpio */
-.fc-daygrid-day-frame {
-  padding: 6px !important;
-}
-
-.fc-event-title { 
-  color: #000 !important; 
-}
-
-.fc-daygrid-event-dot { 
-  display: none !important; /* Oculta el puntito feo */ 
-}
-
-
-/* ============================
-   HEADER MODERNO ESTILO APP
-============================ */
-
-#appHeader {
-  background: #000; /* negro elegante */
-  color: white;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-bottom: 2px solid #222;
-}
-
-#homeName {
-  font-size: 1.3rem;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-#userArea {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  font-size: 0.85rem;
-}
-
-.header-actions {
-  display: flex;
-  gap: 10px;
-}
-
-/* Botones tipo icono */
-.icon-btn {
-  background: #222;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
-}
-
-.icon-btn:active {
-  transform: scale(0.9);
-  background: #444;
-}
-
-/* Dropdown de miembros */
-.members-dropdown {
-  background: white;
-  color: black;
-  border-radius: 10px;
-  padding: 10px;
-  position: absolute;
-  margin-top: 5px;
-  right: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  display: none;
-}
-
-/* ============================
-/* ============================
-   ICONOS ESTILO APP MÓVIL
-============================ */
-
-.home-btn {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  border-radius: 18px;
-  border: none;
-  color: white;
-
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-
-.home-btn:active {
-  transform: scale(0.94);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.10);
-}
-
-.home-btn .icon {
-  font-size: 2.6rem;
-  margin-bottom: 6px;
-}
-
-.home-btn .label {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-/* Colores por sección */
-.home-btn[data-screen="agendaScreen"] {
-  background: #ff6b6b;
-}
-
-.home-btn[data-screen="calendarScreen"] {
-  background: #4dabf7;
-}
-
-.home-btn[data-screen="compraScreen"] {
-  background: #51cf66;
-}
-
-.home-btn[data-screen="notesScreen"] {
-  background: #845ef7;
-}
-
-
-.home-btn:active {
-  transform: scale(0.92);
-  filter: brightness(1.2);
-}
-
-/* Modal renombrar hogar */
-#renameModal .modal-card {
-  background: white;
-  padding: 20px;
-  border-radius: 14px;
-  width: 90%;
-  max-width: 350px;
-  margin: auto;
-  text-align: center;
-}
-
-#renameModal input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  margin-bottom: 12px;
-}
-
-#renameModal button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  margin-top: 8px;
-  font-size: 1rem;
-}
-
-#saveHouseNameBtn {
-  background: #000;
-  color: white;
-}
-
-#closeRenameModal {
-  background: #ddd;
-}
-
-/* ============================
-   HEADER MODERNO
-============================ */
-
+/* ================= HEADER ================= */
 #appHeader {
   background: #000;
   color: white;
@@ -550,11 +90,7 @@ textarea {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-}
-
-/* Nombre del hogar editable */
-.editable-home-name {
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 8px;
   font-size: 1.3rem;
@@ -572,7 +108,6 @@ textarea {
   opacity: 1;
 }
 
-/* Botones icono */
 .icon-btn {
   background: #222;
   color: white;
@@ -589,31 +124,299 @@ textarea {
   background: #444;
 }
 
-/* Asegurar que el icono ✏️ se vea */
-.editable-home-name {
-  display: flex !important;
+/* ================= HOME GRID ================= */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  height: calc(100vh - 140px);
+  padding: 12px;
+}
+
+.home-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
+  border-radius: 18px;
+  color: white;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
-.editable-home-name .editIcon {
-  display: inline-block !important;
-  opacity: 0.8;
-  font-size: 1.2rem;
+.home-btn:active {
+  transform: scale(0.92);
+  filter: brightness(1.2);
 }
 
-.editable-home-name .editIcon:hover {
+.home-btn .icon {
+  font-size: 2.6rem;
+  margin-bottom: 6px;
+}
+
+.home-btn .label {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+
+
+/* ================= SCREENS ================= */
+.screen {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.screen-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding-bottom: 90px; /* espacio para menú */
+}
+
+
+
+
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+
+
+/* ================= BOTTOM NAV ================= */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 75px;
+  background: rgba(6, 6, 6, 0.8);
+  backdrop-filter: blur(20px);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid rgba(237, 235, 235, 0.05);
+  z-index: 999999;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  color: #f4f1f1;
+  transition: all 0.2s ease;
+}
+
+.nav-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+  transition: transform 0.2s ease;
+}
+
+.nav-btn:hover .nav-icon {
+  transform: translateY(-3px);
+}
+
+.nav-active {
+  color: #000;
+  font-weight: 600;
+}
+
+/* ================= MOBILE FIXES ================= */
+@media (max-width: 480px) {
+  .fc-daygrid-day-frame { padding: 2px !important; }
+  .fc-event {
+    font-size: 8px !important;
+    padding: 2px 4px !important;
+    border-radius: 4px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .fc-daygrid-day-number { font-size: 12px !important; }
+}
+
+
+/* ================== ARREGLO MENÚ INFERIOR ================== */
+
+/* Aseguramos que la barra esté siempre por encima del calendario */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 75px;
+  background: rgba(6, 6, 6, 0.8);
+  backdrop-filter: blur(20px);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid rgba(237, 235, 235, 0.05);
+  z-index: 999999; /* por encima del calendario */
+}
+
+/* En la barra inferior, los .home-btn se comportan como iconos, no como tarjetas */
+.bottom-nav .home-btn[data-screen] {
+  background: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+
+  color: #f9f6f6;
+  font-size: 12px;
+  font-weight: 400;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  cursor: pointer;
+}
+
+/* Icono dentro del botón del menú inferior */
+.bottom-nav .home-btn[data-screen] .icon {
+  font-size: 22px;
+  margin-bottom: 2px;
+}
+
+/* Estado activo del botón del menú inferior */
+.bottom-nav .home-btn.nav-active {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Evitar efectos raros al pulsar en móvil */
+.bottom-nav .home-btn[data-screen]:focus,
+.bottom-nav .home-btn[data-screen]:active {
+  background: none;
+  outline: none;
+}
+
+
+/* ============================
+   PANEL DESPLEGABLE DEL MENÚ
+============================ */
+
+/* Estado oculto */
+#bottomMenuPanel {
+  position: fixed;
+  bottom: -100%; /* oculto fuera de pantalla */
+  left: 0;
+  width: 100%;
+  background: #f2efef;
+  padding: 20px 0;
+  box-shadow: 0 -4px 20px rgba(84, 83, 83, 0.25);
+  border-radius: 18px 18px 0 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  transition: bottom 0.35s ease, opacity 0.35s ease;
+  opacity: 0;
+
+  z-index: 999998; /* justo debajo del menú inferior */
+}
+
+/* Estado visible (tu JS usa .show) */
+#bottomMenuPanel.show {
+  bottom: 75px; /* aparece justo encima del menú inferior */
   opacity: 1;
 }
 
+/* Botones del menú */
+#bottomMenuPanel .menu-item {
+  background: #0e0d0d;
+  border: none;
+  padding: 14px;
+  margin: 0 16px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#bottomMenuPanel .menu-item:hover {
+  background: #e9e9e9;
+}
+
+/* Hover más claro para que se note */
+#bottomMenuPanel .menu-item:hover {
+  background: #0eed85;
+}
+
+/* Efecto al pulsar */
+#bottomMenuPanel .menu-item:active {
+  transform: scale(0.97);
+}
+
+/* Capa oscura para cerrar al tocar fuera */
+#menuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.35);
+  z-index: 999997;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+#menuOverlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 
 /* ============================
-   BLOQUE DE SALUDO Y FECHA
+   TARJETAS DEL DASHBOARD
 ============================ */
 
+.dashboard-card,
+.home-card,
+.card {
+  background: #f2f2f2;        /* gris suave */
+  padding: 16px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Efecto al pulsar */
+.dashboard-card:active,
+.home-card:active,
+.card:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+/* Títulos dentro de las tarjetas */
+.dashboard-card h3,
+.home-card h3,
+.card h3 {
+  margin-top: 0;
+  font-weight: bold;
+  color: #333;
+}
+
+
 /* ============================
-/* ============================
-   BLOQUE DE SALUDO ELEGANTE
+   BLOQUE DE SALUDO INICIAL
 ============================ */
 
 #welcomeBlock {
@@ -660,26 +463,62 @@ textarea {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ============================
+   MENÚ DESPLEGABLE A LA IZQUIERDA
+   JUSTO ENCIMA DEL BOTÓN "MENÚ"
+============================ */
 
-#addEventModal .modal-card {
-  background: white;
-  padding: 20px;
-  border-radius: 14px;
-  width: 90%;
-  max-width: 350px;
-  margin: auto;
+#bottomMenuPanel {
+  position: fixed;
+  bottom: -100%; /* oculto fuera de pantalla */
+  left: 10px;    /* alineado a la izquierda */
+  
+  width: 260px;          /* ancho recogido */
+  max-width: 85vw;       /* por si la pantalla es pequeña */
+  
+  background: #ffffff;
+  padding: 20px 0;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.25);
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  opacity: 0;
+  transition: bottom 0.35s ease, opacity 0.35s ease;
+
+  z-index: 999998;
+}
+
+/* Cuando se abre */
+#bottomMenuPanel.show {
+  bottom: 85px; /* aparece justo encima del menú inferior */
+  opacity: 1;
+}
+
+/* Botones del menú */
+#bottomMenuPanel .menu-item {
+  background: #000;
+  color: #fff;
+  padding: 14px;
+  margin: 0 16px;
+  border-radius: 12px;
+  font-size: 1.1rem;
   text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
 }
 
-#addEventModal input,
-#addEventModal textarea,
-#addEventModal select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  margin-bottom: 12px;
+#bottomMenuPanel .menu-item:hover {
+  background: #222;
 }
+
+
+
+/* ============================================
+   MODAL FIJO Y CENTRADO (FUNCIONA EN MÓVIL)
+============================================ */
 
 .modal {
   position: fixed;
@@ -687,787 +526,677 @@ textarea {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,0.35);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99999 !important; /* MUY IMPORTANTE */
+  z-index: 999999;
 }
 
-.modal-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  z-index: 100000 !important;
-}
-
-
-/* ============================= */
-/* CALENDARIO MODERNO CLARO */
-/* ============================= */
-
-/* Fondo general */
-.fc {
-  
-  border-radius: 18px;
-  padding: 10px;
-}
-
-/* Celdas */
-.fc-daygrid-day {
-  background: #dbdada;
-  transition: background 0.2s ease;
-}
-
-/* Hover suave */
-.fc-daygrid-day:hover {
-  background: #e9f2ff;
-}
-
-/* Número del día */
-.fc-daygrid-day-number {
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
-}
-
-/* Día actual destacado moderno */
-.fc-day-today {
-  background: linear-gradient(135deg, #35eb10, #aef36e) !important;
-  color: white !important;
-}
-
-.fc-day-today .fc-daygrid-day-number {
-  color: white !important;
-}
-
-/* Quitar bordes feos */
-.fc-theme-standard td,
-.fc-theme-standard th {
-  border: none !important;
-}
-
-.fc-event {
-  border: none !important;
-  padding: 4px 8px !important;
-  border-radius: 20px !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  color: white !important;
-
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-/* Hover elegante */
-.fc-event:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
-}
-
-/* Quitar puntito */
-.fc-daygrid-event-dot {
-  display: none !important;
-}
-
-
-/* Bordes más discretos */
-.fc-theme-standard td, 
-.fc-theme-standard th {
-  border: 1px solid #333 !important;
-}
-
-/* Eventos como pastillas de color */
-.fc-event {
-  padding: 4px 6px !important;
-  border-radius: 6px !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  color: #000 !important;
-  white-space: normal !important;
-}
-
-/* Ocultar el puntito de evento */
-.fc-daygrid-event-dot {
-  display: none !important;
-}
-
-/* Título del evento siempre visible */
-.fc-event-title {
-  color: #000 !important;
-}
-
-
-
-/* Contenedor del item */
-#agendaList li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 6px;
-  border-bottom: 1px solid #333;
-}
-
-/* Contenedor de botones */
-.agenda-actions {
-  display: flex;
-  gap: 10px;
-}
-
-/* Botones */
-.agenda-actions button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 6px;
-  transition: 0.2s;
-}
-
-/* Iconos elegantes */
-.icon-edit::before {
-  content: "✎";
-  font-size: 18px;
-  color: #4dabf7; /* azul suave */
-}
-
-.icon-delete::before {
-  content: "🗑";
-  font-size: 18px;
-  color: #ff6b6b; /* rojo suave */
-}
-
-/* Hover */
-.agenda-actions button:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-
-.today-alert {
-  background: #333;
-  color: #fff;
-  padding: 10px 14px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  border-left: 5px solid #4dabf7;
-}
-
-.today-alert.hidden,
-.today-events.hidden {
+.modal.hidden {
   display: none;
 }
-
-.today-events {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 15px 0;
-}
-
-.today-events li {
-  background: #222;
-  padding: 8px 10px;
-  border-radius: 6px;
-  margin-bottom: 6px;
-  border-left: 5px solid #4dabf7;
-  color: #fff;
-}
-
-.today-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #222;
-  padding: 8px 10px;
-  border-radius: 6px;
-  margin-bottom: 6px;
-  color: #fff;
-}
-
-#appHeader {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 10px;
-  position: relative;
-}
-
-.family-menu-btn {
-  font-size: 22px;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 6px;
-  transition: 0.2s;
-}
-
-.family-menu-btn:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-.family-menu {
-  position: absolute;
-  top: 50px;
-  left: 10px;
-  background: #f7f4f4;
-  color: #0b0b0b;
-  padding: 12px;
-  border-radius: 8px;
-  width: 200px;
-  box-shadow: 0 0 10px rgba(244, 242, 242, 0.4);
-  z-index: 9999;
-}
-
-.family-member {
-  padding: 10px 8px;
-  border-bottom: 1px solid #ccc;
-  font-size: 1rem;
-  color: #111 !important;
-  cursor: default;
-}
-
-.family-member:hover {
-  background: #e9e9e9;
-  border-radius: 6px;
+.modal-card,.modal-content {
+  background: rgb(250, 249, 249);
+  color: #000;
+  border-radius: 14px;
+  padding: 20px;
+  max-width: 420px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
 }
 
 
-/* Ajustes SOLO para pantallas pequeñas */
-@media (max-width: 480px) {
 
-  /* Reducir padding de las celdas */
-  .fc-daygrid-day-frame {
-    padding: 2px !important;
-  }
 
-  /* Hacer que los eventos ocupen una sola línea */
-  .fc-event {
-    font-size: 11px !important;
-    padding: 2px 4px !important;
-    border-radius: 4px !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
-
-  /* Reducir tamaño del número del día */
-  .fc-daygrid-day-number {
-    font-size: 12px !important;
-    padding: 0 2px !important;
-  }
-
-  /* Evitar que los eventos se salgan de la celda */
-  .fc-daygrid-day-events {
-    margin-top: 2px !important;
-  }
+@keyframes modalIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 
 
-.agenda-actions button {
-  background: #f2f2f2;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  margin-left: 4px;
-}
+/* ============================================
+   MODAL DEL CALENDARIO LABORAL — FIX COMPLETO
+============================================ */
 
-.agenda-actions i {
-  color: #333;
-  font-size: 20px;
-}
-
-
-.family-member {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px;
-  cursor: pointer;
-}
-
-.family-member:hover {
-  background: #f0f0f0;
-}
-
-.family-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.avatar-preview {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  margin-bottom: 8px;
-}
-
-.invite-inside-btn {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  background: #e8f0fe;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  text-align: left;
-}
-
-.invite-inside-btn:hover {
-  background: #d2e3fc;
-}
-
-
-/* Contenedor general */
-.notify-list {
-  margin-top: 10px;
-  padding: 10px;
-  background: #f5f5f7;
-  border-radius: 12px;
-  border: 1px solid #e0e0e0;
-}
-
-/* Cada miembro */
-.notify-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 10px;
-  margin-bottom: 8px;
-  background: white;
-  border-radius: 10px;
-  border: 1px solid #e6e6e6;
-  transition: background 0.2s, border 0.2s;
-}
-
-/* Hover */
-.notify-item:hover {
-  background: #eef2ff;
-  border-color: #c7d2fe;
-}
-
-/* Checkbox */
-.notify-item input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  margin-right: 12px;
-  accent-color: #4f46e5; /* Material You purple */
-}
-
-/* Texto */
-.notify-item label {
-  font-size: 0.95rem;
-  color: #333;
-  cursor: pointer;
-  width: 100%;
-}
-
-/* Título */
-.notify-title {
-  margin-top: 15px;
-  margin-bottom: 5px;
-  font-size: 1rem;
-  font-weight: bold;
-  color: #444;
-}
-
-
-.danger-btn {
-  background: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  width: 100%;
-  margin-top: 10px;
-  cursor: pointer;
-}
-
-.danger-btn:hover {
-  background: #e63939;
-}
-
-
-/* Fondo oscuro difuminado */
-#resetModal {
-  position: fixed;
+/* Fondo oscuro del modal */
+#workDayModal {
+  position: fixed !important;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  backdrop-filter: blur(6px);
-  background: rgba(0, 0, 0, 0.45);
+
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(3px);
+
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
-  animation: fadeIn 0.25s ease-out;
+
+  z-index: 999999;
 }
 
-/* Caja del modal */
-#resetModal .modal-content {
-  background: #ffffff;
-  padding: 28px;
-  width: 90%;
-  max-width: 380px;
-  border-radius: 16px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
-  animation: slideUp 0.25s ease-out;
-  text-align: center;
+#workDayModal.hidden {
+  display: none !important;
 }
 
-/* Título */
-#resetModal h3 {
-  margin-bottom: 16px;
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #333;
+/* TARJETA INTERNA DEL MODAL (tu .modal-card) */
+
+/* Animación */
+@keyframes modalIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 
-/* Input */
-#resetModal input[type="email"] {
+/* Botones del modal laboral */
+#workDayModal button {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  margin-bottom: 18px;
-  transition: 0.2s;
-}
-
-#resetModal input[type="email"]:focus {
-  border-color: #4dabf7;
-  box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.25);
-  outline: none;
-}
-
-/* Botones */
-#resetModal button {
-  width: 100%;
-  padding: 12px;
+  padding: 10px;
+  margin-top: 8px;
   border-radius: 10px;
   border: none;
   font-size: 1rem;
   cursor: pointer;
-  margin-bottom: 10px;
-  transition: 0.2s;
 }
 
-/* Botón principal */
-#sendResetBtn {
-  background: #4dabf7;
+#saveWorkDayBtn { background: #4CAF50; color: white; }
+#cancelWorkDayBtn { background: #777; color: white; }
+#deleteWorkShiftBtn,
+#deleteShift1Btn,
+#deleteShift2Btn { background: #d9534f; color: white; }
+
+
+/* ============================================
+   MODAL LABORAL — DISEÑO OPTIMIZADO PARA MÓVIL
+============================================ */
+
+#workDayModal .modal-card {
+  background: white !important;
+
+  /* MÁS ANCHO */
+  width: 95%;
+  max-width: 500px; /* más ancho incluso en móviles grandes */
+
+  /* MENOS ALTO */
+  max-height: 70vh; /* antes 85vh → ahora más compacto */
+
+  overflow-y: auto;
+  padding: 18px;
+  border-radius: 16px;
+
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  animation: modalIn 0.25s ease;
+}
+
+/* Scroll suave dentro del modal */
+#workDayModal .modal-card::-webkit-scrollbar {
+  width: 6px;
+}
+
+#workDayModal .modal-card::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 6px;
+}
+
+/* ============================================
+   FIX TARJETA DE MIEMBROS — RESTAURAR VISIBILIDAD
+============================================ */
+
+/* Tarjeta flotante */
+#familyMenu {
+  position: absolute !important;
+  top: 55px !important;
+  left: 10px !important;
+
+  width: 240px;
+  padding: 14px 16px;
+
+  background: #ffffff !important;   /* 🔥 evita transparencia */
+  color: #000 !important;            /* 🔥 texto visible */
+  border-radius: 14px;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25) !important;
+  z-index: 999999 !important;        /* 🔥 por encima de todo */
+  opacity: 1 !important;             /* 🔥 evita opacidad heredada */
+}
+
+/* Evitar que el header recorte la tarjeta */
+#appHeader {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* Asegurar que los textos internos se vean */
+#familyMenu * {
+  color: #000 !important;
+  opacity: 1 !important;
+}
+
+/* ============================================
+   FIX TARJETA DE PERFIL — FONDO Y TEXTO VISIBLES
+============================================ */
+
+/* Cualquier tarjeta de perfil que se abra al pulsar un miembro */
+#memberProfileCard,
+.member-profile,
+.profile-card,
+.member-card,
+#profileCard {
+  background: #ffffff !important;   /* 🔥 fondo blanco real */
+  color: #000 !important;           /* 🔥 texto visible */
+  border-radius: 14px !important;
+  padding: 16px !important;
+
+  position: absolute !important;
+  z-index: 999999 !important;       /* 🔥 por encima de todo */
+  opacity: 1 !important;            /* 🔥 evita transparencia heredada */
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25) !important;
+}
+
+/* Asegurar que los textos internos no heredan opacidad */
+#memberProfileCard *,
+.member-profile *,
+.profile-card *,
+.member-card *,
+#profileCard * {
+  color: #000 !important;
+  opacity: 1 !important;
+}
+
+/* ============================================
+   FIX MODAL PERFIL — RESTAURAR FONDO Y VISIBILIDAD
+============================================ */
+
+/* Fondo oscuro detrás del modal */
+#profileModal.modal {
+  background: rgba(0,0,0,0.5) !important;  /* 🔥 fondo oscuro real */
+  backdrop-filter: none !important;        /* 🔥 evita transparencia */
+  opacity: 1 !important;
+  z-index: 999999 !important;
+}
+
+/* Tarjeta del modal */
+#profileModal .modal-card {
+  background: #ffffff !important;          /* 🔥 fondo blanco real */
+  color: #000 !important;                  /* 🔥 texto visible */
+  border-radius: 14px !important;
+  padding: 20px !important;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25) !important;
+  opacity: 1 !important;
+  z-index: 1000000 !important;
+}
+
+/* Asegurar que los textos internos no heredan opacidad */
+#profileModal .modal-card * {
+  color: #000 !important;
+  opacity: 1 !important;
+}
+
+/* ============================================
+   MENÚ SEMANAL — DISEÑO VERTICAL OPTIMIZADO
+============================================ */
+
+/* Pantalla del menú */
+#menuScreen {
+  
+  
+  -webkit-overflow-scrolling: touch;
+  padding: 20px 15px 80px;
+  box-sizing: border-box;
+}
+
+/* Contenedor de los días */
+.menu-week {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Tarjeta de cada día */
+.menu-day {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Título del día */
+.menu-day h3 {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+/* Comidas */
+.meal {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.meal:last-child {
+  border-bottom: none;
+}
+
+.meal:hover {
+  background: #f5f5f5;
+  border-radius: 6px;
+}
+
+/* Botones de acciones */
+.menu-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.menu-actions button {
+  flex: 1 1 45%;
+}
+
+/* Encabezado semana */
+.menu-week-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.menu-week-header button {
+  border: none;
+  background: #4CAF50;
   color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#weekInfo {
   font-weight: 600;
+  font-size: 1rem;
 }
 
-#sendResetBtn:hover {
-  background: #339af0;
+/* Botones inferiores */
+.menu-ideas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 15px 0;
 }
 
-/* Botón cerrar */
-#closeResetModal {
-  background: #e9ecef;
+.menu-btn {
+  background: #ffffff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.menu-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.menu-btn:not(.secondary) {
+  background: #4CAF50;
+  color: white;
+}
+
+.menu-btn.secondary {
+  background: #f1f1f1;
   color: #333;
 }
 
-#closeResetModal:hover {
-  background: #dee2e6;
+/* Ajustes móviles */
+@media (max-width: 600px) {
+  .menu-day {
+    padding: 12px;
+  }
+
+  .menu-day h3 {
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  .meal {
+    padding: 6px 0;
+  }
+
+  .menu-actions button {
+    flex: 1 1 48%;
+    font-size: 11px;
+    padding: 5px;
+    border-radius: 8px;
+  }
+
+  .menu-btn {
+    flex: 1;
+    text-align: center;
+  }
 }
 
-/* Animaciones */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+
+
+/* ============================================
+   AGENDA — RESTAURACIÓN COMPLETA DEL ESTILO
+============================================ */
+
+/* Contenedor principal */
+#agendaBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+/* Tarjetas de la agenda */
+#agendaBlock .card {
+  background: #ffffff !important;        /* 🔥 fondo blanco real */
+  border-radius: 14px !important;        /* esquinas redondeadas */
+  padding: 16px !important;              /* espacio interno */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; /* sombra suave */
+  opacity: 1 !important;                 /* evitar transparencia heredada */
+  color: #000 !important;                /* texto visible */
 }
 
-/* Oculto */
-.hidden {
-  display: none !important;
-}
-
-
-#futureEventsContainer {
-  margin-top: 20px;
-  background: #f8f9fa;
+/* Botón añadir evento */
+#addEventBtn {
+  width: 100%;
+  padding: 12px;
+  background: #4caf50;
+  color: white !important;
+  border: none;
   border-radius: 10px;
-  padding: 10px 15px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
+#addEventBtn:hover {
+  background: #43a047;
+}
+
+/* Títulos HOY y Próximos eventos */
+#agendaBlock h3,
+.agenda-title {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #333 !important;
+}
+
+/* Lista de eventos de hoy */
+.today-events,
+#agendaList,
+#futureEventsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Cada evento */
+.today-events li,
+#agendaList li,
+#futureEventsList li {
+  background: #f5f5f5 !important;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  color: #000 !important;
+  font-size: 15px;
+}
+
+/* Alerta de hoy */
+.today-alert {
+  background: #ffeb3b !important;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  color: #000 !important;
+  font-weight: 600;
+}
+
+/* Futuros eventos — cabecera */
 #futureEventsHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: #e0e0e0 !important;
+  padding: 10px 12px;
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 1.1rem;
-  padding: 8px 0;
+  margin-top: 12px;
 }
 
-#futureEventsHeader:hover {
-  opacity: 0.8;
+#futureEventsHeader span {
+  font-weight: 600;
+  color: #000 !important;
 }
 
 #futureEventsArrow {
-  transition: transform 0.25s ease;
+  font-size: 22px;
+  color: #000 !important;
 }
 
-#futureEventsList {
-  margin-top: 10px;
-  list-style: none;
-  padding-left: 0;
+#agendaScreen {
+  overflow-y: auto !important;   /* 🔥 vuelve el scroll vertical */
+  
+  padding-bottom: 40px;          /* espacio para que no corte el último evento */
 }
 
+#agendaList li,
+#todayEventsList li,
 #futureEventsList li {
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  display: flex !important;
+  justify-content: space-between !important;   /* 🔥 texto izquierda / botones derecha */
+  align-items: center !important;
+}
+
+
+.event-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-left: 6px solid #ccc;
+  gap: 8px;
 }
 
-#futureEventsList li .agenda-info {
-  flex: 1;
-}
-
-#futureEventsList li .agenda-actions button {
-  margin-left: 6px;
-}
-
-
-.shopping-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-}
-
-.deleteProductBtn {
-  background: transparent;
+.event-actions button {
+  background: #e0e0e0;
   border: none;
+  padding: 6px 8px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 16px;
 }
 
+.event-actions button:hover {
+  background: #d5d5d5;
+}
+
+#agendaBlock .card {
+  background: #ffffff !important;
+  border-radius: 14px !important;
+  padding: 16px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  margin-bottom: 16px !important;
+  opacity: 1 !important;
+}
+
+
+/* ============================================
+   COMPRAS — RESTAURACIÓN COMPLETA DEL ESTILO
+============================================ */
+
+/* Pantalla con scroll */
+#compraScreen {
+  overflow-y: auto !important;
+  height: 100% !important;
+  padding-bottom: 40px;
+}
+
+/* Cabecera */
 .shopping-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
+/* Botón "Nueva lista" */
+#createListBtn {
+  
+  color: white !important;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#createListBtn:hover {
+  background: #43a047;
+}
+
+/* Título de la lista actual */
 .current-list-title {
-  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #333 !important;
+}
+
+/* Contenedor de listas */
+#listsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Tarjetas de listas */
+.shopping-list-card
+ {
+  background:transparent !important;
+  border-radius: 14px !important;
+  padding: 16px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  opacity: 1 !important;
+  color: #000 !important;
+}
+
+/* Título de cada lista */
+.shopping-list-card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
   font-size: 18px;
-  font-weight: 600;
-  text-align: center;
+  font-weight: 700; /* negrita */
+  color: white !important; /* blanco */
+  text-align: center; /* centrado */
+}
+
+.list-name {
   flex: 1;
+  text-align: center;
+  color: white !important;
+  font-weight: 700;
 }
 
-.hidden {
-  display: none;
+
+/* Lista interna */
+.shopping-list-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.dropdown {
-  position: relative;
+/* Cada item de la lista */
+.shopping-list-card li {
+  background: transparent !important;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  color: #000 !important;
+
+  display: flex !important;
+  justify-content: space-between !important;   /* 🔥 texto izquierda / botones derecha */
+  align-items: center !important;
 }
 
-.dropdown-content {
-  position: absolute;
-  top: 40px;
-  left: 0;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  min-width: 200px;
-  max-height: 250px;
-  overflow-y: auto;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+/* Contenedor de botones dentro del item */
+.shopping-list-card li .item-actions {
+  display: flex;
+  gap: 8px;
 }
 
-.dropdown-content button {
-  width: 100%;
-  margin-bottom: 5px;
+/* Botones dentro del item */
+.shopping-list-card li button {
+  background: #e0e0e0;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
 }
+
+.shopping-list-card li button:hover {
+  background: #d5d5d5;
+}
+
 
 
 .list-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* 👈 separa nombre y botón */
   align-items: center;
   padding: 12px;
-  background: #f5dbdb;
-  border-radius: 10px;
+  
+  border-radius: 8px;
   margin-bottom: 10px;
-  transition: 0.2s;
 }
 
-.list-row:hover {
-  background: #94f497;
-}
+
 
 .list-name {
   margin: 0;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
 }
 
 .list-actions {
   display: flex;
-  gap: 8px;
+  justify-content: flex-end; /* 👈 asegura que el botón se pegue a la derecha */
+  width: 40px; /* 👈 evita que se mueva si el nombre es largo */
 }
 
-.list-actions button {
+.deleteListBtn {
+  background: #ff4d4d;
   border: none;
-  
-  padding: 6px 8px;
-  border-radius: 8px;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
-  transition: 0.2s;
 }
-
-.list-actions button:hover {
-  transform: scale(1.1);
-  background: #eaeaea;
-}
-
-/* Botón borrar más elegante */
-.deleteListBtn {
-  color: #d32f2f;
-}
-
-.deleteListBtn:hover {
-  background: #ffe5e5;
-}
-
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.modal.hidden {
-  display: none;
-}
-
-.modal-content {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  width: 320px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.modal-content input {
-  width: 100%;
-  padding: 10px;
-  margin: 15px 0;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-}
-
-.modal-actions button {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-#saveNewListBtn {
-  background: #4CAF50;
-  color: white;
-}
-
-#saveNewListBtn:hover {
-  background: #45a049;
-}
-
-#closeListModalBtn {
-  background: #f44336;
-  color: white;
-}
-
-#closeListModalBtn:hover {
-  background: #d32f2f;
-}
-
-
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.modal.hidden {
-  display: none;
-}
-
-.modal-content {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-}
-
-.completed {
-  text-decoration: line-through;
-  opacity: 0.5;
-}
-
 
 .shopping-item {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* nombre a la izquierda, botones a la derecha */
   align-items: center;
   padding: 10px;
-  border-radius: 10px;
-  background: #f5f5f5;
+  background: #f4f4f4;
   margin-bottom: 8px;
+  border-radius: 6px;
+}
+
+.shopping-item span.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
 }
 
 .product-actions {
@@ -1475,620 +1204,519 @@ textarea {
   gap: 8px;
 }
 
-.product-actions button {
-  border: none;
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s;
-}
-
-.toggleCompleteBtn {
-  background: #4caf50;
-  color: rgb(56, 239, 28);
-}
-
-.toggleCompleteBtn:hover {
-  background: #43a047;
-}
-
-.deleteProductBtn {
-  background: #e53935;
-  color: white;
-}
-
-.deleteProductBtn:hover {
-  background: #c62828;
-}
 
 .shopping-list-card {
+  padding: 14px;
+  border-radius: 10px;
+  margin-bottom: 12px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 0.1s ease;
 }
 
 .shopping-list-card:hover {
   transform: scale(1.02);
-  background-color: #f5f5f5;
 }
 
 
-/* ===== SECCIÓN TAREAS ===== */
+#calendarScreen {
+  display: flex;
+  flex-direction: column;
+}
 
-.tasks-section {
+#calendar {
+  flex: 1;
+  min-height: 0; /* 🔥 evita desbordes raros */
+}
+
+#workCalendarScreen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  
+  padding: 12px;
+  box-sizing: border-box;
+
+  overflow: hidden; /* evita scroll raro */
+  
+}
+#workCalendarPlaceholder {
+  margin: auto;
+  width: 90%;
+  max-width: 380px;
+
+  background: linear-gradient(135deg, #ffffff, #f7f9fc);
+  padding: 28px 22px;
+  border-radius: 22px;
+
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  animation: fadeInScale 0.35s ease;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+#mainPrompt {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1f2d3d;
+}
+
+#motivacionText {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #5f7ea6;
+}
+
+#memberPrompt {
+  font-size: 1.05rem;
+  color: #34495e;
+}
+
+.work-btn {
+  background: linear-gradient(135deg, #4CAF50, #2e7d32);
+  color: white;
+  border: none;
+
+  padding: 10px;
+  border-radius: 10px;
+
+  font-size: 14px;
   width: 100%;
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 30px;
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+
+  transition: all 0.2s ease;
 }
 
-/* Cabecera */
+.work-btn:active {
+  transform: scale(0.96);
+}
+
+#workCalendarPlaceholder {
+  backdrop-filter: blur(10px);
+}
+
+#workCalendarScreen.overlay-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0,0,0,0.4);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
+}
+
+
+
+
+
+
+
+
+
+
+
+#dailyTipOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.5); /* fondo oscuro elegante */
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 9999;
+}
+
+.overlay-card {
+  background: white;
+  border-radius: 20px;
+  padding: 25px 20px;
+  width: 85%;
+  max-width: 320px;
+
+  text-align: center;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+
+  animation: fadeInScale 0.3s ease;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.tip-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+#dailyTip {
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.enter-menu-btn {
+  background: linear-gradient(135deg, #4CAF50, #2e7d32);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 14px;
+
+  width: 100%;
+
+  transition: all 0.2s ease;
+}
+
+.enter-menu-btn:active {
+  transform: scale(0.96);
+}
+
+
+
+
+@media (max-width: 600px) {
+
+  #workCalendarScreen .fc-event {
+    font-size: 9px !important;
+  }
+
+  #workCalendarScreen .fc-event-title {
+    font-size: 9px !important;
+  }
+
+}
+
+
+#shoppingList {
+  list-style: none;    /* Quita los bullets */
+  padding: 0;          /* Quita el padding por defecto */
+  margin: 0;           /* Quita margen si lo hubiera */
+}
+
+
+#recipeResults {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.recipe-result {
+  background: #fff;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 15px;
+}
+
+.recipe-result h4 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.recipe-result .ingredients {
+  color: #555;
+  font-size: 14px;
+}
+
+.recipe-result .matches {
+  font-size: 13px;
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+
+
+/* CONTENEDOR GENERAL */
+.tasks-section {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* CABECERA */
 .tasks-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
 }
 
 .tasks-header h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: 1.6rem;
+  font-weight: 700;
 }
 
 #tasksCounter {
-  font-size: 14px;
-  color: #c62222;
-  font-weight: 500;
+  background: #4CAF50;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
-/* Input */
+/* INPUT + BOTÓN */
 .task-input-container {
   display: flex;
-  gap: 12px;
-  margin-bottom: 25px;
+  gap: 10px;
 }
 
 #taskInput {
   flex: 1;
-  padding: 14px 18px;
-  border-radius: 12px;
-  border: 1px solid #666;
-  font-size: 16px;
-  outline: none;
-  transition: 0.2s;
-}
-
-#taskInput:focus {
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  background: #fafafa;
 }
 
 #addTaskBtn {
-  padding: 0 20px;
-  border-radius: 12px;
+  padding: 0 16px;
   border: none;
   background: #4CAF50;
   color: white;
-  font-size: 18px;
+  border-radius: 10px;
+  font-size: 1.3rem;
   cursor: pointer;
   transition: 0.2s;
 }
 
 #addTaskBtn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
+  background: #bdbdbd;
+  cursor: default;
 }
 
-#addTaskBtn:not(:disabled):hover {
-  background: #43a047;
-}
-
-
+/* LISTA DE TAREAS */
 .tasks-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.tasks-list li {
+/* TARJETA DE TAREA */
+.task-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 12px; /* separación entre checkbox y texto */
+  background: white;
   padding: 14px;
-  margin-bottom: 10px;
-  background: #f8f9fa;
   border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-/* 🔥 BLOQUE IZQUIERDO */
+/* EFECTO AL PULSAR */
+.task-item:active {
+  transform: scale(0.97);
+}
+
+
+
+/* TAREA COMPLETADA */
+.task-completed .task-text {
+  text-decoration: line-through;
+  color: #888;
+}
+
+/* BOTÓN ELIMINAR */
+.delete-task-btn {
+  background: #ff5252;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+
+.delete-task-btn:active {
+  transform: scale(0.9);
+}
+
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* separación entre checkbox y texto */
+  background: white;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Checkbox bonito */
+.task-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid #4CAF50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: 0.2s;
+}
+
+/* Cuando está marcada */
+.task-checkbox.checked {
+  background: #4CAF50;
+  color: white;
+}
+
+/* Texto */
+.task-text {
+  flex: 1;
+  font-size: 1rem;
+}
+
 .task-label {
   display: flex;
   align-items: center;
   gap: 10px;
   flex: 1;
-  min-width: 0;
 }
 
-/* 🔥 TEXTO */
+
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* El contenedor del texto ocupa todo el espacio */
+.task-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+/* Mover el checkbox a la derecha */
+.task-check {
+  order: 2; /* lo manda al final dentro de task-label */
+}
+
+/* El texto queda a la izquierda del checkbox */
+.task-label span {
+  order: 1;
+  flex: 1;
+}
+
+/* Cada tarea en una fila */
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 10px;
+  gap: 12px;
+}
+
+/* Contenedor del texto y checkbox */
+.task-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* separa texto y checkbox */
+  flex: 1; /* ocupa todo el espacio disponible */
+  gap: 10px;
+}
+
+/* Texto ocupa todo el espacio a la izquierda */
 .task-label span {
   flex: 1;
-  min-width: 0;
-  white-space: normal;
-  word-break: break-word;
+  font-size: 1rem;
 }
 
-/* Checkbox */
+/* Checkbox a la derecha dentro de task-label */
 .task-check {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
   flex-shrink: 0;
 }
 
-/* Botón borrar */
+/* Tarea completada */
+.task-done {
+  text-decoration: line-through;
+  color: #888;
+}
+
+/* Botón eliminar */
 .deleteTaskBtn {
-  margin-left: auto;
-  background: #ff4d4d;
-  border: none;
+  background: #ff5252;
   color: white;
+  border: none;
   padding: 6px 10px;
   border-radius: 8px;
   cursor: pointer;
-  flex-shrink: 0;
-}
-
-.task-check {
-  width: auto !important;
-  flex-shrink: 0;
-}
-.task-label input[type="checkbox"] {
-  width: auto !important;
-}
-
-
-/* =============================== */
-/* 🔥 AJUSTES TAREAS PARA MÓVIL */
-/* =============================== */
-
-@media (max-width: 480px) {
-
-  .tasks-section {
-    margin: 10px;
-    padding: 16px;
-    border-radius: 16px;
-  }
-
-  .task-input-container {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  #addTaskBtn {
-    width: 100%;
-  }
-
-}
-
-* {
-  box-sizing: border-box;
-  max-width: 100%;
-}
-
-
-/* ============================= */
-/* ===== BARRA INFERIOR NUEVA ===== */
-/* ============================= */
-
-/* ============================= */
-/* ===== BARRA INFERIOR MODERNA ===== */
-/* ============================= */
-
-/* ================= BOTTOM NAV ================= */
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 75px;
-
-  background: rgba(6, 6, 6, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  border-top: 1px solid rgba(237, 235, 235, 0.05);
-  z-index: 999999;
-}
-
-/* 🔥 BOTONES SIN RECUADRO */
-.home-btn[data-screen] {
-  background: none;
-  border: none;
-  outline: none;
-  box-shadow: none;
-
-  padding: 0;
-  margin: 0;
-
-  color: #f9f6f6;
-  font-size: 12px;      /* 👈 texto más pequeño */
-  font-weight: 400;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-
-  cursor: pointer;
-}
-
-/* Quitar efecto azul al pulsar en móvil */
-.home-btn[data-screen]:focus,
-.home-btn[data-screen]:active {
-  background: none;
-  outline: none;
-}
-
-
-
-/* Botones */
-.nav-btn {
-  background: none;
-  border: none;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 12px;
-  color: #f4f1f1;
-
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-/* Iconos más grandes */
-.nav-icon {
-  font-size: 22px;
-  margin-bottom: 4px;
-  transition: transform 0.2s ease;
-}
-
-/* Hover */
-.nav-btn:hover .nav-icon {
-  transform: translateY(-3px);
-}
-
-/* Activo */
-.nav-active {
-  color: #000;
-  font-weight: 600;
-}
-
-/* 🔥 Indicador moderno debajo del botón activo */
-.nav-active::after {
-  content: "";
-  position: absolute;
-  bottom: -6px;
-  width: 6px;
-  height: 6px;
-  background: #4CAF50;
-  border-radius: 50%;
-}
-
-
-/* ============================= */
-/* ===== MENU DESPLEGABLE ===== */
-/* ============================= */
-
-/* ============================= */
-/* MENU DESPLEGABLE BARRA */
-/* ============================= */
-
-/* ============================= */
-/* MENU DESPLEGABLE BARRA */
-/* ============================= */
-
-/* ============================= */
-/* MENU DESPLEGABLE (VERSIÓN SUTIL) */
-/* ============================= */
-
-/* ============================= */
-/* MENU DESPLEGABLE (ALINEADO A LA IZQUIERDA) */
-/* ============================= */
-
-.bottom-menu {
-  position: fixed;
-  bottom: 90px;
-  left: 16px;
-
-  width: 240px;
-
-  background: white;
-  border-radius: 18px;
-  padding: 14px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-
-  opacity: 0;
-  transform: translateY(20px);
-  pointer-events: none;
-
-  transition: opacity 0.25s ease, transform 0.25s ease;
-
-  z-index: 999999;
-}
-
-.bottom-menu.show {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-/* Botones del menú */
-.menu-item {
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  background: #111111;
-  font-size: 16px;
-  cursor: pointer;
-  text-align: left;
-  transition: 0.2s;
-}
-
-.menu-item:hover {
-  background: #4CAF50;
-  color: white;
-}
-
-
-/* =============================== */
-/* DASHBOARD HOME */
-/* =============================== */
-
-/* ================================= */
-/* DASHBOARD MODERNO */
-/* ================================= */
-
-.dashboard {
-  display: flex;
-  flex-direction: column;
-  gap: 28px; /* 🔥 Más separación entre tarjetas */
-  margin-top: 30px;
-}
-
-.modern-card {
-  position: relative;
-  padding: 20px;
-  border-radius: 22px;
-
-  background: linear-gradient(
-    135deg,
-    #ffffff,
-    #f8f9fa
-  );
-
-  border: 1px solid rgba(0,0,0,0.05);
-
-  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
-
-  transition: all 0.25s ease;
-}
-
-/* 🔥 Hover elegante */
-.modern-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
-}
-
-/* Títulos */
-.modern-card h3 {
-  font-size: 16px;
-  margin-bottom: 12px;
-  font-weight: 600;
-}
-
-/* Listas */
-.modern-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.modern-card li {
-  padding: 6px 0;
-  font-size: 14px;
-  opacity: 0.85;
-}
-
-/* Mensajes vacíos */
-.modern-card p {
-  font-size: 14px;
-  opacity: 0.7;
-}
-
-.modern-card {
-  animation: fadeInUp 0.4s ease forwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* =============================== */
-/* COLORES DIFERENTES POR TARJETA */
-/* =============================== */
-
-/* Eventos de hoy */
-.card-today {
-  background: linear-gradient(
-    135deg,
-    #f0f7ff,
-    #e6f0ff
-  );
-}
-
-/* Eventos de esta semana */
-.card-week {
-  background: linear-gradient(
-    135deg,
-    #f0f7ff,
-    #e6f0ff
-  );
-}
-
-/* Tareas */
-.card-tasks {
-  background: linear-gradient(
-    135deg,
-    #f0f7ff,
-    #e6f0ff
-  );
-}
-
-/* =============================== */
-/* ITEMS CLICABLES DASHBOARD */
-/* =============================== */
-
-.dashboard-event-item,
-.dashboard-task-item {
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  transition: background 0.2s ease;
-}
-
-.dashboard-event-item:hover,
-.dashboard-task-item:hover {
-  background: #f1f3f5;
-}
-
-
-/* =============================== */
-/* CONTENIDO MODERNO DENTRO DE LAS CARDS */
-/* =============================== */
-
-.card-content-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #222;
-}
-
-.card-content-sub {
   font-size: 0.9rem;
-  color: #666;
-  margin-top: 4px;
-}
-
-.card-item {
-  padding: 12px;
-  border-radius: 12px;
-  background: white;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-  transition: transform 0.2s ease;
-}
-
-.card-item:hover {
-  transform: translateY(-2px);
+  flex-shrink: 0;
 }
 
 
-/* ================================= */
-/* CALENDARIO MES COMPLETO EN MÓVIL */
-/* ================================= */
-
-#calendar {
-  width: 100%;
-  max-width: 100%;
+.work-day {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* centra vertical */
+  align-items: center;       /* centra horizontal */
+  text-align: center;        /* centra el texto */
+  height: 100%;              /* asegura que el centrado funcione */
+  padding: 6px;
+  gap: 4px;
 }
 
-@media (max-width: 480px) {
-
-  .fc {
-    font-size: 12px;
-  }
-
-  /* Toolbar compacta */
-  .fc-toolbar {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .fc-toolbar-title {
-    font-size: 16px !important;
-  }
-
-  .fc-button {
-    padding: 4px 6px !important;
-    font-size: 12px !important;
-  }
-
-  /* Ajustar altura de celdas */
-  .fc-daygrid-day {
-    min-height: 65px !important;
-  }
-
-  /* Número del día */
-  .fc-daygrid-day-number {
-    font-size: 11px !important;
-  }
-
-  /* Eventos compactos */
-  .fc-event {
-    font-size: 9px !important;
-    padding: 2px 4px !important;
-    border-radius: 10px !important;
-  }
-
-  /* Evitar scroll horizontal */
-  .fc-scroller {
-    overflow-x: hidden !important;
-  }
-
-  /* Reducir padding interno */
-  .fc-daygrid-day-frame {
-    padding: 2px !important;
-  }
-}
-
-
-.fc-toolbar {
-  background: transparent;
-  box-shadow: none;
-  padding: 10px 0;
-}
-
-.fc-toolbar-title {
-  font-size: 18px !important;
-  text-align: center;
-}
-
-.fc-button {
-  background: rgb(10, 10, 10) !important;
-  border-radius: 50% !important;
-  width: 36px;
-  height: 36px;
-  padding: 0 !important;
+.work-shift {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
 }
+
+
