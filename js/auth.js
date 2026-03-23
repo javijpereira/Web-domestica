@@ -3,6 +3,7 @@
 // ======================================================
 
 import { auth, db } from "./firebase.js";
+window.db = db;
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -128,7 +129,8 @@ mascota1: `
 };
 
 
-  let currentHouseholdId = null;
+  window.currentHouseholdId = null;
+
   let currentUserNameValue = "";
   let unsubscribeTasks = null;
 
@@ -501,7 +503,7 @@ function updateBottomNavActive(screenId) {
       createdAt: serverTimestamp()
     });
 
-    currentHouseholdId = user.uid;
+   window.currentHouseholdId = user.uid;
     homeName.textContent = "Mi Casa";
   } else {
     currentHouseholdId = snap.docs[0].id;
@@ -522,20 +524,34 @@ function updateBottomNavActive(screenId) {
 
 
   // ======================================================
-  //  MIEMBROS
   // ======================================================
+// MIEMBROS CORREGIDO
+// ======================================================
 async function loadMembers() {
   const snap = await getDoc(doc(db, "households", currentHouseholdId));
+  const membersData = snap.data().members || {};
+
+  // Lista de miembros en la pantalla de familia
   const familyList = document.getElementById("familyMembersList");
   familyList.innerHTML = "";
 
-  for (const uid in snap.data().members) {
+  // Selector del calendario laboral
+  const workSelect = document.getElementById("workMemberSelect");
+  const currentSelection = workSelect ? workSelect.value : "";
+
+  if (workSelect) {
+    workSelect.innerHTML = `<option value="">Seleccionar miembro</option>`;
+  }
+
+  // Recorrer miembros
+  for (const uid in membersData) {
     const u = await getDoc(doc(db, "users", uid));
     const data = u.data();
 
-    const name = data.name;
+    const name = data.name || "Sin nombre";
     const avatar = data.avatar || "padre1";
 
+    // --- Añadir a la lista de miembros (menú lateral) ---
     const item = document.createElement("div");
     item.classList.add("family-member");
 
@@ -545,15 +561,35 @@ async function loadMembers() {
     `;
 
     familyList.appendChild(item);
-
     item.addEventListener("click", () => openProfile(uid));
+
+    // --- Añadir al selector del calendario laboral ---
+    if (workSelect) {
+      const option = document.createElement("option");
+      option.value = uid;
+      option.textContent = name;
+      workSelect.appendChild(option);
+    }
+  }
+
+  // Restaurar la selección previa si sigue existiendo
+  if (workSelect && currentSelection) {
+    const exists = Array.from(workSelect.options).some(opt => opt.value === currentSelection);
+    if (exists) {
+      workSelect.value = currentSelection;
+      window.selectedWorkMember = currentSelection;
+      // Opcional: recargar los días del calendario para el miembro seleccionado
+      await loadWorkDaysForMember(window.selectedWorkMember);
+    } else {
+      window.selectedWorkMember = null;
+    }
   }
 }
-
-
-document.getElementById("familyMenuBtn").addEventListener("click", () => {
+document.getElementById("familyMenuBtn")?.addEventListener("click", () => {
   document.getElementById("familyMenu").classList.toggle("hidden");
 });
+
+
 
 // ======================================================
 // ======================================================
@@ -610,6 +646,11 @@ document.addEventListener("click", (e) => {
     document.getElementById("familyMenu").classList.add("hidden");
   }
 });
+
+document.querySelector(`[data-screen="workCalendarScreen"]`)
+  ?.addEventListener("click", () => {
+    loadMembers();
+  });
 
 
 
@@ -1360,11 +1401,15 @@ saveNewListBtn?.addEventListener("click", async () => {
   const name = newListNameInput.value.trim();
   if (!name || !currentHouseholdId) return;
 
-  await addDoc(collection(db, "shoppingLists"), {
-    name,
-    householdId: currentHouseholdId,
-    createdAt: serverTimestamp()
-  });
+const color = document.getElementById("newListColor").value;
+
+await addDoc(collection(db, "shoppingLists"), {
+  name,
+  householdId: currentHouseholdId,
+  color, // 👈 guardamos el color elegido
+  createdAt: serverTimestamp()
+});
+
 
   newListNameInput.value = "";
   createListModal?.classList.add("hidden");
@@ -1394,34 +1439,30 @@ async function loadShoppingLists() {
 
   const snap = await getDocs(q);
 
- snap.forEach(docu => {
+  snap.forEach(docu => {
 
-  const div = document.createElement("div");
-  div.classList.add("shopping-list-card");
-  div.dataset.id = docu.id;   // 👈 guardamos el id aquí
+    const div = document.createElement("div");
+    div.classList.add("shopping-list-card");
+    div.dataset.id = docu.id;
 
-  div.innerHTML = `
-    <div class="list-row">
-
-      <h3 class="list-name">
-        ${docu.data().name}
-      </h3>
-
-      <div class="list-actions">
-
-        <button class="deleteListBtn" data-id="${docu.id}">
-          🗑
-        </button>
-
+    div.innerHTML = `
+      <div class="list-row">
+        <h3 class="list-name">${docu.data().name}</h3>
+        <div class="list-actions">
+          <button class="deleteListBtn" data-id="${docu.id}">🗑</button>
+        </div>
       </div>
+    `;
 
-    </div>
-  `;
+    // 👇 APLICAR COLOR AQUÍ
+    const row = div.querySelector(".list-row");
+    row.style.backgroundColor = docu.data().color;
+    row.style.color = "white";
 
-  listsContainer.appendChild(div);
-});
-
+    listsContainer.appendChild(div);
+  });
 }
+
 
 
 /* =====================================================
@@ -1570,46 +1611,55 @@ function loadProducts() {
     unsubscribeProducts();
   }
 
-  const q = query(
-    collection(db, "shoppingLists", currentListId, "products"),
-    orderBy("createdAt", "desc")
-  );
+ const q = query(
+  collection(db, "shoppingLists", currentListId, "products"),
+  orderBy("completed", "asc"),
+  orderBy("createdAt", "desc")
+);
 
-  unsubscribeProducts = onSnapshot(q, (snapshot) => {
 
-    list.innerHTML = "";
+unsubscribeProducts = onSnapshot(q, (snapshot) => {
 
-    snapshot.forEach(docu => {
+  list.innerHTML = "";
 
-      const data = docu.data();
+  // 👇 CREAMOS EL ARRAY DE PRODUCTOS
+  const products = [];
 
-      const li = document.createElement("li");
-      li.classList.add("shopping-item");
+  snapshot.forEach(docu => {
+    const data = docu.data();
+    products.push(data); // 👈 añadimos cada producto al array
 
-      const completedClass = data.completed ? "completed" : "";
+    const li = document.createElement("li");
+    li.classList.add("shopping-item");
 
-      li.innerHTML = `
-        <span class="${completedClass}">
-          ${data.qty}x ${data.name}
-        </span>
+    const completedClass = data.completed ? "completed" : "";
 
-        <div class="product-actions">
-          <button class="toggleCompleteBtn" data-id="${docu.id}">
-            ✔
-          </button>
+    li.innerHTML = `
+      <span class="${completedClass}">
+        ${data.qty}x ${data.name}
+      </span>
 
-          <button class="deleteProductBtn" data-id="${docu.id}">
-            🗑
-          </button>
-        </div>
-      `;
+      <div class="product-actions">
+        <button class="toggleCompleteBtn" data-id="${docu.id}">
+          ✔
+        </button>
 
-      list.appendChild(li);
+        <button class="deleteProductBtn" data-id="${docu.id}">
+          🗑
+        </button>
+      </div>
+    `;
 
-    });
-
-    calculateTotal();
+    list.appendChild(li);
   });
+
+  calculateTotal();
+
+  // 👇 AHORA SÍ EXISTE "products"
+  checkIfListCompleted(products);
+
+});
+
 
   // Delegación de eventos
   list.onclick = async (e) => {
@@ -1646,6 +1696,22 @@ function loadProducts() {
     }
   };
 }
+
+/* =PRODUCTOS COMPLETADOS*/
+function checkIfListCompleted(products) {
+  if (products.length === 0) return;
+
+  const allDone = products.every(p => p.completed === true);
+
+  if (allDone) {
+    document.getElementById("completedModal").classList.remove("hidden");
+  }
+}
+
+document.getElementById("closeCompletedModal").addEventListener("click", () => {
+  document.getElementById("completedModal").classList.add("hidden");
+});
+
    
 /* =====================================================
    CALCULAR TOTAL (CORREGIDO)
@@ -1987,12 +2053,30 @@ if (
 
 }
 
+
+const memberTab = document.getElementById("memberTab");
+const memberDropdown = document.getElementById("memberDropdown");
+
+memberTab.addEventListener("click", () => {
+  memberDropdown.classList.toggle("show");
+});
+
+// Cerrar al pulsar fuera
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#memberTab") && !e.target.closest("#memberDropdown")) {
+    memberDropdown.classList.remove("show");
+  }
+});
+
+
+
   // ======================================================
   //  INICIALIZAR
   // ======================================================
   showLogin();
 
 });
+
 
 
 
