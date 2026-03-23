@@ -79,6 +79,8 @@
 
 <!-- ================= APP PRINCIPAL ================= -->
 
+  
+
 <!-- HEADER APP -->
 <div id="app" class="hidden">
 <div id="appHeader" class="hidden">
@@ -184,12 +186,14 @@
   <div class="shopping-header">
 
     <button id="createListBtn">Nueva lista</button>
-
+    <div class="list-item">
     <h2 id="currentListTitle" class="current-list-title hidden">
       🛒 Lista
     </h2>
 
-  </div>
+  </div> 
+</div>
+ 
 
   <!-- LISTAS -->
   <div id="listsView">
@@ -199,13 +203,16 @@
   <!-- MODAL CREAR LISTA -->
 <div id="createListModal" class="modal hidden">
 
-  <div class="modal-content">
+   <div class="modal-content">
 
     <h3>📋 Crear nueva lista</h3>
 
     <input type="text"
            id="newListName"
            placeholder="Nombre de la lista">
+           <label for="newListColor">Color de la lista:</label>
+           <input type="color" id="newListColor" value="#4CAF50">
+
 
     <div class="modal-actions">
       <button id="saveNewListBtn">Crear</button>
@@ -213,8 +220,9 @@
     </div>
 
   </div>
+  </div>
 
-</div>
+
 
 <!-- MODAL CONFIRMAR ELIMINAR LISTA -->
 <div id="deleteListModal" class="modal hidden">
@@ -243,10 +251,19 @@
 
   <!-- PRODUCTOS -->
   <div id="productsView" class="hidden">
+    <div class="screen-content">
 
     <ul id="shoppingList"></ul>
 
 <button id="openAddProductModal">➕ Añadir producto</button>
+ <button id="backToListsBtn">⬅ Volver a listas</button>
+
+    <div id="totalPrice">Total: 0 €</div>
+
+</div>
+</div>
+</div>
+
 
 <!-- MODAL AÑADIR PRODUCTO -->
 <div id="addProductModal" class="modal hidden">
@@ -263,14 +280,6 @@
       <button id="saveProductBtn">Guardar</button>
       <button id="closeAddProductModal">Cancelar</button>
     </div>
-
-  </div>
-
-</div>
-
-    <button id="backToListsBtn">⬅ Volver a listas</button>
-
-    <div id="totalPrice">Total: 0 €</div>
 
   </div>
 
@@ -302,6 +311,328 @@
 
   </section>
 </div>
+
+
+<!--CALENDARIO LABORAL-->
+
+<div id="workCalendarScreen" class="screen hidden">
+ 
+  <h2>Calendario laboral</h2>
+
+  <!-- Pestaña flotante -->
+  <div id="memberTab">Miembro ▼</div>
+
+  <!-- Dropdown flotante -->
+  <div id="memberDropdown">
+    <select id="workMemberSelect">
+      <option value="">Seleccionar miembro</option>
+    </select>
+  </div>
+
+  <!-- MENSAJE -->
+  
+  <div id="workCalendarPlaceholder" class="placeholder-card hidden">
+    <div id="topRow">
+      <span id="mainPrompt">¿Libras o trabajas hoy?</span>
+      <span id="motivacionText"></span>
+    </div>
+    <span id="memberPrompt">Selecciona un miembro de la familia para comenzar</span>
+  </div>
+
+  <!-- CALENDARIO -->
+  <div id="workCalendar" class="hidden"></div>
+  
+
+</div>
+
+
+
+
+
+
+
+<!-- MODAL CALENDARIO LABORAL -->
+<div id="workDayModal" class="modal hidden">
+  <div class="modal-card">
+
+    <h3>Horario laboral</h3>
+
+    <p id="workSelectedDate"></p>
+
+    <label>Tipo de día</label>
+    <select id="workDayType">
+      <option value="trabajo">Trabajo</option>
+      <option value="libre">Día libre</option>
+      <option value="festivo">Festivo</option>
+      <option value="asuntos">Asuntos propios</option>
+      <option value="vacaciones">Vacaciones</option>
+    </select>
+
+    <hr>
+
+    <h4>Turno 1</h4>
+
+    <label>Nombre Turno 1</label>
+    <input type="text" id="workShiftName1" placeholder="Nombre turno 1">
+
+    <label>Hora inicio</label>
+    <input type="time" id="shift1Start">
+
+    <label>Hora fin</label>
+    <input type="time" id="shift1End">
+
+    <label>Color turno 1</label>
+    <input type="color" id="workShiftColor1" value="#4CAF50">
+
+    <hr>
+
+    <h4>Turno 2</h4>
+
+    <label>Nombre Turno 2</label>
+    <input type="text" id="workShiftName2" placeholder="Nombre turno 2">
+
+    <label>Hora inicio</label>
+    <input type="time" id="shift2Start">
+
+    <label>Hora fin</label>
+    <input type="time" id="shift2End">
+
+    <label>Color turno 2</label>
+    <input type="color" id="workShiftColor2" value="#2196F3">
+
+    <hr>
+
+<button id="saveWorkDayBtn">Guardar</button>
+<button id="cancelWorkDayBtn">Cancelar</button>
+<button id="deleteWorkShiftBtn">Eliminar día</button>
+<button id="deleteShift1Btn">Eliminar turno 1</button>
+<button id="deleteShift2Btn">Eliminar turno 2</button>
+
+
+  </div>
+</div>
+
+<!-- ====================================================== -->
+<!-- ====================================================== -->
+<!--  MENÚ SEMANAL -->
+<!-- ====================================================== -->
+
+<div id="menuScreen" class="screen hidden">
+
+<!-- PANTALLA CONSEJO DEL DÍA -->
+<div id="dailyTipOverlay" class="overlay hidden">
+  <div class="overlay-card">
+    <div class="tip-icon">💡</div>
+    <div id="dailyTip"></div>
+
+    <button id="enterMenuBtn" class="enter-menu-btn">
+      Acceder al menú
+    </button>
+  </div>
+</div>
+
+
+<div class="screen-content">
+<div id="menuContent" class="hidden">
+
+
+<h2>🍽️ Menú semanal</h2>
+
+<div class="menu-week-header">
+
+<button id="prevWeekBtn">⬅</button>
+
+<div id="weekInfo">
+<span id="weekRange"></span>
+</div>
+
+<button id="nextWeekBtn">➡</button>
+
+</div>
+
+<div class="menu-week">
+
+  <!-- Lunes -->
+  <div class="menu-day">
+    <h3>Lunes</h3>
+
+    <div class="meal editable-meal" data-day="monday" data-type="lunch">
+      🍝 Comida: <span></span>
+    </div>
+
+    <div class="meal editable-meal" data-day="monday" data-type="dinner">
+      🌙 Cena: <span></span>
+    </div>
+  </div>
+
+  <!-- Martes -->
+  <div class="menu-day">
+    <h3>Martes</h3>
+
+    <div class="meal editable-meal" data-day="tuesday" data-type="lunch">
+      🍝 Comida: <span></span>
+    </div>
+
+    <div class="meal editable-meal" data-day="tuesday" data-type="dinner">
+      🌙 Cena: <span></span>
+    </div>
+  </div>
+
+  <!-- Miércoles -->
+  <div class="menu-day">
+    <h3>Miércoles</h3>
+
+    <div class="meal editable-meal" data-day="wednesday" data-type="lunch">
+      🍝 Comida: <span></span>
+    </div>
+
+    <div class="meal editable-meal" data-day="wednesday" data-type="dinner">
+      🌙 Cena: <span></span>
+    </div>
+  </div>
+
+  <!-- Jueves -->
+  <div class="menu-day">
+    <h3>Jueves</h3>
+
+    <div class="meal editable-meal" data-day="thursday" data-type="lunch">
+      🍝 Comida: <span></span>
+    </div>
+
+    <div class="meal editable-meal" data-day="thursday" data-type="dinner">
+      🌙 Cena: <span></span>
+    </div>
+  </div>
+
+  <!-- Viernes -->
+  <div class="menu-day">
+    <h3>Viernes</h3>
+
+    <div class="meal editable-meal" data-day="friday" data-type="lunch">
+      🍝 Comida: <span></span>
+    </div>
+
+    <div class="meal editable-meal" data-day="friday" data-type="dinner">
+      🌙 Cena: <span></span>
+    </div>
+  </div>
+
+  <!-- Sábado -->
+  <div class="menu-day">
+    <h3>Sábado</h3>
+
+    <div class="meal editable-meal" data-day="saturday" data-type="lunch">
+      🍝 Comida: <span></span>
+    </div>
+
+    <div class="meal editable-meal" data-day="saturday" data-type="dinner">
+      🌙 Cena: <span></span>
+    </div>
+  </div>
+
+  <!-- Domingo -->
+  <div class="menu-day">
+    <h3>Domingo</h3>
+
+    <div class="meal editable-meal" data-day="sunday" data-type="lunch">
+      🍝 Comida: <span></span>
+    </div>
+
+    <div class="meal editable-meal" data-day="sunday" data-type="dinner">
+      🌙 Cena: <span></span>
+    </div>
+  </div>
+
+</div>
+
+<div class="menu-ideas">
+  <button id="menuRapido" class="menu-btn">⚡ Rápido</button>
+  <button id="menuSaludable" class="menu-btn">🥗 Saludable</button>
+  <button id="randomMenuBtn" class="menu-btn">🎲 Aleatorio</button>
+  <button id="openRecipeFinder" class="menu-btn secondary">🔍 Recetas</button>
+
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- ====================================================== -->
+<!-- MODAL BUSCADOR DE RECETAS -->
+<!-- ====================================================== -->
+
+<div id="recipeModal" class="modal hidden">
+
+<div class="modal-content">
+
+<button id="closeRecipeModal" class="close-btn">✖</button>
+
+<h2>🥕 Buscar recetas</h2>
+
+<input
+id="ingredientInput"
+placeholder="Ej: huevo, pasta, tomate"
+/>
+
+<div class="recipe-buttons">
+
+<button id="searchRecipesBtn">Buscar recetas</button>
+<button id="searchOnlineRecipesBtn">🔎 Buscar recetas online</button>
+<button id="searchSpoonacularBtn">🍽 Buscar recetas avanzadas</button>
+
+</div>
+
+<div id="recipeResults"></div>
+
+</div>
+
+</div>
+
+
+
+
+<!-- MODAL EDITAR COMIDA -->
+
+<div id="mealModal" class="modal hidden">
+  <div class="modal-card">
+
+    <h3>Editar comida</h3>
+
+    <input type="text" id="mealInput" placeholder="Ej: Lentejas">
+
+    <button id="saveMealBtn">Guardar</button>
+    <button id="closeMealModal">Cancelar</button>
+
+  </div>
+</div>
+<!--MODAL ELEGIR TIPO Y DIA DE COMIDA -->
+<div id="recipePickerModal" class="modal hidden">
+  <div class="modal-card">
+    <h3>Asignar receta</h3>
+    <p id="selectedRecipeName"></p>
+
+    <label>Día:</label>
+    <select id="pickerDay">
+      <option value="monday">Lunes</option>
+      <option value="tuesday">Martes</option>
+      <option value="wednesday">Miércoles</option>
+      <option value="thursday">Jueves</option>
+      <option value="friday">Viernes</option>
+      <option value="saturday">Sábado</option>
+      <option value="sunday">Domingo</option>
+    </select>
+
+    <label>Comida/Cena:</label>
+    <select id="pickerType">
+      <option value="lunch">Comida</option>
+      <option value="dinner">Cena</option>
+    </select>
+
+    <button id="assignRecipeBtn">Asignar</button>
+    <button id="closePickerBtn">Cancelar</button>
+  </div>
+</div>
+
 
 <!-- 🔥 BARRA INFERIOR FIJA -->
 <div class="bottom-nav">
@@ -341,6 +672,8 @@
   <button class="menu-item" data-screen="calendarScreen">🗓 Calendario</button>
   <button class="menu-item" data-screen="compraScreen">🛒 Compras</button>
   <button class="menu-item" data-screen="tasksSection">📝 Tareas</button>
+  <button class="menu-item" data-screen="workCalendarScreen">👷 Calendario laboral</button>
+  <button class="menu-item" data-screen="menuScreen">🍽️ Menú semanal</button>
 
 </div>
 
@@ -496,6 +829,34 @@
   </div>
 </div>
 
+<!-- MODAL LISTA COMPLETADA -->
+<div id="completedModal" class="modal hidden">
+  <div class="modal-card" style="text-align:center; padding:30px;">
+    
+    <div style="font-size:60px; color:#4CAF50; margin-bottom:10px;">
+      ✔
+    </div>
+
+    <h3 style="margin-bottom:20px;">¡Lista completada!</h3>
+
+    <button id="closeCompletedModal" style="
+      background:#4CAF50;
+      color:white;
+      border:none;
+      padding:10px 20px;
+      border-radius:8px;
+      font-size:16px;
+      cursor:pointer;
+    ">
+      Cerrar
+    </button>
+
+  </div>
+</div>
+
+
+
+
 
 
 
@@ -519,7 +880,12 @@ if ("serviceWorker" in navigator) {
   emailjs.init("0sPny-acy_XcDU9mn");
 </script>
 
+<script type="module" src="firebase.js"></script>
+
 <script type="module" src="js/auth.js"></script>
+<script type="module" src="js/work-calendar.js"></script>
+<script type="module" src="js/menu.js"></script>
+
 
 </body>
 </html>
