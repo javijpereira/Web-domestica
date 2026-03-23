@@ -7,7 +7,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDZ6FUgCHfudfBasmRNz3vK2KHtiVKTYkU",
   authDomain: "mi-web-domestica.firebaseapp.com",
   projectId: "mi-web-domestica",
-  storageBucket: "mi-web-domestica.firebasestorage.com",
+  storageBucket: "mi-web-domestica.appspot.com",
   messagingSenderId: "464485161458",
   appId: "1:464485161458:web:d1614a1c307d39ac4df36b"
 };
