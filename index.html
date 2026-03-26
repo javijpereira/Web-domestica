@@ -359,14 +359,7 @@
 
     <p id="workSelectedDate"></p>
 
-    <label>Tipo de día</label>
-    <select id="workDayType">
-      <option value="trabajo">Trabajo</option>
-      <option value="libre">Día libre</option>
-      <option value="festivo">Festivo</option>
-      <option value="asuntos">Asuntos propios</option>
-      <option value="vacaciones">Vacaciones</option>
-    </select>
+ 
 
     <hr>
 
@@ -374,12 +367,6 @@
 
     <label>Nombre Turno 1</label>
     <input type="text" id="workShiftName1" placeholder="Nombre turno 1">
-
-    <label>Hora inicio</label>
-    <input type="time" id="shift1Start">
-
-    <label>Hora fin</label>
-    <input type="time" id="shift1End">
 
     <label>Color turno 1</label>
     <input type="color" id="workShiftColor1" value="#4CAF50">
@@ -391,16 +378,22 @@
     <label>Nombre Turno 2</label>
     <input type="text" id="workShiftName2" placeholder="Nombre turno 2">
 
-    <label>Hora inicio</label>
-    <input type="time" id="shift2Start">
-
-    <label>Hora fin</label>
-    <input type="time" id="shift2End">
-
     <label>Color turno 2</label>
     <input type="color" id="workShiftColor2" value="#2196F3">
 
+        <h4>Turnos rápidos</h4>
+
+<div id="workTemplatesContainer" class="work-templates"></div>
+
+<button id="addTemplateBtn" class="secondary">
+  ➕ Crear tipo de turno
+</button>
+
     <hr>
+
+
+
+
 
 <button id="saveWorkDayBtn">Guardar</button>
 <button id="cancelWorkDayBtn">Cancelar</button>
@@ -409,6 +402,20 @@
 <button id="deleteShift2Btn">Eliminar turno 2</button>
 
 
+  </div>
+</div>
+
+<div id="templateModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Turno rápido</h3>
+    <input type="text" id="templateName" placeholder="Nombre del turno" />
+    <input type="color" id="templateColor" value="#4CAF50" />
+
+    <div class="btn-row">
+      <button id="saveTemplateBtn" class="btn-save">Guardar</button>
+      <button id="deleteTemplateBtn" class="btn-delete">Borrar</button>
+      <button id="closeTemplateModal" class="btn-close">Cerrar</button>
+    </div>
   </div>
 </div>
 
