@@ -1719,4 +1719,73 @@ html, body {
   gap: 6px;
 }
 
+/* ========================= */
+/* TURNOS RÁPIDOS (CHIPS) */
+/* ========================= */
+
+.work-templates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 15px;
+}
+
+/* Chip individual */
+.work-template-chip {
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Hover efecto */
+.work-template-chip:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* Cuando está seleccionado */
+.work-template-chip.selected {
+  outline: 2px solid #000;
+  transform: scale(1.08);
+}
+
+/* Botón añadir plantilla */
+#addTemplateBtn {
+  margin-bottom: 10px;
+  font-size: 13px;
+  padding: 6px 10px;
+}
+
+/* Responsive (muy importante para móvil) */
+@media (max-width: 480px) {
+  .work-template-chip {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+}
+
+/* Día actual: círculo blanco detrás del número, esquina superior derecha */
+.fc-day-today .fc-daygrid-day-number {
+  position: relative;      /* necesario para el pseudo-elemento */
+  z-index: 2;              /* por encima del fondo pero debajo de textos adicionales */
+}
+
+/* Círculo blanco detrás */
+.fc-day-today .fc-daygrid-day-number::before {
+  content: "";
+  position: absolute;
+  top: 0,5;                  /* ajusta si quieres un poquito más abajo */
+  right: -3;                /* esquina superior derecha */
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  z-index: -1;             /* detrás del número */
+}
 
