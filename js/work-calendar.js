@@ -11,9 +11,13 @@ window.workCalendar = null;
 window.selectedWorkMember = null;
 window.selectedRange = [];
 window.workDaysCache = {};
+window.workTemplates = [];
+window.selectedTemplateShifts = [];
+window.currentEditingTemplate = null;
 
 // ======================================================
 // UTILIDADES
+
 // ======================================================
 
 function formatLocalDate(date){
@@ -63,15 +67,15 @@ function repaintDay(date) {
     text.style.color = "#fff";
     text.style.zIndex = "2";
 
-    if(data.shifts && data.shifts.length === 1){
+if(data.shifts && data.shifts.length === 1){
+  const s = data.shifts[0];
 
-      bg.style.background = data.shifts[0].color;
+  bg.style.background = s.color;
 
-      text.innerHTML =
-        data.shifts[0].name+"<br>"+
-        "<span style='font-size:10px'>"+
-        data.shifts[0].start+"-"+data.shifts[0].end+
-        "</span>";
+  text.innerHTML = s.name + "<br>" +
+    "<span style='font-size:10px'>" + 
+    (s.start && s.end ? s.start+"-"+s.end : "") +
+    "</span>";
 
     } 
 else if(data.shifts && data.shifts.length === 2){
@@ -117,12 +121,7 @@ else if(data.shifts && data.shifts.length === 2){
 
   return;
 }
-    else if(data.type){
-
-      bg.style.background = getColorForType(data.type);
-      text.textContent = data.type.toUpperCase();
-
-    }
+   
 
     cell.appendChild(bg);
     cell.appendChild(text);
@@ -152,6 +151,7 @@ function initWorkCalendar(){
     selectable:true,
     selectMirror:true,
     editable:true,
+   
 
     select:function(info){
       if(!window.selectedWorkMember){
@@ -201,7 +201,6 @@ function initWorkCalendar(){
 },
 
 datesSet: function(){
-
   if(!window.selectedWorkMember) return;
 
   const cells = document.querySelectorAll('#workCalendar .fc-daygrid-day');
@@ -210,7 +209,6 @@ datesSet: function(){
     const date = cell.getAttribute("data-date");
     repaintDay(date);
   });
-
 }
   });
 
@@ -266,30 +264,24 @@ async function openDayModal(dateStr){
 
   const snap = await getDoc(dayRef);
 
-  document.getElementById("workDayType").value="trabajo";
+  
   document.getElementById("workShiftName1").value="";
-  document.getElementById("shift1Start").value="";
-  document.getElementById("shift1End").value="";
   document.getElementById("workShiftName2").value="";
-  document.getElementById("shift2Start").value="";
-  document.getElementById("shift2End").value="";
 
   if(snap.exists()){
     const data = snap.data();
-    if(data.type) document.getElementById("workDayType").value = data.type;
     if(data.shifts && data.shifts[0]){
       const s = data.shifts[0];
       document.getElementById("workShiftName1").value = s.name||"";
-      document.getElementById("shift1Start").value = s.start||"";
-      document.getElementById("shift1End").value = s.end||"";
     }
     if(data.shifts && data.shifts[1]){
       const s = data.shifts[1];
       document.getElementById("workShiftName2").value = s.name||"";
-      document.getElementById("shift2Start").value = s.start||"";
-      document.getElementById("shift2End").value = s.end||"";
     }
   }
+
+  await loadWorkTemplates();
+  window.selectedTemplateShifts = [];
 
   document.getElementById("workDayModal").classList.remove("hidden");
 }
@@ -301,25 +293,21 @@ async function openDayModal(dateStr){
 document.getElementById("saveWorkDayBtn")?.addEventListener("click", async ()=>{
   if(!window.selectedWorkMember) return;
 
-  const type = document.getElementById("workDayType").value;
+  
 
   const shift1 = {
     name: document.getElementById("workShiftName1").value.trim(),
-    start: document.getElementById("shift1Start").value,
-    end: document.getElementById("shift1End").value,
     color: document.getElementById("workShiftColor1").value
   };
 
   const shift2 = {
     name: document.getElementById("workShiftName2").value.trim(),
-    start: document.getElementById("shift2Start").value,
-    end: document.getElementById("shift2End").value,
     color: document.getElementById("workShiftColor2").value
   };
 
   const shifts = [];
-  if(shift1.name && shift1.start && shift1.end) shifts.push(shift1);
-  if(shift2.name && shift2.start && shift2.end) shifts.push(shift2);
+  if(shift1.name ) shifts.push(shift1);
+  if(shift2.name ) shifts.push(shift2);
 
   for(const date of window.selectedRange){
     const dayRef = doc(
@@ -332,7 +320,12 @@ document.getElementById("saveWorkDayBtn")?.addEventListener("click", async ()=>{
       date
     );
 
-    const dataToSave = shifts.length>0 ? {shifts} : {type};
+    if(shifts.length === 0){
+  alert("Selecciona al menos un turno");
+  return;
+}
+
+const dataToSave = {shifts};
     await setDoc(dayRef, dataToSave);
     window.workDaysCache[date] = dataToSave;
 
@@ -384,73 +377,17 @@ document.getElementById("deleteWorkShiftBtn")?.addEventListener("click", async (
 
 document.getElementById("deleteShift1Btn")?.addEventListener("click", ()=>{
   document.getElementById("workShiftName1").value="";
-  document.getElementById("shift1Start").value="";
-  document.getElementById("shift1End").value="";
 });
 
 document.getElementById("deleteShift2Btn")?.addEventListener("click", ()=>{
   document.getElementById("workShiftName2").value="";
-  document.getElementById("shift2Start").value="";
-  document.getElementById("shift2End").value="";
 });
 
 // ======================================================
-// COLORES SEGUN TIPO
-// ======================================================
 
-function getColorForType(type){
-  switch(type){
-    case "trabajo": return "#1425e3";
-    case "libre": return "#15f349";
-    case "festivo": return "#E91E63";
-    case "asuntos": return "#9C27B0";
-    case "vacaciones": return "#f3780c";
-    default: return "#607D8B";
-  }
-}
 
 // ======================================================
-// CAMBIO DE MIEMBRO
-// ======================================================
-document.getElementById("workMemberSelect")?.addEventListener("change", async (e)=>{
 
-  const memberId = e.target.value;
-
-  const calendar = document.getElementById("workCalendar");
-  const placeholder = document.getElementById("workCalendarPlaceholder");
-
-  window.selectedWorkMember = memberId;
-  window.selectedRange = [];
-  window.workDaysCache = {};
-
-  if(!memberId){
-
-    calendar.classList.add("hidden");
-    placeholder.classList.remove("hidden");
-
-    return;
-  }
-
-  placeholder.classList.add("hidden");
-  calendar.classList.remove("hidden");
-
-  // 🔹 CARGAR DATOS DEL MIEMBRO
-  await loadWorkDaysForMember(memberId);
-
-  // 🔹 REPINTAR TODAS LAS CELDAS VISIBLES
-  const allCells = document.querySelectorAll('#workCalendar .fc-daygrid-day');
-
-  allCells.forEach(cell => {
-
-    const date = cell.getAttribute('data-date');
-    repaintDay(date);
-
-  });
-
-  // 🔹 REFRESCAR CALENDARIO
-  setTimeout(() => window.workCalendar.updateSize(), 80);
-
-});
 
 
 
@@ -517,6 +454,219 @@ document.getElementById("workMemberSelect")?.addEventListener("change", async (e
 
 // Llamar al iniciar calendario
 document.addEventListener("DOMContentLoaded", mostrarPlaceholder);
+
+// ============================================
+// Cargar y mostrar chips de plantillas
+// ================================================
+// CARGAR PLANTILLAS / TURNOS RÁPIDOS
+// ================================================
+// ================================================
+// CARGAR PLANTILLAS / TURNOS RÁPIDOS
+// ================================================
+async function loadWorkTemplates() {
+  if (!window.currentHouseholdId) return;
+
+  const container = document.getElementById("workTemplatesContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const ref = collection(window.db, "households", window.currentHouseholdId, "workShiftTemplates");
+  const snap = await getDocs(ref);
+
+  window.workTemplates = [];
+
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    const template = { id: docSnap.id, ...data };
+    window.workTemplates.push(template);
+
+    const chip = document.createElement("div");
+    chip.className = "work-template-chip";
+    chip.style.position = "relative";
+    chip.style.background = data.color;
+    chip.textContent = data.name;
+
+    // 🔴 IMPORTANTE (para editar)
+    chip.dataset.id = template.id;
+
+    // ❌ Botón borrar
+    const closeBtn = document.createElement("span");
+    closeBtn.textContent = "×";
+    closeBtn.style.position = "absolute";
+    closeBtn.style.top = "2px";
+    closeBtn.style.right = "4px";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.style.fontWeight = "bold";
+    closeBtn.style.color = "#fff";
+    closeBtn.style.fontSize = "12px";
+
+    closeBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+
+      if (!confirm(`¿Seguro que quieres borrar "${template.name}"?`)) return;
+
+      await deleteDoc(doc(window.db, "households", window.currentHouseholdId, "workShiftTemplates", template.id));
+      loadWorkTemplates();
+    });
+
+    chip.appendChild(closeBtn);
+
+    // ✔️ Selección
+    chip.addEventListener("click", () => toggleTemplate(template, chip));
+
+    container.appendChild(chip);
+  });
+}
+
+
+// ================================================
+// SELECCIÓN DE PLANTILLAS
+// ================================================
+function toggleTemplate(template, chip) {
+  const index = window.selectedTemplateShifts.findIndex(t => t.id === template.id);
+
+  if (index !== -1) {
+    window.selectedTemplateShifts.splice(index, 1);
+    chip.classList.remove("selected");
+  } else {
+    if (window.selectedTemplateShifts.length >= 2) {
+      alert("Máximo 2 turnos por día");
+      return;
+    }
+    window.selectedTemplateShifts.push(template);
+    chip.classList.add("selected");
+  }
+
+  fillInputsFromTemplates();
+}
+
+
+// ================================================
+// RELLENAR MODAL AUTOMÁTICAMENTE
+// ================================================
+function fillInputsFromTemplates() {
+  const t1 = window.selectedTemplateShifts[0];
+  const t2 = window.selectedTemplateShifts[1];
+
+  document.getElementById("workShiftName1").value = t1?.name || "";
+  document.getElementById("workShiftColor1").value = t1?.color || "#000000";
+
+  document.getElementById("workShiftName2").value = t2?.name || "";
+  document.getElementById("workShiftColor2").value = t2?.color || "#000000";
+}
+
+
+// ================================================
+// EVENTOS (SOLO SE REGISTRAN UNA VEZ)
+// ================================================
+function initTemplateEvents() {
+
+  // ➕ Nuevo turno
+  document.getElementById("addTemplateBtn")?.addEventListener("click", () => {
+    window.currentEditingTemplate = null;
+
+    document.getElementById("templateName").value = "";
+    document.getElementById("templateColor").value = "#4CAF50";
+
+    document.getElementById("templateModal").classList.remove("hidden");
+  });
+
+
+  // 💾 Guardar (crear o editar)
+  document.getElementById("saveTemplateBtn")?.addEventListener("click", async () => {
+    const name = document.getElementById("templateName").value.trim();
+    const color = document.getElementById("templateColor").value;
+
+    if (!name) return alert("Pon un nombre");
+
+    let ref;
+
+    if (window.currentEditingTemplate) {
+      ref = doc(
+        window.db,
+        "households",
+        window.currentHouseholdId,
+        "workShiftTemplates",
+        window.currentEditingTemplate.id
+      );
+    } else {
+      ref = doc(
+        collection(window.db, "households", window.currentHouseholdId, "workShiftTemplates")
+      );
+    }
+
+    await setDoc(ref, { name, color });
+
+    window.currentEditingTemplate = null;
+    document.getElementById("templateModal").classList.add("hidden");
+
+    loadWorkTemplates();
+  });
+
+  
+
+
+  // 🗑️ Borrar desde modal
+  document.getElementById("deleteTemplateBtn")?.addEventListener("click", async () => {
+    if (!window.currentEditingTemplate) {
+      return alert("Selecciona un turno para borrar");
+    }
+
+    if (!confirm("¿Seguro que quieres borrar este turno?")) return;
+
+    const ref = doc(
+      window.db,
+      "households",
+      window.currentHouseholdId,
+      "workShiftTemplates",
+      window.currentEditingTemplate.id
+    );
+
+    await deleteDoc(ref);
+
+    window.currentEditingTemplate = null;
+    document.getElementById("templateModal").classList.add("hidden");
+
+    loadWorkTemplates();
+  });
+
+
+  // ❌ Cerrar modal
+  document.getElementById("closeTemplateModal")?.addEventListener("click", () => {
+    document.getElementById("templateModal").classList.add("hidden");
+    window.currentEditingTemplate = null;
+  });
+
+
+  // ✏️ Doble click = editar
+  document.addEventListener("dblclick", e => {
+    if (!e.target.classList.contains("work-template-chip")) return;
+
+    const templateId = e.target.dataset.id;
+    const template = window.workTemplates.find(t => t.id === templateId);
+
+    if (!template) return;
+
+    window.currentEditingTemplate = template;
+
+    document.getElementById("templateName").value = template.name;
+    document.getElementById("templateColor").value = template.color;
+
+    document.getElementById("templateModal").classList.remove("hidden");
+  });
+
+}
+
+
+// ================================================
+// INIT
+// ================================================
+document.addEventListener("DOMContentLoaded", () => {
+  initTemplateEvents();
+  loadWorkTemplates();
+});
+
 // ======================================================
 // INICIAR CALENDARIO
 // ======================================================
