@@ -1,0 +1,454 @@
+/* Mi Casa 2.0 — visual system, mobile-first. Functional selectors/IDs remain intact. */
+:root {
+  color-scheme: light;
+  --mc-blue: #1764e8;
+  --mc-blue-2: #24a9f2;
+  --mc-ink: #15243b;
+  --mc-muted: #718096;
+  --mc-line: #e7edf5;
+  --mc-canvas: #f4f7fb;
+  --mc-surface: #ffffff;
+  --mc-yellow: #ffca4b;
+  --mc-mint: #dff7ee;
+  --mc-shadow: 0 12px 32px rgba(31, 58, 95, .07);
+  --mc-radius: 22px;
+  --mc-nav-height: 76px;
+}
+* { box-sizing: border-box; }
+html { min-height: 100%; background: var(--mc-canvas); }
+body { margin: 0; min-height: 100dvh; background: var(--mc-canvas); color: var(--mc-ink); font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; }
+button { border: 0; border-radius: 14px; background: var(--mc-blue); color: #fff; font-weight: 700; min-height: 44px; padding: 11px 16px; box-shadow: 0 5px 14px rgba(23,100,232,.15); transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
+button:active { transform: scale(.975); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid rgba(36,169,242,.3); outline-offset: 2px; }
+button.secondary { background: #edf3fb; color: #35506f; box-shadow: none; }
+button.danger-btn, #deleteEventBtn, #deleteWorkShiftBtn, #deleteShift1Btn, #deleteShift2Btn { background: #fff0ef; color: #c63f3b; box-shadow: none; }
+input, select, textarea { width: 100%; min-height: 48px; margin: 5px 0 12px; padding: 12px 14px; color: var(--mc-ink); background: #f8fafd; border: 1px solid #e3eaf3; border-radius: 13px; }
+input::placeholder, textarea::placeholder { color: #9aa8ba; }
+label { display: block; margin: 8px 0 4px; color: #53647b; font-size: .84rem; font-weight: 700; }
+h1,h2,h3,h4 { color: var(--mc-ink); font-family: 'Manrope','DM Sans',sans-serif; letter-spacing: -.035em; }
+h2 { font-size: clamp(1.35rem, 4vw, 1.75rem); margin: 8px 0 18px; }
+h3 { font-size: 1.02rem; }
+.hidden { display: none !important; }
+
+/* Login / registration */
+#authScreen.auth-container { width: min(100% - 32px, 440px); margin: clamp(24px, 8vh, 90px) auto; padding: clamp(24px, 6vw, 38px); background: var(--mc-surface); border: 1px solid rgba(222,232,244,.8); border-radius: 30px; box-shadow: 0 24px 70px rgba(30,65,110,.11); }
+.auth-brand { display: flex; align-items: center; justify-content: center; gap: 13px; margin: 0 auto 12px; }
+.brand-mark { width: 68px; height: 68px; filter: drop-shadow(0 7px 10px rgba(23,100,232,.13)); }
+.brand-wordmark h1 { margin: 0; font-size: 2rem; line-height: 1; font-weight: 800; letter-spacing: -.07em; }
+.brand-wordmark h1 span { color: var(--mc-blue-2); }
+.brand-wordmark p { margin: 6px 0 0; color: var(--mc-muted); font-size: .78rem; }
+#authScreen > .subtitle { margin: 14px 0 26px; text-align: center; color: var(--mc-muted); font-size: .94rem; }
+.auth-box { display: flex; flex-direction: column; gap: 3px; }
+.auth-box h2 { margin: 0 0 12px; }
+.auth-box button { width: 100%; margin: 4px 0; }
+#loginBtn, #registerBtn, #joinHouseholdBtn { min-height: 51px; background: linear-gradient(110deg, #1764e8, #219fea); box-shadow: 0 10px 22px rgba(23,100,232,.2); }
+.divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; color: #a0adbd; font-size: .8rem; font-weight: 600; }
+.divider::before,.divider::after { content: ''; height: 1px; flex: 1; background: var(--mc-line); }
+.auth-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.auth-actions button { min-height: 48px; margin: 0; padding: 10px; background: #edf4ff; color: var(--mc-blue); box-shadow: none; font-size: .84rem; }
+#forgotPasswordLink { margin: 18px 0 0; text-align: center; color: var(--mc-blue); font-size: .86rem; font-weight: 700; cursor: pointer; }
+
+/* App header */
+#app { min-height: 100dvh; padding-bottom: calc(var(--mc-nav-height) + env(safe-area-inset-bottom) + 14px); }
+#appHeader { position: sticky; top: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 68px; padding: 10px clamp(16px, 4vw, 34px); background: rgba(255,255,255,.9); border-bottom: 1px solid rgba(226,234,244,.8); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); color: var(--mc-ink); }
+.header-brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.header-brand-mark { width: 38px; height: 38px; flex: 0 0 auto; }
+.editable-home-name { position: static; left: auto; transform: none; display: flex !important; align-items: center; gap: 7px; min-width: 0; max-width: 58vw; color: var(--mc-ink); font-family: 'Manrope',sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; }
+#houseNameText { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.editIcon { color: #8ea2bc; font-size: .75rem; }
+.header-actions { margin-left: auto; }
+.icon-btn, .family-menu-btn { display: grid; place-items: center; width: 42px; height: 42px; min-height: 42px; padding: 0; border-radius: 14px; background: #edf4ff; color: var(--mc-blue); box-shadow: none; font-size: 1.1rem; }
+.family-menu-btn { font-size: 1rem; }
+#familyMenu { top: 60px !important; left: 14px !important; width: min(290px, calc(100vw - 28px)); padding: 16px; border: 1px solid var(--mc-line); border-radius: 20px; box-shadow: 0 18px 45px rgba(25,48,82,.18) !important; }
+#familyMenu * { color: var(--mc-ink) !important; }
+#familyMenu .invite-inside-btn { width: 100%; margin-top: 12px; color: white !important; background: var(--mc-blue); }
+
+/* Main screen canvas */
+.screen { display: flex; flex-direction: column; width: min(100%, 1120px); height: auto; min-height: calc(100dvh - 146px); margin: 0 auto; padding: 20px 16px 26px; overflow: visible; }
+#homeScreen { gap: 14px; }
+#welcomeBlock { width: 100%; margin: 0; padding: 23px 21px; align-items: flex-start; text-align: left; border-radius: 24px; color: #fff; background: radial-gradient(circle at 88% 5%, rgba(255,255,255,.22), transparent 32%), linear-gradient(120deg, #155bd4 0%, #168be9 60%, #22b6ef 100%); box-shadow: 0 16px 35px rgba(23,100,232,.2); }
+#welcomeText { color: #fff; margin: 0 0 8px; font-family: 'Manrope',sans-serif; font-size: clamp(1.35rem, 5vw, 1.9rem); font-weight: 800; letter-spacing: -.05em; }
+#dateRow { gap: 8px; }
+#dateTime { color: rgba(255,255,255,.85); font-size: .88rem; }
+#welcomeIcon { font-size: 1.1rem; }
+.dashboard-card, .home-card, .card { margin: 0 0 14px; padding: 18px; border: 1px solid #eaf0f7; border-radius: var(--mc-radius); background: var(--mc-surface); box-shadow: var(--mc-shadow); }
+#homeScreen > .dashboard-card { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 0; border: 0; background: transparent; box-shadow: none; }
+#homeScreen .dashboard-card .dashboard-card { min-width: 0; margin: 0; padding: 18px; }
+.dashboard-card h3, .home-card h3, .card h3 { margin: 0 0 12px; color: var(--mc-ink); font-size: .98rem; }
+.card-today { background: linear-gradient(145deg,#fff,#f5f9ff); }
+.card-week { background: linear-gradient(145deg,#fff,#f3fbff); }
+.card-tasks { background: linear-gradient(145deg,#fff,#fffaf0); }
+.dashboard-card ul, .card ul { padding-left: 18px; color: #53647b; line-height: 1.6; }
+
+/* Section headings and content cards */
+#agendaScreen, #calendarScreen, #compraScreen, #tasksSection, #workCalendarScreen, #menuScreen { gap: 12px; }
+#agendaBlock { gap: 12px; }
+#agendaBlock .card { background: #fff !important; border: 1px solid var(--mc-line) !important; box-shadow: var(--mc-shadow) !important; }
+#addEventBtn { min-height: 50px; border-radius: 15px; background: linear-gradient(110deg,#1764e8,#219fea); }
+#agendaBlock h3, .agenda-title { color: var(--mc-ink) !important; font-size: 1.05rem; }
+.today-events li,#agendaList li,#futureEventsList li { padding: 13px 14px; border: 1px solid #edf1f6; border-radius: 14px; background: #f8fafd !important; color: var(--mc-ink) !important; }
+#futureEventsHeader { background: #eff5fd !important; border-radius: 13px; }
+#futureEventsHeader span,#futureEventsArrow { color: var(--mc-ink) !important; }
+#calendar { width: 100%; min-height: 560px; padding: 10px; border: 1px solid var(--mc-line); border-radius: 20px; background: #fff; box-shadow: var(--mc-shadow); }
+.fc .fc-toolbar { flex-wrap: wrap; gap: 8px; }
+.fc .fc-toolbar-title { font-family: 'Manrope',sans-serif; font-size: 1.1rem !important; font-weight: 800; }
+.fc .fc-button-primary { border: 0 !important; border-radius: 10px !important; background: var(--mc-blue) !important; box-shadow: none !important; }
+.fc .fc-daygrid-day-number { color: #52657e; text-decoration: none; }
+.fc .fc-day-today { background: #eef6ff !important; }
+
+/* Shopping and tasks */
+#compraScreen h2, #tasksSection h2, #workCalendarScreen > h2, #menuScreen h2 { margin: 4px 0 8px; }
+.shopping-header { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+#createListBtn, #openAddProductModal, #addTaskBtn { border-radius: 13px; }
+#listsContainer { display: grid; grid-template-columns: 1fr; gap: 11px; }
+#listsContainer > * { border-radius: 18px; }
+#shoppingList { padding: 0; list-style: none; }
+#shoppingList li, .tasks-list li { margin: 8px 0; padding: 13px; border: 1px solid var(--mc-line); border-radius: 14px; background: #fff; }
+#totalPrice { margin: 16px 0; padding: 15px; border-radius: 14px; background: #eef6ff; color: var(--mc-blue); font-weight: 800; }
+.tasks-section { padding: 0; }
+.tasks-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.task-input-container { display: flex; gap: 8px; align-items: center; padding: 8px; border: 1px solid var(--mc-line); border-radius: 17px; background: #fff; }
+.task-input-container input { margin: 0; border: 0; background: transparent; }
+.task-input-container button { width: 46px; min-width: 46px; min-height: 46px; padding: 0; font-size: 1.2rem; }
+
+/* Work calendar and weekly menu */
+#workCalendar { overflow-x: auto; padding: 8px; border: 1px solid var(--mc-line); border-radius: 20px; background: #fff; box-shadow: var(--mc-shadow); }
+#memberTab { display: inline-flex; align-self: flex-start; padding: 10px 14px; border-radius: 12px; background: #eaf3ff; color: var(--mc-blue); font-weight: 700; }
+#memberDropdown { max-width: 360px; }
+#workCalendarPlaceholder { padding: 18px; border: 1px solid var(--mc-line); border-radius: 18px; background: #fff; }
+.menu-week { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 12px; }
+.menu-day { padding: 17px; border: 1px solid var(--mc-line); border-radius: 18px; background: #fff; box-shadow: var(--mc-shadow); }
+.menu-day h3 { margin: 0 0 8px; font-size: .98rem; }
+.meal { padding: 11px 8px; border-bottom: 1px solid #edf1f6; border-radius: 9px; color: #53647b; }
+.meal:last-child { border-bottom: 0; }
+.menu-week-header button { border-radius: 12px; background: #edf4ff; color: var(--mc-blue); box-shadow: none; }
+#weekInfo { color: var(--mc-ink); }
+.menu-btn { border: 1px solid var(--mc-line); border-radius: 13px; background: #fff !important; color: var(--mc-blue) !important; box-shadow: none; font-weight: 700; }
+.menu-btn:not(.secondary) { background: #edf4ff !important; }
+
+/* Bottom navigation */
+.bottom-nav { position: fixed; z-index: 999999; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: space-around; gap: 2px; height: calc(var(--mc-nav-height) + env(safe-area-inset-bottom)); padding: 7px 8px calc(7px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.94); border-top: 1px solid rgba(223,232,243,.95); box-shadow: 0 -8px 28px rgba(30,57,91,.07); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); }
+.bottom-nav .home-btn[data-screen], .bottom-nav .nav-btn { display: flex; flex: 1 1 0; align-items: center; justify-content: center; flex-direction: column; gap: 3px; min-width: 0; min-height: 56px; margin: 0; padding: 5px 2px; border: 0; border-radius: 15px; background: transparent; color: #8291a6; box-shadow: none; font-size: .68rem; font-weight: 600; }
+.bottom-nav .nav-icon { display: grid; place-items: center; width: 28px; height: 26px; margin: 0; font-family: system-ui,sans-serif; font-size: 1.55rem; line-height: 1; }
+.bottom-nav .nav-text { font-size: .66rem; white-space: nowrap; }
+.bottom-nav .home-btn.nav-active, .bottom-nav .nav-btn.nav-active { background: #edf4ff; color: var(--mc-blue); font-weight: 800; }
+#bottomMenuPanel { position: fixed; z-index: 999998; left: 12px; bottom: calc(var(--mc-nav-height) + env(safe-area-inset-bottom) + 10px); width: min(290px, calc(100vw - 24px)); max-height: min(70vh, 560px); overflow-y: auto; padding: 14px; border: 1px solid var(--mc-line); border-radius: 22px; background: rgba(255,255,255,.98); box-shadow: 0 18px 55px rgba(20,43,77,.2); opacity: 0; pointer-events: none; transform: translateY(12px) scale(.98); transition: opacity .2s ease, transform .2s ease; }
+#bottomMenuPanel.show { bottom: calc(var(--mc-nav-height) + env(safe-area-inset-bottom) + 10px); opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+#bottomMenuPanel .menu-item { width: 100%; min-height: 45px; margin: 3px 0; padding: 11px 13px; border-radius: 12px; background: transparent; color: var(--mc-ink); text-align: left; box-shadow: none; font-size: .9rem; }
+#bottomMenuPanel .menu-item:hover { background: #edf4ff; color: var(--mc-blue); }
+
+/* Modals, overlays, and alerts */
+.modal { padding: 16px; background: rgba(14,31,54,.48); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+.modal-card,.modal-content { width: min(100%, 480px); max-width: 480px; max-height: min(84dvh, 760px); padding: 23px; border: 1px solid rgba(231,237,245,.9); border-radius: 24px; background: #fff; box-shadow: 0 24px 70px rgba(12,31,58,.24); }
+.modal-card h3,.modal-content h3 { margin: 0 0 16px; font-size: 1.2rem; }
+.modal-card button,.modal-content button { margin: 5px 4px 0 0; }
+#resetModal:not(.hidden) { position: fixed; z-index: 1000000; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(14,31,54,.48); }
+#resetModal .modal-content { margin: auto; }
+
+/* Larger screens: retain the same visual language with more breathing room */
+@media (min-width: 700px) {
+  :root { --mc-nav-height: 82px; }
+  #appHeader { min-height: 76px; padding-inline: max(28px, calc((100vw - 1120px)/2)); }
+  .screen { padding: 28px 28px 38px; min-height: calc(100dvh - 158px); }
+  #homeScreen > .dashboard-card { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .menu-week { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  #listsContainer { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .bottom-nav { left: 50%; right: auto; width: min(680px, calc(100% - 40px)); height: 76px; bottom: 16px; padding: 8px 16px; border: 1px solid rgba(223,232,243,.95); border-radius: 24px; transform: translateX(-50%); box-shadow: 0 12px 40px rgba(30,57,91,.14); }
+  #app { padding-bottom: 112px; }
+  #bottomMenuPanel { left: max(20px, calc((100vw - 680px)/2)); bottom: 104px; }
+  #bottomMenuPanel.show { bottom: 104px; }
+}
+@media (min-width: 980px) {
+  .menu-week { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  #listsContainer { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (max-width: 380px) {
+  .bottom-nav .nav-text { font-size: .6rem; }
+  .bottom-nav .nav-icon { font-size: 1.35rem; }
+  .screen { padding-inline: 12px; }
+  #welcomeBlock { padding: 20px 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* =====================================================
+   MI CASA 2.1 — SMART FAMILY HUB
+===================================================== */
+.today-hub{margin:22px 0 110px;padding:0 2px}
+.hub-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 0 14px}
+.hub-heading h2{font:800 1.55rem Manrope, sans-serif;margin:3px 0 0;color:#172b4d}
+.eyebrow{font-size:.68rem;font-weight:800;letter-spacing:.13em;color:#1764e8}
+.hub-date{font-size:.78rem;color:#75839a;text-transform:capitalize;text-align:right}
+.hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.hub-card{min-width:0;background:#fff;border:1px solid #e7edf6;border-radius:22px;padding:16px;box-shadow:0 8px 26px rgba(28,62,110,.055)}
+.hub-card-title{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+.hub-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:14px;background:#eef5ff;font-size:1.2rem;flex:none}
+.hub-card-title h3{font:750 .96rem Manrope,sans-serif;margin:0;color:#172b4d}
+.hub-card-title p{margin:3px 0 0;font-size:.73rem;color:#8290a5}
+.hub-meal-list,.hub-work-list{display:grid;gap:10px;min-height:84px}
+.hub-meal-row{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;background:#f7f9fd;border-radius:13px}
+.hub-meal-row>span{font-size:1rem}
+.hub-meal-row div,.hub-work-row div{display:grid;gap:3px;min-width:0}
+.hub-meal-row small{font-size:.61rem;letter-spacing:.09em;color:#8a98ad;font-weight:800}
+.hub-meal-row strong{font-size:.81rem;color:#243957;line-height:1.35;overflow-wrap:anywhere}
+.hub-work-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f0f3f8}
+.hub-work-row:last-child{border-bottom:0}
+.hub-work-avatar{width:30px;height:30px;display:grid;place-items:center;background:#f1f5fb;border-radius:50%;font-size:1rem;flex:none}
+.hub-work-row strong{font-size:.78rem;color:#263b59}
+.hub-work-row small{font-size:.68rem;color:#7c8ba1;line-height:1.3}
+.hub-work-row i{width:8px;height:8px;border-radius:50%;margin-left:auto;flex:none;background:#cbd5e1}
+.hub-work-row i.is-working{background:#16a36a;box-shadow:0 0 0 3px #e3f7ed}
+.hub-work-row i.is-free{background:#a9b7ca}
+.hub-link{border:0;background:transparent;color:#1764e8;font-size:.76rem;font-weight:800;padding:12px 0 0;display:flex;justify-content:space-between;align-items:center;width:100%;cursor:pointer}
+.hub-link span{font-size:1.1rem}
+.hub-empty{font-size:.76rem;color:#93a0b3;list-style:none;padding:5px 0;margin:0}
+.hub-family-list{display:grid;gap:6px;min-height:84px}
+.family-profile-chip{border:0;background:#f7f9fd;border-radius:12px;padding:7px 9px;display:flex;align-items:center;gap:8px;text-align:left;cursor:pointer;color:#233958}
+.profile-avatar{width:30px;height:30px;border-radius:50%;background:#e9f1ff;display:grid;place-items:center;font-size:1rem}
+.profile-chip-copy{display:grid;gap:2px;min-width:0}
+.profile-chip-copy strong{font-size:.76rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile-chip-copy small{font-size:.65rem;color:#8997aa}
+.profile-chevron{margin-left:auto;color:#8da0bb;font-size:1.2rem}
+.hub-shopping-summary{display:flex;align-items:baseline;gap:8px;min-height:84px;padding:12px 4px}
+.hub-shopping-summary strong{font:800 2.1rem Manrope,sans-serif;color:#1764e8}
+.hub-shopping-summary span{font-size:.76rem;color:#8290a5}
+
+/* Family profiles */
+.family-screen-content{padding:22px 4px 110px;max-width:1000px;margin:auto}
+.family-screen-content h2{font:800 1.65rem Manrope,sans-serif;color:#172b4d;margin:5px 0}
+.family-intro{color:#7d8ca2;font-size:.9rem;margin:0 0 20px;max-width:620px;line-height:1.5}
+.family-profiles-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.family-profile-card{border:1px solid #e6edf7;background:#fff;border-radius:22px;padding:19px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 8px 25px rgba(28,62,110,.05);cursor:pointer;color:#233958}
+.family-profile-avatar{width:58px;height:58px;display:grid;place-items:center;border-radius:20px;background:linear-gradient(145deg,#e8f2ff,#f4f7ff);font-size:2rem}
+.family-profile-name{font-weight:800;font-size:.95rem}
+.family-profile-role{font-size:.75rem;color:#8997aa}
+.family-profile-open{margin-top:5px;color:#1764e8;font-size:.74rem;font-weight:800}
+
+/* Agenda history */
+.past-events-container{margin-top:16px;border:1px solid #e5ebf4;border-radius:17px;background:#fbfcff;overflow:hidden}
+.past-events-toggle{width:100%;border:0;background:transparent;padding:15px;display:flex;align-items:center;gap:9px;color:#536782;font-weight:800;font-size:.88rem;cursor:pointer;text-align:left}
+.past-events-toggle>span:first-child{font-size:1.1rem;color:#1764e8}
+.past-events-toggle #pastEventsChevron{margin-left:auto;font-size:1.1rem}
+.history-count{background:#eaf1fb;color:#54709a;border-radius:30px;padding:3px 8px;font-size:.7rem}
+.history-caption{font-size:.75rem;color:#8a98ad;margin:0 15px 10px}
+#pastEventsList{list-style:none;padding:0 12px 12px;margin:0;display:grid;gap:8px}
+.past-event-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;background:#fff;border:1px solid #edf1f7;border-radius:12px;opacity:.88}
+.history-empty{font-size:.78rem;color:#98a4b5;padding:10px;list-style:none}
+
+/* Menu -> shopping workflow */
+.menu-shopping-bridge{margin:18px 0;padding:17px;border-radius:19px;background:linear-gradient(125deg,#eff6ff,#f7faff 65%,#fff8e7);border:1px solid #dce9fb}
+.menu-shopping-bridge strong{font:800 .98rem Manrope,sans-serif;color:#1c3558}
+.menu-shopping-bridge p{font-size:.78rem;color:#74859e;margin:5px 0 12px}
+.menu-shopping-actions{display:flex;gap:8px;align-items:center}
+.menu-shopping-actions select{flex:1;min-width:0;border:1px solid #d9e3f1;border-radius:12px;padding:11px;background:#fff;color:#334966}
+.menu-shopping-actions button{border:0;border-radius:12px;background:#1764e8;color:white;padding:11px 13px;font-weight:800;font-size:.75rem;cursor:pointer}
+.menu-shopping-actions button:disabled{opacity:.6;cursor:wait}
+.menu-shopping-bridge small{display:block;color:#8997aa;font-size:.67rem;margin-top:9px}
+#menuShoppingFeedback{padding:10px 12px;border-radius:10px;background:#fff;color:#31577e;font-size:.76rem;line-height:1.4;margin:10px 0 0}
+
+@media(max-width:640px){
+  .hub-grid{grid-template-columns:1fr;gap:10px}
+  .hub-card{padding:15px;border-radius:19px}
+  .hub-card-title{margin-bottom:10px}
+  .hub-meal-list,.hub-work-list,.hub-family-list{min-height:unset}
+  .hub-shopping-summary{min-height:unset;padding:6px 4px}
+  .family-profiles-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .family-profile-card{padding:16px 9px;border-radius:18px}
+  .menu-shopping-actions{flex-direction:column;align-items:stretch}
+  .menu-shopping-actions select,.menu-shopping-actions button{width:100%}
+  .hub-heading h2{font-size:1.4rem}
+}
+
+
+/* Mi Casa 2.2 — family invite, product icons and voice assistant */
+.family-invite-actions{margin:18px 0 4px;padding:16px;border:1px dashed #cbdcf5;border-radius:18px;background:#f7faff}
+.family-invite-actions p{margin:7px 0 0;color:#7889a2;font-size:.78rem}
+.family-invite-btn,.voice-inline-btn{border:0;border-radius:13px;padding:12px 16px;background:#1764e8;color:#fff;font-weight:800;box-shadow:0 6px 16px rgba(23,100,232,.15)}
+.shopping-add-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.voice-inline-btn{background:#fff;color:#1764e8;border:1px solid #d7e5fa;box-shadow:none}
+.voice-hint{font-size:.75rem;color:#8291a7;margin:7px 2px}
+.shopping-product-main{display:flex;align-items:center;gap:11px;min-width:0;flex:1}
+.shopping-product-icon{width:38px;height:38px;flex:0 0 38px;border-radius:12px;display:grid;place-items:center;background:#f0f5fc;font-size:1.25rem}
+.shopping-item{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.voice-assistant{position:fixed;right:18px;bottom:94px;z-index:9000}
+.voice-assistant-toggle{width:58px;height:58px;border-radius:50%;font-size:1.45rem;background:linear-gradient(145deg,#12a9f5,#1764e8);box-shadow:0 10px 28px rgba(23,100,232,.3);border:3px solid #fff}
+.voice-assistant-panel{position:absolute;right:0;bottom:70px;width:min( min(88vw,360px),360px);padding:18px;border:1px solid #e0e9f6;border-radius:22px;background:#fff;box-shadow:0 18px 55px rgba(24,49,83,.2);color:#243b5a}
+.voice-panel-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.voice-panel-heading strong,.voice-panel-heading small{display:block}.voice-panel-heading small{font-size:.72rem;color:#8796aa;margin-top:3px}
+.voice-panel-heading button{background:#f0f4fa;color:#52647c;border-radius:50%;width:32px;height:32px;padding:0;font-size:1.2rem}
+.voice-assistant-panel label{display:block;font-size:.76rem;font-weight:800;margin:10px 0 6px}
+.voice-assistant-panel select{width:100%;padding:11px;border:1px solid #dce6f3;border-radius:12px;background:#f9fbfe;color:#344967}
+.voice-start-btn{width:100%;margin:12px 0 6px;padding:13px;border-radius:13px;background:#1764e8;color:#fff;font-weight:800}
+.voice-assistant-panel p{font-size:.76rem;line-height:1.45;color:#7889a2;margin:7px 0}
+.voice-transcript{padding:11px;border-radius:12px;background:#f2f6fc;color:#314866;font-size:.82rem;margin-top:9px}
+.voice-assistant-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.voice-assistant-actions button{flex:1;min-width:100px;border-radius:11px;padding:10px;background:#1764e8;color:white;font-weight:800}
+.voice-assistant-actions button.secondary{background:#eef3fa;color:#4a5e79}
+#pastEventsPanel[aria-hidden="false"]{display:block!important;max-height:60vh;overflow:auto;animation:historyReveal .18s ease-out}
+@keyframes historyReveal{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:520px){.voice-assistant{right:13px;bottom:88px}.voice-assistant-toggle{width:54px;height:54px}.voice-assistant-panel{right:-4px}.shopping-add-actions>*{flex:1}}
+
+
+/* Mi Casa 2.3 — configuración, tema oscuro e iconografía contextual */
+.settings-heading p,.settings-card p{color:var(--mc-muted);font-size:.86rem;line-height:1.5}
+.settings-card{padding:18px;margin:0 0 14px;border:1px solid var(--mc-line);border-radius:20px;background:var(--mc-surface);box-shadow:var(--mc-shadow)}
+.settings-card h3{margin:0 0 5px}.settings-switch-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0 2px;border-top:1px solid var(--mc-line)}
+.settings-switch-row span{display:grid;gap:4px}.settings-switch-row small{font-size:.75rem;color:var(--mc-muted)}
+.settings-switch-row input{width:48px;height:26px;min-height:26px;margin:0;accent-color:var(--mc-blue)}
+.dashboard-settings-list{display:grid;gap:4px;margin:12px 0 18px}.dashboard-settings-list label{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--mc-line);border-radius:12px;background:var(--mc-canvas);font-size:.86rem}
+.dashboard-settings-list input{width:19px;min-height:19px;height:19px;margin:0;accent-color:var(--mc-blue)}
+.dashboard-section-hidden{display:none!important}
+.meal-icon{display:inline-grid;place-items:center;min-width:1.5em;margin-right:3px;font-style:normal;font-size:1.08em}
+.voice-assistant-toggle{display:grid;place-items:center;background:linear-gradient(145deg,#25d366,#0aa84f)!important;border:3px solid #fff!important;box-shadow:0 10px 28px rgba(12,168,79,.3)!important;color:#fff!important}
+.voice-assistant-toggle svg{width:29px;height:29px}.voice-start-btn{display:flex;align-items:center;justify-content:center;gap:9px;background:#16b85b!important}.voice-start-btn svg{width:21px;height:21px}
+:root[data-theme="dark"],body[data-theme="dark"]{color-scheme:dark;--mc-ink:#e7edf7;--mc-muted:#a4b1c4;--mc-line:#2a374b;--mc-canvas:#101827;--mc-surface:#182437;--mc-shadow:0 12px 32px rgba(0,0,0,.22)}
+:root[data-theme="dark"] body{background:var(--mc-canvas);color:var(--mc-ink)}
+:root[data-theme="dark"] #appHeader{background:rgba(20,31,48,.94);border-color:#2a374b;color:var(--mc-ink)}
+:root[data-theme="dark"] h1,:root[data-theme="dark"] h2,:root[data-theme="dark"] h3,:root[data-theme="dark"] h4,:root[data-theme="dark"] .dashboard-card h3,:root[data-theme="dark"] .hub-card-title h3,:root[data-theme="dark"] .hub-heading h2{color:var(--mc-ink)!important}
+:root[data-theme="dark"] .dashboard-card,:root[data-theme="dark"] .card,:root[data-theme="dark"] .hub-card,:root[data-theme="dark"] .settings-card,:root[data-theme="dark"] #workCalendar,:root[data-theme="dark"] #calendar{background:var(--mc-surface)!important;border-color:var(--mc-line)!important;color:var(--mc-ink)}
+:root[data-theme="dark"] .hub-meal-row,:root[data-theme="dark"] .hub-work-avatar,:root[data-theme="dark"] .dashboard-settings-list label,:root[data-theme="dark"] input,:root[data-theme="dark"] select,:root[data-theme="dark"] textarea{background:#202f45!important;color:var(--mc-ink)!important;border-color:#35445a!important}
+:root[data-theme="dark"] .hub-meal-row strong,:root[data-theme="dark"] .hub-work-row strong,:root[data-theme="dark"] .hub-work-row small,:root[data-theme="dark"] .hub-meal-row small,:root[data-theme="dark"] .settings-card p,:root[data-theme="dark"] .settings-heading p{color:#c0ccdc}
+:root[data-theme="dark"] #agendaBlock .card,:root[data-theme="dark"] #agendaBlock .card ul li,:root[data-theme="dark"] #futureEventsHeader,:root[data-theme="dark"] #pastEventsPanel{background:#182437!important;color:var(--mc-ink)!important;border-color:var(--mc-line)!important}
+:root[data-theme="dark"] .voice-assistant-panel{background:#182437;border-color:#35445a;color:var(--mc-ink)}
+:root[data-theme="dark"] .voice-assistant-panel p,:root[data-theme="dark"] .voice-panel-heading small{color:#aab8ca}
+
+/* =====================================================
+   MI CASA 2.4 — PERSONAL DASHBOARD + MOBILE HARDENING
+===================================================== */
+.dashboard-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:stretch}
+.dashboard-layout>[data-dashboard-section]{min-width:0;margin:0;height:100%}
+.dashboard-layout .dashboard-card{padding:17px}
+.dashboard-setting-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 9px;border:1px solid var(--mc-line);border-radius:13px;background:var(--mc-canvas)}
+.dashboard-settings-list .dashboard-setting-label{display:flex;align-items:center;gap:10px;flex:1;min-width:0;margin:0;padding:5px 0;background:transparent;border:0;color:var(--mc-ink)}
+.dashboard-setting-label span{overflow-wrap:anywhere}
+.dashboard-setting-label input{width:20px;min-width:20px;height:20px;min-height:20px;margin:0;flex:0 0 auto}
+.dashboard-order-actions{display:flex;gap:5px;flex:0 0 auto}
+.dashboard-order-btn{display:grid;place-items:center;width:36px;min-width:36px;height:36px;min-height:36px;padding:0;border-radius:10px;background:var(--mc-surface);border:1px solid var(--mc-line);color:var(--mc-ink);box-shadow:none;font-size:1.05rem}
+.dashboard-order-btn:disabled{opacity:.32;cursor:not-allowed}
+
+/* Dark theme: ensure every legacy component uses readable foreground/background pairs */
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] .screen,
+:root[data-theme="dark"] .today-hub,
+:root[data-theme="dark"] .hub-heading,
+:root[data-theme="dark"] .settings-heading,
+:root[data-theme="dark"] .settings-card,
+:root[data-theme="dark"] .dashboard-card,
+:root[data-theme="dark"] .hub-card,
+:root[data-theme="dark"] .card,
+:root[data-theme="dark"] .home-card,
+:root[data-theme="dark"] #agendaBlock .card,
+:root[data-theme="dark"] #calendar,
+:root[data-theme="dark"] #workCalendar,
+:root[data-theme="dark"] .menu-day,
+:root[data-theme="dark"] #listsContainer>*,
+:root[data-theme="dark"] #shoppingList li,
+:root[data-theme="dark"] .tasks-list li,
+:root[data-theme="dark"] .task-input-container,
+:root[data-theme="dark"] .modal-card,
+:root[data-theme="dark"] .modal-content,
+:root[data-theme="dark"] #bottomMenuPanel{background:var(--mc-surface)!important;color:var(--mc-ink)!important;border-color:var(--mc-line)!important}
+:root[data-theme="dark"] p,
+:root[data-theme="dark"] li,
+:root[data-theme="dark"] label,
+:root[data-theme="dark"] small,
+:root[data-theme="dark"] .hub-date,
+:root[data-theme="dark"] .hub-card-title p,
+:root[data-theme="dark"] .hub-empty,
+:root[data-theme="dark"] .meal,
+:root[data-theme="dark"] .dashboard-card ul,
+:root[data-theme="dark"] .card ul,
+:root[data-theme="dark"] .settings-heading p,
+:root[data-theme="dark"] .settings-card p,
+:root[data-theme="dark"] .settings-switch-row small,
+:root[data-theme="dark"] .family-profile-role,
+:root[data-theme="dark"] .profile-chip-copy small,
+:root[data-theme="dark"] .hub-work-row small,
+:root[data-theme="dark"] .hub-meal-row small{color:#c2cde0!important}
+:root[data-theme="dark"] strong,
+:root[data-theme="dark"] b,
+:root[data-theme="dark"] h1,
+:root[data-theme="dark"] h2,
+:root[data-theme="dark"] h3,
+:root[data-theme="dark"] h4,
+:root[data-theme="dark"] .hub-meal-row strong,
+:root[data-theme="dark"] .hub-work-row strong,
+:root[data-theme="dark"] .hub-card-title h3,
+:root[data-theme="dark"] .dashboard-card h3{color:#f0f5ff!important}
+:root[data-theme="dark"] .hub-meal-row,
+:root[data-theme="dark"] .hub-work-avatar,
+:root[data-theme="dark"] .family-profile-card,
+:root[data-theme="dark"] .family-profile-chip,
+:root[data-theme="dark"] .dashboard-setting-row,
+:root[data-theme="dark"] .dashboard-settings-list label,
+:root[data-theme="dark"] .today-events li,
+:root[data-theme="dark"] #agendaList li,
+:root[data-theme="dark"] #futureEventsList li,
+:root[data-theme="dark"] #futureEventsHeader,
+:root[data-theme="dark"] #pastEventsPanel,
+:root[data-theme="dark"] #totalPrice,
+:root[data-theme="dark"] .menu-shopping-bridge,
+:root[data-theme="dark"] #menuShoppingFeedback{background:#202f45!important;color:#edf3ff!important;border-color:#35465e!important}
+:root[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea{background:#202f45!important;color:#f0f5ff!important;border-color:#40516a!important}
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder{color:#aab8cc!important;opacity:1}
+:root[data-theme="dark"] .bottom-nav{background:rgba(18,29,45,.97);border-color:#2a3a51}
+:root[data-theme="dark"] .bottom-nav .nav-btn,
+:root[data-theme="dark"] .bottom-nav .home-btn[data-screen]{color:#aebbd0}
+:root[data-theme="dark"] .bottom-nav .nav-active{background:#203b60!important;color:#8fc4ff!important}
+:root[data-theme="dark"] #bottomMenuPanel .menu-item{color:#edf3ff!important}
+:root[data-theme="dark"] button.secondary,
+:root[data-theme="dark"] .menu-btn,
+:root[data-theme="dark"] .menu-week-header button{background:#263b57!important;color:#dceaff!important;border-color:#40516a!important}
+:root[data-theme="dark"] .fc .fc-daygrid-day-number,
+:root[data-theme="dark"] .fc .fc-col-header-cell-cushion{color:#dce7f7}
+:root[data-theme="dark"] .fc .fc-daygrid-day,
+:root[data-theme="dark"] .fc .fc-scrollgrid,
+:root[data-theme="dark"] .fc td,
+:root[data-theme="dark"] .fc th{border-color:#35465e!important}
+:root[data-theme="dark"] .fc .fc-day-today{background:#203b60!important}
+:root[data-theme="dark"] .family-invite-actions{background:#202f45;border-color:#40516a}
+
+/* Android and iPhone layout: safe areas, readable controls and no horizontal overflow */
+html{min-height:100%;min-height:100dvh;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%}
+body{min-height:100vh;min-height:100dvh;overflow-x:hidden;overscroll-behavior-x:none}
+#app{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);padding-bottom:calc(var(--mc-nav-height) + env(safe-area-inset-bottom) + 18px)}
+#appHeader{padding-top:max(10px,env(safe-area-inset-top));}
+.bottom-nav{padding-bottom:calc(7px + env(safe-area-inset-bottom));min-height:calc(var(--mc-nav-height) + env(safe-area-inset-bottom));}
+.screen{width:100%;max-width:1120px;min-width:0;padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));}
+.screen>*{min-width:0;max-width:100%}
+button,.bottom-nav button,.dashboard-order-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+input,select,textarea{font-size:16px;max-width:100%}
+img,svg,video,canvas{max-width:100%}
+#calendar,#workCalendar,.fc{max-width:100%;min-width:0}
+@media(min-width:700px){.dashboard-layout{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.dashboard-layout>[data-dashboard-section]{min-width:0}}
+@media(min-width:1050px){.dashboard-layout{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:699px){
+  .dashboard-layout{grid-template-columns:minmax(0,1fr)}
+  .today-hub{margin:16px 0 24px}
+  .dashboard-layout .dashboard-card,.dashboard-layout .hub-card{padding:15px}
+  .screen{padding-top:14px;padding-bottom:20px}
+  #calendar{min-height:440px;padding:5px}
+  .fc .fc-toolbar{align-items:flex-start}
+  .fc .fc-toolbar-title{font-size:1rem!important}
+  .fc .fc-button{padding:.35em .5em!important;font-size:.82rem!important}
+  .modal{align-items:flex-end;padding:8px}
+  .modal-card,.modal-content{width:100%;max-width:none;max-height:88dvh;overflow-y:auto;border-radius:22px 22px 14px 14px;padding:19px}
+  .voice-assistant{bottom:calc(var(--mc-nav-height) + env(safe-area-inset-bottom) + 12px)}
+  .voice-assistant-panel{max-height:70dvh;overflow-y:auto}
+}
+@media(max-width:360px){
+  .bottom-nav{gap:0;padding-left:4px;padding-right:4px}
+  .bottom-nav .nav-text{font-size:.57rem}
+  .bottom-nav .nav-icon{font-size:1.25rem}
+  .editable-home-name{max-width:52vw}
+  .hub-heading{align-items:flex-start;flex-direction:column}
+  .hub-date{text-align:left}
+}
+@supports(padding:max(0px)){
+  .bottom-nav{padding-left:max(6px,env(safe-area-inset-left));padding-right:max(6px,env(safe-area-inset-right))}
+}
