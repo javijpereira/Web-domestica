@@ -1,15 +1,24 @@
 {
-  "name": "Mi Casa",
-  "short_name": "MiCasa",
+  "name": "Mi Casa · Tu hogar en armonía",
+  "short_name": "Mi Casa",
   "start_url": "/Web-domestica/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4CAF50",
+  "background_color": "#F4F7FB",
+  "theme_color": "#1764E8",
   "icons": [
     {
       "src": "/Web-domestica/icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/Web-domestica/assets/brand-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
-  ]
+  ],
+  "description": "Organiza la vida de tu hogar en un solo lugar."
 }
+
