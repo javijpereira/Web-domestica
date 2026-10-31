@@ -2,7 +2,7 @@
 //  AUTH + NAVEGACIÓN + AGENDA + CALENDARIO + COMPRAS + NOTAS
 // ======================================================
 
-import { auth, db } from "./firebase.js";
+import { auth, db } from "../firebase.js";
 window.db = db;
 import {
   createUserWithEmailAndPassword,
@@ -169,7 +169,7 @@ mascota1: `
   const joinHouseholdBtn = document.getElementById("joinHouseholdBtn");
 
   // INVITACIONES
-  const inviteBtnInside = document.getElementById("inviteBtnInside");
+  const inviteBtnInside = document.getElementById("inviteBtnFamily");
 
   const inviteModal = document.getElementById("inviteModal");
   const inviteCodeBox = document.getElementById("inviteCodeBox");
@@ -323,18 +323,11 @@ document.querySelectorAll(".home-btn").forEach(btn => {
 // ======================================================
 
 function updateBottomNavActive(screenId) {
-
-  document.querySelectorAll(".nav-btn").forEach(btn => {
-    btn.classList.remove("nav-active");
+  // La barra nueva usa .home-btn para las pantallas principales.
+  // Conservamos .nav-btn para compatibilidad con la navegación anterior.
+  document.querySelectorAll(".bottom-nav [data-screen]").forEach(btn => {
+    btn.classList.toggle("nav-active", btn.getAttribute("data-screen") === screenId);
   });
-
-  const activeBtn = document.querySelector(
-    `.nav-btn[data-screen="${screenId}"]`
-  );
-
-  if (activeBtn) {
-    activeBtn.classList.add("nav-active");
-  }
 }
 
   document.querySelectorAll(".backHome").forEach(btn => {
@@ -507,6 +500,7 @@ function updateBottomNavActive(screenId) {
     homeName.textContent = "Mi Casa";
   } else {
     currentHouseholdId = snap.docs[0].id;
+    window.currentHouseholdId = currentHouseholdId;
     homeName.textContent = snap.docs[0].data().name;
   }
 
@@ -518,6 +512,7 @@ function updateBottomNavActive(screenId) {
     loadShoppingLists();
     loadTasks();
     loadHomeDashboardRealtime();
+    window.dispatchEvent(new CustomEvent("micasa:household-ready", { detail: { householdId: currentHouseholdId } }));
   }, 50);
 });
 
@@ -546,9 +541,10 @@ async function loadMembers() {
   // Recorrer miembros
   for (const uid in membersData) {
     const u = await getDoc(doc(db, "users", uid));
-    const data = u.data();
+    if (!u.exists()) continue;
+    const data = u.data() || {};
 
-    const name = data.name || "Sin nombre";
+    const name = data.name || data.displayName || "Sin nombre";
     const avatar = data.avatar || "padre1";
 
     // --- Añadir a la lista de miembros (menú lateral) ---
@@ -585,11 +581,6 @@ async function loadMembers() {
     }
   }
 }
-document.getElementById("familyMenuBtn")?.addEventListener("click", () => {
-  document.getElementById("familyMenu").classList.toggle("hidden");
-});
-
-
 
 // ======================================================
 // ======================================================
@@ -641,12 +632,6 @@ if (menuNav && bottomMenuPanel) {
 
 }
 
-document.addEventListener("click", (e) => {
-  if (!e.target.closest("#familyMenu") && !e.target.closest("#familyMenuBtn")) {
-    document.getElementById("familyMenu").classList.add("hidden");
-  }
-});
-
 document.querySelector(`[data-screen="workCalendarScreen"]`)
   ?.addEventListener("click", () => {
     loadMembers();
@@ -660,7 +645,7 @@ document.querySelector(`[data-screen="workCalendarScreen"]`)
 //  INVITAR MIEMBROS (CORREGIDO)
 // ======================================================
 
-inviteBtnInside.addEventListener("click", async () => {
+inviteBtnInside?.addEventListener("click", async () => {
 
   if (!currentHouseholdId || !auth.currentUser) {
     alert("No se ha cargado el hogar actual.");
@@ -817,10 +802,13 @@ async function loadAgendaEvents() {
   const todayAlert = document.getElementById("todayAlert");
   const todayEventsList = document.getElementById("todayEventsList");
   const futureList = document.getElementById("futureEventsList");
+  const pastList = document.getElementById("pastEventsList");
+  const pastCount = document.getElementById("pastEventsCount");
 
   list.innerHTML = "";
   todayEventsList.innerHTML = "";
   futureList.innerHTML = "";
+  if (pastList) pastList.innerHTML = "";
 
   const today = new Date();
   today.setHours(0,0,0,0);
@@ -845,6 +833,7 @@ async function loadAgendaEvents() {
 
   let todayEvents = [];
   let futureByMonth = {};
+  let pastEvents = [];
 
   // ======================================================
   // RECORRER EVENTOS
@@ -855,8 +844,11 @@ snap.forEach(docu => {
   const ev = docu.data();
   const evDate = new Date(ev.date + "T00:00:00");
 
-  // --- OCULTAR PASADOS ---
-  if (evDate < today) return;
+  // --- HISTORIAL: conservar y mostrar eventos anteriores ---
+  if (evDate < today) {
+    pastEvents.push({ id: docu.id, ...ev });
+    return;
+  }
 
   // --- EVENTOS DE HOY (PRIMERO) ---
   if (ev.date === todayStr) {
@@ -960,6 +952,28 @@ snap.forEach(docu => {
 
 
   // ======================================================
+  // HISTORIAL DE EVENTOS PASADOS
+  // ======================================================
+  pastEvents.sort((a, b) => `${b.date} ${b.time || "00:00"}`.localeCompare(`${a.date} ${a.time || "00:00"}`));
+  if (pastCount) pastCount.textContent = String(pastEvents.length);
+  if (pastList) {
+    if (!pastEvents.length) {
+      const empty = document.createElement("li");
+      empty.className = "history-empty";
+      empty.textContent = "Todavía no hay eventos anteriores.";
+      pastList.appendChild(empty);
+    } else {
+      pastEvents.forEach(ev => {
+        const li = document.createElement("li");
+        li.className = "past-event-item";
+        li.style.borderLeft = `4px solid ${ev.color || "#a7b4c8"}`;
+        li.innerHTML = `<div class="agenda-info"><strong>${ev.date} ${ev.time || ""}</strong><br>${ev.shortTitle || ev.description || "Evento"}</div><div class="agenda-actions"><button class="viewEventBtn" data-id="${ev.id}" aria-label="Ver evento"><i class="material-icons">visibility</i></button></div>`;
+        pastList.appendChild(li);
+      });
+    }
+  }
+
+  // ======================================================
   // FUTUROS POR MES
   // ======================================================
 
@@ -1037,6 +1051,20 @@ snap.forEach(docu => {
   });
 
 }
+
+const pastEventsToggle = document.getElementById("pastEventsToggle");
+pastEventsToggle?.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  const panel = document.getElementById("pastEventsPanel");
+  if (!panel) return;
+  const shouldOpen = pastEventsToggle.getAttribute("aria-expanded") !== "true";
+  pastEventsToggle.setAttribute("aria-expanded", String(shouldOpen));
+  panel.classList.toggle("hidden", !shouldOpen);
+  panel.setAttribute("aria-hidden", String(!shouldOpen));
+  const chevron = document.getElementById("pastEventsChevron");
+  if (chevron) chevron.textContent = shouldOpen ? "−" : "＋";
+});
 
 function openEditEvent(event) {
   const modal = document.getElementById("editEventModal");
@@ -1281,6 +1309,8 @@ async function openProfile(uid) {
   // Rellenar datos
   document.getElementById("profileName").value = data.name || "";
   document.getElementById("profileRole").value = data.role || "invitado";
+  document.getElementById("profileBirthday").value = data.birthday || "";
+  document.getElementById("profileNotes").value = data.familyNotes || "";
   const avatar = data.avatar || "padre1";
 document.getElementById("profileAvatar").value = avatar;
 document.getElementById("profileAvatarPreview").innerHTML = AVATARS[avatar];
@@ -1312,17 +1342,22 @@ if (isOwner && uid !== auth.currentUser.uid) {
     document.getElementById("profileName").disabled = true;
     document.getElementById("profileRole").disabled = true;
     document.getElementById("profileAvatar").disabled = true;
+    document.getElementById("profileBirthday").disabled = true;
+    document.getElementById("profileNotes").disabled = true;
     saveBtn.classList.add("hidden");
   } else {
     document.getElementById("profileName").disabled = false;
     document.getElementById("profileRole").disabled = false;
     document.getElementById("profileAvatar").disabled = false;
+    document.getElementById("profileBirthday").disabled = false;
+    document.getElementById("profileNotes").disabled = false;
     saveBtn.classList.remove("hidden");
   }
 
   modal.classList.remove("hidden");
 }
 
+window.openFamilyProfile = openProfile;
 
 
 document.getElementById("closeProfileModal").addEventListener("click", () => {
@@ -1338,15 +1373,20 @@ document.getElementById("saveProfileBtn").addEventListener("click", async () => 
   const name = document.getElementById("profileName").value;
   const role = document.getElementById("profileRole").value;
   const avatar = document.getElementById("profileAvatar").value;
+  const birthday = document.getElementById("profileBirthday").value;
+  const familyNotes = document.getElementById("profileNotes").value.trim();
 
   await updateDoc(doc(db, "users", uid), {
     name,
     role,
-    avatar
+    avatar,
+    birthday,
+    familyNotes
   });
 
   modal.classList.add("hidden");
   loadMembers();
+  window.dispatchEvent(new CustomEvent("micasa:profiles-updated"));
 });
 
 document.getElementById("deleteMemberBtn").addEventListener("click", async () => {
@@ -1361,6 +1401,7 @@ document.getElementById("deleteMemberBtn").addEventListener("click", async () =>
 
   modal.classList.add("hidden");
   loadMembers();
+  window.dispatchEvent(new CustomEvent("micasa:profiles-updated"));
 });
 
   // ======================================================
@@ -1378,6 +1419,7 @@ const confirmDeleteListBtn = document.getElementById("confirmDeleteListBtn");
 const cancelDeleteListBtn = document.getElementById("cancelDeleteListBtn");
 
 let currentListId = null;
+window.micasaGetCurrentListId = () => currentListId;
 let listIdToDelete = null;
 
 /* =====================================================
@@ -1415,6 +1457,7 @@ await addDoc(collection(db, "shoppingLists"), {
   createListModal?.classList.add("hidden");
 
   loadShoppingLists();
+  window.dispatchEvent(new CustomEvent("micasa:shopping-lists-updated"));
 });
 
 closeListModalBtn?.addEventListener("click", () => {
@@ -1472,6 +1515,7 @@ async function loadShoppingLists() {
 function openList(listId) {
 
   currentListId = listId;
+  window.micasaGetCurrentListId = () => currentListId;
 
   getDoc(doc(db, "shoppingLists", listId)).then(snapshot => {
 
@@ -1542,6 +1586,8 @@ confirmDeleteListBtn?.addEventListener("click", async () => {
     listIdToDelete = null;
 
     loadShoppingLists();
+    window.dispatchEvent(new CustomEvent("micasa:shopping-updated"));
+    window.dispatchEvent(new CustomEvent("micasa:shopping-lists-updated"));
 
   } catch (error) {
     console.error("Error eliminando lista:", error);
@@ -1597,6 +1643,21 @@ const backToListsBtn = document.getElementById("backToListsBtn");
    CARGAR PRODUCTOS
 ===================================================== */
 
+function escapeShoppingText(value = "") { return String(value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch])); }
+function getShoppingProductIcon(name = "") {
+  const n = name.toLocaleLowerCase("es");
+  const rules = [
+    [/leche|yogur|queso|nata|mantequilla|huevo/,"🥛"],[/pan|barra|baguette|tostada/,"🥖"],
+    [/tomate|lechuga|zanahoria|patata|cebolla|ajo|pimiento|fruta|manzana|plátano|platano|verdura|pepino|calabacín|calabacin/,"🥦"],
+    [/pollo|carne|ternera|cerdo|pavo|filete/,"🥩"],[/pescado|salmón|salmon|merluza|atún|atun|gamba/,"🐟"],
+    [/arroz|pasta|macarrón|macarron|espagueti|harina|legumbre|lenteja|garbanzo/,"🍝"],
+    [/agua|zumo|refresco|bebida/,"🧃"],[/café|cafe|té|te|infusión|infusion/,"☕"],
+    [/limpieza|detergente|lejía|lejia|lavavajillas|suavizante/,"🧽"],[/papel|pañal|panal|higiénico|higienico/,"🧻"],
+    [/galleta|chocolate|dulce|snack|patata frita/,"🍪"],[/aceite|vinagre|sal|especia|salsa/,"🫙"]
+  ];
+  return rules.find(([pattern]) => pattern.test(n))?.[1] || "🛍️";
+}
+
 let unsubscribeProducts = null;
 
 function loadProducts() {
@@ -1634,10 +1695,13 @@ unsubscribeProducts = onSnapshot(q, (snapshot) => {
 
     const completedClass = data.completed ? "completed" : "";
 
+    const productIcon = getShoppingProductIcon(data.name || "");
+    const qtyText = /^[\d.,]+$/.test(String(data.qty ?? "")) ? `${data.qty}x ` : `${escapeShoppingText(data.qty ?? "1")} `;
     li.innerHTML = `
-      <span class="${completedClass}">
-        ${data.qty}x ${data.name}
-      </span>
+      <div class="shopping-product-main">
+        <span class="shopping-product-icon" aria-hidden="true">${productIcon}</span>
+        <span class="${completedClass}">${qtyText}${escapeShoppingText(data.name || "Producto")}</span>
+      </div>
 
       <div class="product-actions">
         <button class="toggleCompleteBtn" data-id="${docu.id}">
@@ -1683,6 +1747,7 @@ unsubscribeProducts = onSnapshot(q, (snapshot) => {
       await updateDoc(productRef, {
         completed: !currentStatus
       });
+      window.dispatchEvent(new CustomEvent("micasa:shopping-updated"));
     }
 
     const deleteBtn = e.target.closest(".deleteProductBtn");
@@ -1693,6 +1758,7 @@ unsubscribeProducts = onSnapshot(q, (snapshot) => {
       await deleteDoc(
         doc(db, "shoppingLists", currentListId, "products", productId)
       );
+      window.dispatchEvent(new CustomEvent("micasa:shopping-updated"));
     }
   };
 }
@@ -1798,6 +1864,7 @@ saveProductBtn?.addEventListener("click", async () => {
 
   loadProducts();
   calculateTotal();
+  window.dispatchEvent(new CustomEvent("micasa:shopping-updated"));
 });
   // ======================================================
 // ======================================================
@@ -2076,6 +2143,13 @@ document.addEventListener("click", (e) => {
   showLogin();
 
 });
+
+
+
+
+
+
+
 
 
 
