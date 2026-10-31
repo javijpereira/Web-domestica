@@ -181,7 +181,6 @@ document.getElementById("nextWeekBtn").onclick = () => {
 };
 
 updateWeekHeader();
-loadMenuFromFirebase();
 
 
 
@@ -192,6 +191,12 @@ loadMenuFromFirebase();
 
 
 async function saveMenuToFirebase(){
+
+  const householdId = window.currentHouseholdId;
+  if (!householdId) {
+    console.warn("No se guarda el menú: todavía no hay un hogar activo.");
+    return;
+  }
 
   const weekId = getWeekId();
 
@@ -215,7 +220,7 @@ async function saveMenuToFirebase(){
   });
 
   await setDoc(
-    doc(db,"menus",weekId),
+    doc(db, "households", householdId, "menus", weekId),
     data
   );
   window.dispatchEvent(new CustomEvent("micasa:menu-updated"));
@@ -227,18 +232,25 @@ async function saveMenuToFirebase(){
 // CARGAR MENU DESDE FIREBASE
 // ======================================================
 
-async function loadMenuFromFirebase(){
+let menuLoadSequence = 0;
 
+async function loadMenuFromFirebase(householdId = window.currentHouseholdId){
+
+  // No consultar ni limpiar nada hasta que la autenticación haya identificado el hogar.
+  if (!householdId) return;
+
+  const requestSequence = ++menuLoadSequence;
   const weekId = getWeekId();
 
   clearMenu();
 
-  let snap = await getDoc(doc(db,"menus",weekId));
-  // Compatibilidad con documentos antiguos guardados usando la fecha UTC
-  if (!snap.exists()) {
-    const legacyWeekId = new Date(currentWeekStart).toISOString().split("T")[0];
-    if (legacyWeekId !== weekId) snap = await getDoc(doc(db,"menus",legacyWeekId));
-  }
+  // Cada hogar tiene su propio documento semanal; no se leen los antiguos
+  // documentos globales de "menus", que mezclaban los datos de todas las familias.
+  const menuRef = doc(db, "households", householdId, "menus", weekId);
+  const snap = await getDoc(menuRef);
+
+  // Ignorar respuestas antiguas si se ha cambiado de hogar o de semana durante la carga.
+  if (requestSequence !== menuLoadSequence || householdId !== window.currentHouseholdId || weekId !== getWeekId()) return;
 
   if(!snap.exists()) { refreshMealIcons(); return; }
 
@@ -1237,7 +1249,20 @@ document.getElementById("recipeModal").classList.add("hidden");
 
 
 // ======================================================
-// CARGAR MENU AL ABRIR
+// CARGAR MENU CUANDO SE CONOZCA EL HOGAR ACTIVO
 // ======================================================
 updateWeekHeader();
-loadMenuFromFirebase();
+window.addEventListener("micasa:household-ready", event => {
+  const householdId = event.detail?.householdId || window.currentHouseholdId;
+  loadMenuFromFirebase(householdId).catch(error => {
+    console.error("No se pudo cargar el menú del hogar:", error);
+  });
+});
+
+// También cubre el caso en que auth.js ya haya terminado antes de que este
+// archivo registre el listener.
+if (window.currentHouseholdId) {
+  loadMenuFromFirebase(window.currentHouseholdId).catch(error => {
+    console.error("No se pudo cargar el menú del hogar:", error);
+  });
+}
