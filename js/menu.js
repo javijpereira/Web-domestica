@@ -1,6 +1,6 @@
 console.log("Menu semanal iniciado");
 
-import { doc, setDoc, getDoc } 
+import { doc, setDoc, getDoc, collection, addDoc, getDocs, query, where, serverTimestamp }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -24,6 +24,31 @@ const days = [
   "sunday"
 ];
 
+
+
+function iconForMeal(name, type) {
+  const t = String(name || "").toLocaleLowerCase("es-ES");
+  if (/ensalada|gazpacho|salmorejo|verdura|espinaca|tomate|aguacate/.test(t)) return "🥗";
+  if (/pasta|espagueti|macarr|lasaña|fideo/.test(t)) return "🍝";
+  if (/arroz|paella|risotto/.test(t)) return "🍚";
+  if (/pollo|pavo|alitas/.test(t)) return "🍗";
+  if (/ternera|cerdo|carne|alb[oó]ndiga|hamburguesa|chorizo/.test(t)) return "🥩";
+  if (/pescado|merluza|salm[oó]n|bacalao|at[uú]n|gamba|marisco|pulpo|lubina|dorada/.test(t)) return "🐟";
+  if (/lenteja|garbanzo|jud[ií]a|potaje|cocido/.test(t)) return "🥘";
+  if (/pizza|empanada/.test(t)) return "🍕";
+  if (/tortilla|huevo|revuelto/.test(t)) return "🍳";
+  if (/sopa|crema|pur[eé]/.test(t)) return "🥣";
+  if (/bocadillo|s[aá]ndwich|tosta|tostada/.test(t)) return "🥪";
+  if (/fruta|yogur|postre|bizcocho|flan/.test(t)) return "🍓";
+  return type === "lunch" ? "🍲" : "🥙";
+}
+function refreshMealIcons() {
+  document.querySelectorAll(".editable-meal").forEach(meal => {
+    const icon = meal.querySelector(".meal-icon");
+    const value = meal.querySelector("span:not(.meal-icon)")?.textContent || "";
+    if (icon) icon.textContent = iconForMeal(value, meal.dataset.type);
+  });
+}
 
 // ======================================================
 // EDITAR COMIDA / CENA
@@ -64,6 +89,7 @@ document.getElementById("saveMealBtn").onclick = () => {
 
   mealModal.classList.add("hidden");
 
+  refreshMealIcons();
   saveMenuToFirebase();
 
 };
@@ -89,9 +115,11 @@ function getStartOfWeek(date){
 }
 
 function getWeekId(){
-
   const d = new Date(currentWeekStart);
-  return d.toISOString().split("T")[0];
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 
 }
 
@@ -190,6 +218,7 @@ async function saveMenuToFirebase(){
     doc(db,"menus",weekId),
     data
   );
+  window.dispatchEvent(new CustomEvent("micasa:menu-updated"));
 
 }
 
@@ -204,10 +233,14 @@ async function loadMenuFromFirebase(){
 
   clearMenu();
 
-  const ref = doc(db,"menus",weekId);
-  const snap = await getDoc(ref);
+  let snap = await getDoc(doc(db,"menus",weekId));
+  // Compatibilidad con documentos antiguos guardados usando la fecha UTC
+  if (!snap.exists()) {
+    const legacyWeekId = new Date(currentWeekStart).toISOString().split("T")[0];
+    if (legacyWeekId !== weekId) snap = await getDoc(doc(db,"menus",legacyWeekId));
+  }
 
-  if(!snap.exists()) return;
+  if(!snap.exists()) { refreshMealIcons(); return; }
 
   const data = snap.data();
 
@@ -226,6 +259,7 @@ async function loadMenuFromFirebase(){
     if(dinner) dinner.textContent = data[day]?.dinner || "";
 
   });
+  refreshMealIcons();
 
 }
 
@@ -293,6 +327,7 @@ window.generateMenu = function(type){
 
   });
 
+  refreshMealIcons();
   saveMenuToFirebase();
 
 };
@@ -347,6 +382,7 @@ if(cena) cena.textContent = dayMenu.cena;
 
 });
 
+refreshMealIcons();
 saveMenuToFirebase();
 
 }
@@ -643,6 +679,95 @@ const recipes = [
 {name:"Natillas con caramelo", type:"cena", ingredients:["huevo","leche","azúcar","caramelo"]}
 ];
 
+
+// ======================================================
+// CONECTAR MENU SEMANAL CON LISTA DE LA COMPRA
+// ======================================================
+const menuShoppingSelect = document.getElementById("menuShoppingListSelect");
+const menuShoppingButton = document.getElementById("generateMenuShoppingBtn");
+const menuShoppingFeedback = document.getElementById("menuShoppingFeedback");
+
+function normalizeRecipeName(value) {
+  return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
+async function loadMenuShoppingLists(householdId) {
+  if (!menuShoppingSelect || !householdId) return;
+  menuShoppingSelect.innerHTML = '<option value="">Selecciona una lista</option>';
+  const listsSnap = await getDocs(query(collection(window.db, "shoppingLists"), where("householdId", "==", householdId)));
+  listsSnap.forEach(listDoc => {
+    const option = document.createElement("option");
+    option.value = listDoc.id;
+    option.textContent = listDoc.data().name || "Lista de la compra";
+    menuShoppingSelect.appendChild(option);
+  });
+}
+
+window.addEventListener("micasa:household-ready", event => {
+  loadMenuShoppingLists(event.detail?.householdId || window.currentHouseholdId).catch(console.error);
+});
+window.addEventListener("micasa:shopping-lists-updated", () => {
+  loadMenuShoppingLists(window.currentHouseholdId).catch(console.error);
+});
+
+menuShoppingButton?.addEventListener("click", async () => {
+  const householdId = window.currentHouseholdId;
+  const listId = menuShoppingSelect?.value;
+  if (!householdId || !listId) {
+    menuShoppingFeedback.textContent = "Selecciona primero una lista de la compra.";
+    menuShoppingFeedback.classList.remove("hidden");
+    return;
+  }
+
+  const mealNames = Array.from(document.querySelectorAll(".editable-meal span"))
+    .map(span => span.textContent.trim()).filter(Boolean);
+  const ingredientSet = new Set();
+  const unmatchedMeals = [];
+  mealNames.forEach(mealName => {
+    const recipe = recipes.find(item => normalizeRecipeName(item.name) === normalizeRecipeName(mealName));
+    if (!recipe) unmatchedMeals.push(mealName);
+    else recipe.ingredients.forEach(ingredient => ingredientSet.add(ingredient.trim()));
+  });
+
+  if (!ingredientSet.size) {
+    menuShoppingFeedback.textContent = "No he encontrado recetas con ingredientes asociados en este menú. Prueba con recetas del buscador o añade ingredientes manualmente.";
+    menuShoppingFeedback.classList.remove("hidden");
+    return;
+  }
+
+  menuShoppingButton.disabled = true;
+  menuShoppingButton.textContent = "Añadiendo…";
+  try {
+    const productsRef = collection(window.db, "shoppingLists", listId, "products");
+    const existingSnap = await getDocs(productsRef);
+    const existing = new Set(existingSnap.docs.map(d => normalizeRecipeName(d.data().name)));
+    let added = 0;
+    let skipped = 0;
+    for (const ingredient of ingredientSet) {
+      if (existing.has(normalizeRecipeName(ingredient))) { skipped++; continue; }
+      await addDoc(productsRef, {
+        name: ingredient,
+        qty: "1",
+        price: 0,
+        completed: false,
+        source: "weekly-menu",
+        createdAt: serverTimestamp()
+      });
+      added++;
+    }
+    const unmatchedText = unmatchedMeals.length ? ` No se han podido desglosar ${unmatchedMeals.length} plato(s) sin receta asociada.` : "";
+    menuShoppingFeedback.textContent = `${added} ingrediente(s) añadidos${skipped ? `; ${skipped} ya estaban en la lista` : ""}.${unmatchedText} Ajusta las cantidades según las raciones.`;
+    menuShoppingFeedback.classList.remove("hidden");
+    window.dispatchEvent(new CustomEvent("micasa:shopping-updated"));
+  } catch (error) {
+    console.error("Error al generar la compra desde el menú", error);
+    menuShoppingFeedback.textContent = "No se ha podido actualizar la lista. Comprueba tu conexión e inténtalo de nuevo.";
+    menuShoppingFeedback.classList.remove("hidden");
+  } finally {
+    menuShoppingButton.disabled = false;
+    menuShoppingButton.textContent = "Añadir ingredientes";
+  }
+});
 
 // ======================================================
 // BUSCAR RECETAS
