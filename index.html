@@ -2,19 +2,27 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mi Casa 🏠</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Mi Casa — Todo tu hogar, en armonía</title>
+<meta name="description" content="Organiza la vida de tu hogar: agenda, tareas, compras, comidas y turnos en un solo lugar.">
+<meta name="theme-color" content="#1764E8">
 
 <!-- FULLCALENDAR -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
 <!-- CSS -->
 <link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/modern-ui.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <link rel="manifest" href="/Web-domestica/manifest.json">
-<meta name="theme-color" content="#4CAF50">
-<link rel="icon" href="/Web-domestica/icon.png">
+<link rel="icon" type="image/svg+xml" href="/Web-domestica/assets/brand-mark.svg">
 <link rel="apple-touch-icon" href="/Web-domestica/icon.png">
 </head>
 <body>
@@ -23,8 +31,11 @@
 <div id="authScreen" class="auth-container">
 
 
-  <h1>Mi Casa 🏠</h1>
-  <p class="subtitle">Organiza tu hogar en un solo lugar</p>
+  <div class="auth-brand">
+    <img src="assets/brand-mark.svg" alt="" class="brand-mark">
+    <div class="brand-wordmark"><h1>mi casa<span>.</span></h1><p>Todo tu hogar, en armonía.</p></div>
+  </div>
+  <p class="subtitle">La vida en casa, un poco más fácil.</p>
 
   <!-- LOGIN -->
   <div id="loginBox" class="auth-box">
@@ -84,27 +95,16 @@
 <!-- HEADER APP -->
 <div id="app" class="hidden">
 <div id="appHeader" class="hidden">
- <!-- Botón menú familia -->
-  <div id="familyMenuBtn" class="family-menu-btn">👥</div>
-  <div id="familyMenu" class="family-menu hidden">
-  <div id="familyMembersList"></div>
-
-  <button id="inviteBtnInside" class="invite-inside-btn">
-    ➕ Invitar miembro
-  </button>
-</div>
-
-
 
   <!-- Nombre del hogar -->
-  <div id="homeName" class="editable-home-name">
+  <div class="header-brand"><img src="assets/brand-mark.svg" alt="" class="header-brand-mark"><div id="homeName" class="editable-home-name">
     <span id="houseNameText">Mi Casa</span>
     <span class="editIcon">✏️</span>
-  </div>
+  </div></div>
 
     <div class="header-actions">
      
-      <button id="logoutBtn" class="icon-btn">⎋</button>
+      <button id="logoutBtn" class="icon-btn" aria-label="Cerrar sesión" title="Cerrar sesión">↗</button>
     </div>
   </div>
 
@@ -119,33 +119,44 @@
     <span id="welcomeIcon"></span>
   </div>
 </div>
-<!-- 🔥 NUEVAS SECCIONES DASHBOARD -->
-
-  <div class="dashboard-card modern-card">
-
-    <div class="dashboard-card modern-card card-today">
-
-      <h3>📅 Eventos de hoy</h3>
-      <ul id="homeTodayEvents"></ul>
-      <p id="noTodayEventsMsg" class="hidden">
-        ❌ No hay eventos para hoy
-      </p>
-    </div>
-
-    <div class="dashboard-card modern-card card-week">
-      <h3>🗓 Eventos esta semana</h3>
-      <ul id="homeWeekEvents"></ul>
-    </div>
-
-    <div class="dashboard-card modern-card card-tasks">
-      <h3>📝 Tareas pendientes</h3>
-      <ul id="homeTasks"></ul>
-    </div>
-
+<!-- DASHBOARD PERSONALIZABLE POR USUARIO -->
+<section class="today-hub">
+  <div class="hub-heading"><div><span class="eyebrow">TU FAMILIA, AL DÍA</span><h2>Hoy en casa</h2></div><span id="hubDate" class="hub-date"></span></div>
+  <div class="dashboard-layout" id="dashboardLayout">
+    <div class="dashboard-card modern-card card-today" data-dashboard-section="eventsToday" data-dashboard-label="Eventos de hoy"><h3>📅 Eventos de hoy</h3><ul id="homeTodayEvents"></ul><p id="noTodayEventsMsg" class="hidden">❌ No hay eventos para hoy</p></div>
+    <div class="dashboard-card modern-card card-week" data-dashboard-section="eventsWeek" data-dashboard-label="Eventos de esta semana"><h3>🗓 Eventos esta semana</h3><ul id="homeWeekEvents"></ul></div>
+    <div class="dashboard-card modern-card card-tasks" data-dashboard-section="tasks" data-dashboard-label="Tareas pendientes"><h3>📝 Tareas pendientes</h3><ul id="homeTasks"></ul></div>
+    <article class="hub-card hub-meals" data-dashboard-section="meals" data-dashboard-label="Comida de hoy"><div class="hub-card-title"><span class="hub-icon">🍽️</span><div><h3>En la mesa hoy</h3><p>Comida y cena</p></div></div><div id="todayMeals" class="hub-meal-list"><p class="hub-empty">Cargando menú…</p></div><button class="hub-link" data-open-screen="menuScreen">Ver menú semanal <span>→</span></button></article>
+    <article class="hub-card hub-work" data-dashboard-section="work" data-dashboard-label="Calendario laboral familiar"><div class="hub-card-title"><span class="hub-icon">🗓️</span><div><h3>Jornada familiar</h3><p>Turnos de hoy por persona</p></div></div><div id="todayFamilyWork" class="hub-work-list"><p class="hub-empty">Cargando turnos…</p></div><button class="hub-link" data-open-screen="workCalendarScreen">Ver calendario laboral <span>→</span></button></article>
+    <article class="hub-card hub-family" data-dashboard-section="family" data-dashboard-label="Nuestra familia"><div class="hub-card-title"><span class="hub-icon">👨‍👩‍👧‍👦</span><div><h3>Nuestra familia</h3><p>Perfiles y miembros</p></div></div><div id="dashboardFamilyProfiles" class="hub-family-list"></div><button class="hub-link" data-open-screen="familyScreen">Ver perfiles familiares <span>→</span></button></article>
+    <article class="hub-card hub-shopping" data-dashboard-section="shopping" data-dashboard-label="Compra pendiente"><div class="hub-card-title"><span class="hub-icon">🛒</span><div><h3>Compra pendiente</h3><p>Lo que falta en casa</p></div></div><div id="dashboardShoppingSummary" class="hub-shopping-summary"><strong>—</strong><span>productos pendientes</span></div><button class="hub-link" data-open-screen="compraScreen">Abrir la compra <span>→</span></button></article>
   </div>
-
-
+</section>
   </main>
+
+  <!-- CONFIGURACIÓN -->
+  <section id="settingsScreen" class="screen hidden">
+    <div class="settings-heading"><span class="eyebrow">PERSONALIZA TU EXPERIENCIA</span><h2>Configuración</h2><p>Estos ajustes solo afectan a tu cuenta y se sincronizan entre tus dispositivos.</p></div>
+    <article class="settings-card">
+      <h3>🎨 Apariencia</h3>
+      <p>Elige cómo quieres ver Mi Casa.</p>
+      <label class="settings-switch-row" for="darkModeToggle"><span><strong>Modo oscuro</strong><small>Reduce el brillo en ambientes con poca luz.</small></span><input id="darkModeToggle" type="checkbox"></label>
+    </article>
+    <article class="settings-card">
+      <h3>🏠 Personalizar inicio</h3>
+      <p>Elige qué tarjetas aparecen y cambia su orden. Cada miembro tendrá su propia distribución.</p>
+      <div class="dashboard-settings-list" id="dashboardSettingsList">
+        <label><input type="checkbox" data-dashboard-toggle="eventsToday" checked> Eventos de hoy</label>
+        <label><input type="checkbox" data-dashboard-toggle="eventsWeek" checked> Eventos de esta semana</label>
+        <label><input type="checkbox" data-dashboard-toggle="tasks" checked> Tareas pendientes</label>
+        <label><input type="checkbox" data-dashboard-toggle="meals" checked> Comida de hoy</label>
+        <label><input type="checkbox" data-dashboard-toggle="work" checked> Calendario laboral familiar</label>
+        <label><input type="checkbox" data-dashboard-toggle="family" checked> Perfiles familiares</label>
+        <label><input type="checkbox" data-dashboard-toggle="shopping" checked> Compra pendiente</label>
+      </div>
+      <button id="resetDashboardSettings" class="secondary" type="button">Restablecer dashboard</button>
+    </article>
+  </section>
 
   <!-- AGENDA -->
   <div id="agendaScreen" class="screen hidden">
@@ -166,6 +177,10 @@
     <i id="futureEventsArrow" class="material-icons">expand_more</i>
   </div>
   <ul id="futureEventsList" class="hidden"></ul>
+</div>
+<div id="pastEventsContainer" class="past-events-container">
+  <button id="pastEventsToggle" class="past-events-toggle" aria-expanded="false"><span>↶</span> Historial de eventos <span id="pastEventsCount" class="history-count">0</span><span id="pastEventsChevron">＋</span></button>
+  <div id="pastEventsPanel" class="hidden"><p class="history-caption">Aquí puedes consultar los eventos que ya han pasado.</p><ul id="pastEventsList"></ul></div>
 </div>
 
       </div>
@@ -254,8 +269,7 @@
     <div class="screen-content">
 
     <ul id="shoppingList"></ul>
-
-<button id="openAddProductModal">➕ Añadir producto</button>
+<div class="shopping-add-actions"><button id="openAddProductModal">＋ Añadir producto</button><button id="voiceShoppingBtn" type="button" class="voice-inline-btn">🎙️ Añadir por voz</button></div><p id="shoppingVoiceHint" class="voice-hint" aria-live="polite">Puedes decir: «añade dos kilos de tomates».</p>
  <button id="backToListsBtn">⬅ Volver a listas</button>
 
     <div id="totalPrice">Total: 0 €</div>
@@ -312,6 +326,11 @@
   </section>
 </div>
 
+
+<!-- PERFILES FAMILIARES -->
+<div id="familyScreen" class="screen hidden">
+  <section class="family-screen-content"><span class="eyebrow">EL EQUIPO DE CASA</span><h2>Nuestra familia</h2><p class="family-intro">Cada persona tiene su espacio. Consulta sus datos, su jornada y sus responsabilidades.</p><div id="familyProfilesGrid" class="family-profiles-grid"></div><div class="family-invite-actions"><button id="inviteBtnFamily" type="button" class="family-invite-btn">＋ Invitar usuario</button><p>Comparte un código para que otra persona se una a este hogar.</p></div></section>
+</div>
 
 <!--CALENDARIO LABORAL-->
 
@@ -464,11 +483,11 @@
     <h3>Lunes</h3>
 
     <div class="meal editable-meal" data-day="monday" data-type="lunch">
-      🍝 Comida: <span></span>
+      <i class="meal-icon" aria-hidden="true">🍲</i> Comida: <span></span>
     </div>
 
     <div class="meal editable-meal" data-day="monday" data-type="dinner">
-      🌙 Cena: <span></span>
+      <i class="meal-icon" aria-hidden="true">🥙</i> Cena: <span></span>
     </div>
   </div>
 
@@ -477,11 +496,11 @@
     <h3>Martes</h3>
 
     <div class="meal editable-meal" data-day="tuesday" data-type="lunch">
-      🍝 Comida: <span></span>
+      <i class="meal-icon" aria-hidden="true">🍲</i> Comida: <span></span>
     </div>
 
     <div class="meal editable-meal" data-day="tuesday" data-type="dinner">
-      🌙 Cena: <span></span>
+      <i class="meal-icon" aria-hidden="true">🥙</i> Cena: <span></span>
     </div>
   </div>
 
@@ -490,11 +509,11 @@
     <h3>Miércoles</h3>
 
     <div class="meal editable-meal" data-day="wednesday" data-type="lunch">
-      🍝 Comida: <span></span>
+      <i class="meal-icon" aria-hidden="true">🍲</i> Comida: <span></span>
     </div>
 
     <div class="meal editable-meal" data-day="wednesday" data-type="dinner">
-      🌙 Cena: <span></span>
+      <i class="meal-icon" aria-hidden="true">🥙</i> Cena: <span></span>
     </div>
   </div>
 
@@ -503,11 +522,11 @@
     <h3>Jueves</h3>
 
     <div class="meal editable-meal" data-day="thursday" data-type="lunch">
-      🍝 Comida: <span></span>
+      <i class="meal-icon" aria-hidden="true">🍲</i> Comida: <span></span>
     </div>
 
     <div class="meal editable-meal" data-day="thursday" data-type="dinner">
-      🌙 Cena: <span></span>
+      <i class="meal-icon" aria-hidden="true">🥙</i> Cena: <span></span>
     </div>
   </div>
 
@@ -516,11 +535,11 @@
     <h3>Viernes</h3>
 
     <div class="meal editable-meal" data-day="friday" data-type="lunch">
-      🍝 Comida: <span></span>
+      <i class="meal-icon" aria-hidden="true">🍲</i> Comida: <span></span>
     </div>
 
     <div class="meal editable-meal" data-day="friday" data-type="dinner">
-      🌙 Cena: <span></span>
+      <i class="meal-icon" aria-hidden="true">🥙</i> Cena: <span></span>
     </div>
   </div>
 
@@ -529,11 +548,11 @@
     <h3>Sábado</h3>
 
     <div class="meal editable-meal" data-day="saturday" data-type="lunch">
-      🍝 Comida: <span></span>
+      <i class="meal-icon" aria-hidden="true">🍲</i> Comida: <span></span>
     </div>
 
     <div class="meal editable-meal" data-day="saturday" data-type="dinner">
-      🌙 Cena: <span></span>
+      <i class="meal-icon" aria-hidden="true">🥙</i> Cena: <span></span>
     </div>
   </div>
 
@@ -542,14 +561,21 @@
     <h3>Domingo</h3>
 
     <div class="meal editable-meal" data-day="sunday" data-type="lunch">
-      🍝 Comida: <span></span>
+      <i class="meal-icon" aria-hidden="true">🍲</i> Comida: <span></span>
     </div>
 
     <div class="meal editable-meal" data-day="sunday" data-type="dinner">
-      🌙 Cena: <span></span>
+      <i class="meal-icon" aria-hidden="true">🥙</i> Cena: <span></span>
     </div>
   </div>
 
+</div>
+
+<div class="menu-shopping-bridge">
+  <div><strong>¿Preparamos la compra?</strong><p>Reunimos los ingredientes de las recetas del menú semanal.</p></div>
+  <div class="menu-shopping-actions"><select id="menuShoppingListSelect" aria-label="Lista de la compra"><option value="">Selecciona una lista</option></select><button id="generateMenuShoppingBtn" type="button">Añadir ingredientes</button></div>
+  <small>Los ingredientes son orientativos; podrás ajustar cantidades en la lista.</small>
+  <p id="menuShoppingFeedback" class="hidden" role="status"></p>
 </div>
 
 <div class="menu-ideas">
@@ -644,28 +670,28 @@ placeholder="Ej: huevo, pasta, tomate"
 <!-- 🔥 BARRA INFERIOR FIJA -->
 <div class="bottom-nav">
 
-  <button class="nav-btn" id="menuNav">
-    <span class="nav-icon">☰</span>
-    <span class="nav-text">Menú</span>
+  <button class="nav-btn" id="menuNav" aria-label="Más secciones">
+    <span class="nav-icon">＋</span>
+    <span class="nav-text">Más</span>
   </button>
 
   <button class="home-btn" data-screen="agendaScreen">
-    <span class="nav-icon">🗂️</span>
+    <span class="nav-icon">▤</span>
     <span class="nav-text">Agenda</span>
   </button>
 
-  <button class="home-btn home-nav" data-screen="homeScreen">
-    <span class="nav-icon">🏠</span>
+  <button class="home-btn home-nav nav-active" data-screen="homeScreen">
+    <span class="nav-icon">⌂</span>
     <span class="nav-text">Inicio</span>
   </button>
 
   <button class="home-btn" data-screen="calendarScreen">
-     <span class="nav-icon">🗓️</span>
+     <span class="nav-icon">▦</span>
      <span class="nav-text">Calendario</span>
   </button>
 
   <button class="home-btn" data-screen="compraScreen">
-     <span class="nav-icon">🛒</span>
+     <span class="nav-icon">▱</span>
      <span class="nav-text">Compras</span>
   </button>
 
@@ -681,6 +707,8 @@ placeholder="Ej: huevo, pasta, tomate"
   <button class="menu-item" data-screen="tasksSection">📝 Tareas</button>
   <button class="menu-item" data-screen="workCalendarScreen">👷 Calendario laboral</button>
   <button class="menu-item" data-screen="menuScreen">🍽️ Menú semanal</button>
+  <button class="menu-item" data-screen="familyScreen">👨‍👩‍👧‍👦 Mi familia</button>
+  <button class="menu-item" data-screen="settingsScreen">⚙️ Configuración</button>
 
 </div>
 
@@ -816,6 +844,11 @@ placeholder="Ej: huevo, pasta, tomate"
       <option value="invitado">Invitado</option>
     </select>
 
+    <label>Cumpleaños (opcional)</label>
+    <input type="date" id="profileBirthday">
+    <label>Nota para la familia (opcional)</label>
+    <textarea id="profileNotes" rows="2" placeholder="Aficiones, preferencias o información útil…"></textarea>
+
     <label>Avatar</label>
     <select id="profileAvatar">
       <option value="padre1">Padre</option>
@@ -870,6 +903,23 @@ placeholder="Ej: huevo, pasta, tomate"
 
 
 
+
+<!-- ASISTENTE DE VOZ -->
+<div id="voiceAssistant" class="voice-assistant hidden" aria-live="polite">
+  <button id="voiceAssistantToggle" class="voice-assistant-toggle" type="button" aria-label="Abrir asistente de voz"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3.2 3.2 0 0 0-3.2 3.2v5.6a3.2 3.2 0 0 0 6.4 0V6.2A3.2 3.2 0 0 0 12 3Zm-6 8.5a1 1 0 0 1 1 1 5 5 0 0 0 10 0 1 1 0 1 1 2 0 7 7 0 0 1-6 6.93V22h-2v-2.57A7 7 0 0 1 5 12.5a1 1 0 0 1 1-1Z" fill="currentColor"/></svg></button>
+  <section id="voiceAssistantPanel" class="voice-assistant-panel hidden">
+    <div class="voice-panel-heading"><div><strong>Asistente de Mi Casa</strong><small>Habla con tu hogar</small></div><button id="voiceAssistantClose" type="button" aria-label="Cerrar">×</button></div>
+    <label for="voiceCommandMode">¿Qué quieres hacer?</label>
+    <select id="voiceCommandMode"><option value="auto">Detectar automáticamente</option><option value="shopping">Lista de la compra</option><option value="calendar">Agenda y calendario laboral</option></select>
+    <input id="voiceCommandText" type="text" placeholder="O escribe tu petición…" autocomplete="off">
+    <button id="voiceTextSubmit" type="button" class="voice-text-submit">Enviar petición</button>
+    <button id="voiceStartBtn" type="button" class="voice-start-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3.2 3.2 0 0 0-3.2 3.2v5.6a3.2 3.2 0 0 0 6.4 0V6.2A3.2 3.2 0 0 0 12 3Zm-6 8.5a1 1 0 0 1 1 1 5 5 0 0 0 10 0 1 1 0 1 1 2 0 7 7 0 0 1-6 6.93V22h-2v-2.57A7 7 0 0 1 5 12.5a1 1 0 0 1 1-1Z" fill="currentColor"/></svg> Hablar</button>
+    <p id="voiceAssistantStatus" role="status">Prueba: «¿Sara trabaja el 1 de abril?» o «¿Tenemos eventos esta semana?»</p>
+    <div id="voiceAssistantTranscript" class="voice-transcript hidden"></div>
+    <div id="voiceAssistantActions" class="voice-assistant-actions hidden"></div>
+  </section>
+</div>
+
 <!-- JS -->
 
 <script>
@@ -887,11 +937,14 @@ if ("serviceWorker" in navigator) {
   emailjs.init("0sPny-acy_XcDU9mn");
 </script>
 
-<script type="module" src="firebase.js"></script>
+<script type="module" src="./firebase.js"></script>
 
-<script type="module" src="js/auth.js"></script>
-<script type="module" src="js/work-calendar.js"></script>
-<script type="module" src="js/menu.js"></script>
+<script type="module" src="./js/auth.js"></script>
+<script type="module" src="./js/work-calendar.js"></script>
+<script type="module" src="./js/menu.js"></script>
+<script type="module" src="./js/family-dashboard.js"></script>
+<script type="module" src="./js/voice-assistant.js"></script>
+<script type="module" src="./js/settings.js"></script>
 
 
 </body>
