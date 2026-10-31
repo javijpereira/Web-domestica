@@ -333,6 +333,7 @@ const dataToSave = {shifts};
   }
 
   document.getElementById("workDayModal").classList.add("hidden");
+  window.dispatchEvent(new CustomEvent("micasa:work-updated"));
 
   // 🔥 FIX 3: asegurar repintado correcto
   setTimeout(() => window.workCalendar.updateSize(), 80);
@@ -367,6 +368,7 @@ document.getElementById("deleteWorkShiftBtn")?.addEventListener("click", async (
   }
 
   document.getElementById("workDayModal").classList.add("hidden");
+  window.dispatchEvent(new CustomEvent("micasa:work-updated"));
 
   setTimeout(() => window.workCalendar.updateSize(), 80);
 });
