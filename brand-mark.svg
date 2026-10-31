@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title">
+  <title>Mi Casa</title>
+  <defs>
+    <linearGradient id="roof" x1="12" y1="16" x2="84" y2="80" gradientUnits="userSpaceOnUse"><stop stop-color="#29C5F6"/><stop offset="1" stop-color="#1764E8"/></linearGradient>
+    <linearGradient id="door" x1="54" y1="49" x2="76" y2="84" gradientUnits="userSpaceOnUse"><stop stop-color="#FFD76A"/><stop offset="1" stop-color="#FFB52E"/></linearGradient>
+  </defs>
+  <rect width="96" height="96" rx="28" fill="#F0F7FF"/>
+  <path d="M13 43.5 44.5 17a5.5 5.5 0 0 1 7 0L83 43.5a5 5 0 0 1-6.5 7.6L48 27.4 19.5 51.1a5 5 0 0 1-6.5-7.6Z" fill="url(#roof)"/>
+  <path d="M23 47.5 48 27l25 20.5V75a7 7 0 0 1-7 7H30a7 7 0 0 1-7-7V47.5Z" fill="#fff" stroke="#B9D6F5" stroke-width="2.5"/>
+  <path d="M54 58a9 9 0 0 1 18 0v24H54V58Z" fill="url(#door)"/>
+  <path d="M32 54h12v12H32z" fill="#24A9F2"/><path d="M46 54h12v12H46z" fill="#24A9F2"/><path d="M32 68h12v10H32z" fill="#24A9F2"/><path d="M46 68h12v10H46z" fill="#24A9F2"/>
+  <circle cx="67" cy="69" r="1.8" fill="#17406F"/>
+</svg>
