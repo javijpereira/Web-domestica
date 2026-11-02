@@ -453,109 +453,86 @@ img,svg,video,canvas{max-width:100%}
   .bottom-nav{padding-left:max(6px,env(safe-area-inset-left));padding-right:max(6px,env(safe-area-inset-right))}
 }
 
-/* =====================================================
-   AGENDA: acciones compactas y siempre en una sola fila
-   Evita que los botones desplacen el texto en móviles.
-===================================================== */
-#agendaList li,
-#todayEventsList li,
-#futureEventsList li,
-#pastEventsList li {
+/* =========================================================
+   AGENDA: controles compactos y siempre en una sola fila
+   ========================================================= */
+#agendaScreen #agendaList li,
+#agendaScreen #todayEventsList li,
+#agendaScreen #futureEventsList li,
+#agendaScreen #pastEventsList li,
+#agendaScreen .past-event-item {
   display: flex !important;
   flex-direction: row !important;
+  flex-wrap: nowrap !important;
   align-items: center !important;
   justify-content: space-between !important;
   gap: 8px !important;
-  min-width: 0;
+  min-width: 0 !important;
 }
 
-#agendaList li .agenda-info,
-#todayEventsList li .agenda-info,
-#futureEventsList li .agenda-info,
-#pastEventsList li .agenda-info {
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow-wrap: anywhere;
-  word-break: normal;
+#agendaScreen .agenda-info {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
 }
 
-#agendaList li .agenda-actions,
-#todayEventsList li .agenda-actions,
-#futureEventsList li .agenda-actions,
-#pastEventsList li .agenda-actions {
-  display: inline-flex !important;
+#agendaScreen .agenda-actions {
+  display: flex !important;
   flex: 0 0 auto !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
   align-items: center !important;
   justify-content: flex-end !important;
   gap: 4px !important;
-  white-space: nowrap;
+  white-space: nowrap !important;
 }
 
-#agendaList li .agenda-actions button,
-#todayEventsList li .agenda-actions button,
-#futureEventsList li .agenda-actions button,
-#pastEventsList li .agenda-actions button {
+#agendaScreen .agenda-actions button {
   display: inline-flex !important;
   flex: 0 0 32px !important;
-  align-items: center !important;
-  justify-content: center !important;
   width: 32px !important;
   min-width: 32px !important;
   max-width: 32px !important;
   height: 32px !important;
   min-height: 32px !important;
-  margin: 0 !important;
   padding: 0 !important;
-  border-radius: 9px !important;
-  box-shadow: none !important;
+  margin: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
   line-height: 1 !important;
+  box-shadow: none !important;
 }
 
-#agendaList li .agenda-actions button .material-icons,
-#todayEventsList li .agenda-actions button .material-icons,
-#futureEventsList li .agenda-actions button .material-icons,
-#pastEventsList li .agenda-actions button .material-icons {
+#agendaScreen .agenda-actions button .material-icons {
   font-size: 18px !important;
   line-height: 1 !important;
 }
 
-@media (max-width: 480px) {
-  #agendaList li,
-  #todayEventsList li,
-  #futureEventsList li,
-  #pastEventsList li {
-    gap: 6px !important;
-    padding: 10px 9px !important;
+@media (max-width: 390px) {
+  #agendaScreen #agendaList li,
+  #agendaScreen #todayEventsList li,
+  #agendaScreen #futureEventsList li,
+  #agendaScreen #pastEventsList li,
+  #agendaScreen .past-event-item {
+    gap: 5px !important;
+    padding-left: 9px !important;
+    padding-right: 9px !important;
   }
 
-  #agendaList li .agenda-actions,
-  #todayEventsList li .agenda-actions,
-  #futureEventsList li .agenda-actions,
-  #pastEventsList li .agenda-actions {
-    gap: 3px !important;
+  #agendaScreen .agenda-actions { gap: 3px !important; }
+
+  #agendaScreen .agenda-actions button {
+    flex-basis: 28px !important;
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    height: 28px !important;
+    min-height: 28px !important;
   }
 
-  #agendaList li .agenda-actions button,
-  #todayEventsList li .agenda-actions button,
-  #futureEventsList li .agenda-actions button,
-  #pastEventsList li .agenda-actions button {
-    flex-basis: 29px !important;
-    width: 29px !important;
-    min-width: 29px !important;
-    max-width: 29px !important;
-    height: 29px !important;
-    min-height: 29px !important;
-    border-radius: 8px !important;
-  }
-
-  #agendaList li .agenda-actions button .material-icons,
-  #todayEventsList li .agenda-actions button .material-icons,
-  #futureEventsList li .agenda-actions button .material-icons,
-  #pastEventsList li .agenda-actions button .material-icons {
-    font-size: 17px !important;
-  }
+  #agendaScreen .agenda-actions button .material-icons { font-size: 17px !important; }
 }
 
 
