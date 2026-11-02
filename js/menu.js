@@ -1,7 +1,18 @@
 console.log("Menu semanal iniciado");
 
+import { db, auth } from "../firebase.js";
 import { doc, setDoc, getDoc, collection, addDoc, getDocs, query, where, serverTimestamp }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Comprueba que la cuenta autenticada pertenece realmente al hogar activo.
+// La protección definitiva debe estar también en las reglas de Firestore.
+async function isCurrentUserHouseholdMember(householdId) {
+  const user = auth.currentUser;
+  if (!user || !householdId) return false;
+  const householdSnap = await getDoc(doc(db, "households", householdId));
+  return householdSnap.exists() &&
+    householdSnap.data()?.members?.[user.uid] === true;
+}
 
 
 // ======================================================
@@ -75,7 +86,7 @@ document.getElementById("closeMealModal").onclick = () => {
 
 };
 
-document.getElementById("saveMealBtn").onclick = () => {
+document.getElementById("saveMealBtn").onclick = async () => {
 
   const mealText = mealInput.value;
 
@@ -83,14 +94,19 @@ document.getElementById("saveMealBtn").onclick = () => {
     `.editable-meal[data-day="${currentMealDay}"][data-type="${currentMealType}"] span`
   );
 
-  if(mealDiv){
-    mealDiv.textContent = mealText;
+  if (!mealDiv) return;
+  const previousText = mealDiv.textContent;
+  mealDiv.textContent = mealText;
+
+  try {
+    await saveMenuToFirebase();
+    mealModal.classList.add("hidden");
+    refreshMealIcons();
+  } catch (error) {
+    mealDiv.textContent = previousText;
+    console.error("No se pudo guardar el menú:", error);
+    alert("No se ha podido guardar el menú. Comprueba que perteneces a este hogar y que tienes conexión.");
   }
-
-  mealModal.classList.add("hidden");
-
-  refreshMealIcons();
-  saveMenuToFirebase();
 
 };
 
@@ -193,9 +209,8 @@ updateWeekHeader();
 async function saveMenuToFirebase(){
 
   const householdId = window.currentHouseholdId;
-  if (!householdId) {
-    console.warn("No se guarda el menú: todavía no hay un hogar activo.");
-    return;
+  if (!householdId || !(await isCurrentUserHouseholdMember(householdId))) {
+    throw new Error("La cuenta actual no pertenece al hogar activo.");
   }
 
   const weekId = getWeekId();
@@ -237,7 +252,11 @@ let menuLoadSequence = 0;
 async function loadMenuFromFirebase(householdId = window.currentHouseholdId){
 
   // No consultar ni limpiar nada hasta que la autenticación haya identificado el hogar.
-  if (!householdId) return;
+  if (!householdId || !(await isCurrentUserHouseholdMember(householdId))) {
+    clearMenu();
+    console.warn("No se carga el menú: el usuario no pertenece al hogar.");
+    return;
+  }
 
   const requestSequence = ++menuLoadSequence;
   const weekId = getWeekId();
