@@ -550,3 +550,110 @@ img,svg,video,canvas{max-width:100%}
   #agendaScreen .agenda-actions button .material-icons { font-size: 14px !important; }
 }
 
+/* PARCHE COMPLEMENTARIO: pegar AL FINAL de css/modern-ui.css.
+   No sustituye la hoja completa ni modifica los estilos generales de los modales. */
+
+/* Agenda: texto flexible y los tres controles siempre en una sola fila */
+#agendaScreen #agendaList li,
+#agendaScreen #todayEventsList li,
+#agendaScreen #futureEventsList li,
+#agendaScreen #pastEventsList li {
+  display: flex !important;
+  flex-flow: row nowrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 5px !important;
+  min-width: 0 !important;
+}
+
+#agendaScreen .agenda-info {
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+}
+
+#agendaScreen .agenda-actions {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  flex-flow: row nowrap !important;
+  align-items: center !important;
+  gap: 2px !important;
+  white-space: nowrap !important;
+}
+
+#agendaScreen .agenda-actions button {
+  display: inline-flex !important;
+  flex: 0 0 23px !important;
+  width: 23px !important;
+  min-width: 23px !important;
+  max-width: 23px !important;
+  height: 23px !important;
+  min-height: 23px !important;
+  max-height: 23px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+  line-height: 1 !important;
+}
+
+#agendaScreen .agenda-actions .viewEventBtn {
+  background: #e4f6e9 !important;
+  color: #16803c !important;
+}
+#agendaScreen .agenda-actions .editEventBtn {
+  background: #fff0dc !important;
+  color: #c87512 !important;
+}
+#agendaScreen .agenda-actions .deleteEventBtn {
+  background: #fde8e7 !important;
+  color: #c83232 !important;
+}
+#agendaScreen .agenda-actions button i.material-icons {
+  font-size: 14px !important;
+  line-height: 1 !important;
+}
+
+/* Recupera el centrado de los modales en móvil y permite ver sus botones.
+   Afecta solo a los dos modales que dieron el problema. */
+@media (max-width: 699px) {
+  #addProductModal.modal,
+  #mealModal.modal {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 12px !important;
+    overflow-y: auto !important;
+  }
+
+  #addProductModal .modal-content,
+  #mealModal .modal-card {
+    width: min(100%, 420px) !important;
+    max-width: 420px !important;
+    max-height: calc(100dvh - 24px) !important;
+    overflow-y: auto !important;
+    margin: auto !important;
+    border-radius: 16px !important;
+    padding: 18px !important;
+    box-sizing: border-box !important;
+  }
+
+  #addProductModal .modal-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    justify-content: flex-end !important;
+    margin-top: 14px !important;
+  }
+
+  #addProductModal .modal-actions button {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+}
+
+
