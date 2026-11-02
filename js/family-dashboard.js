@@ -142,25 +142,47 @@ document.addEventListener("click", (event) => {
   if (profile) window.openFamilyProfile?.(profile.dataset.profileUid);
 });
 
-async function loadTodayMeals() {
+async function loadTodayMeals(householdId = activeHousehold) {
   const target = $("todayMeals");
   if (!target) return;
+
+  if (!householdId) {
+    target.innerHTML = '<p class="hub-empty">No hay un hogar activo.</p>';
+    return;
+  }
+
+  const requestedHousehold = householdId;
   const date = new Date();
   const key = dayKey[date.getDay()];
+
   try {
     const weekId = mondayKey(date);
-    let menuSnap = await getDoc(doc(db, "menus", weekId));
-    if (!menuSnap.exists()) {
-      const monday = new Date(`${weekId}T00:00:00`);
-      const legacyWeekId = monday.toISOString().split("T")[0];
-      if (legacyWeekId !== weekId) menuSnap = await getDoc(doc(db, "menus", legacyWeekId));
-    }
-    const menu = menuSnap.exists() ? menuSnap.data()[key] || {} : {};
+
+    // Leer exclusivamente el menú de la familia activa
+    const menuRef = doc(
+      db,
+      "households",
+      requestedHousehold,
+      "menus",
+      weekId
+    );
+
+    const menuSnap = await getDoc(menuRef);
+
+    // Evitar mostrar datos de otra familia
+    if (requestedHousehold !== activeHousehold) return;
+
+    const menu = menuSnap.exists()
+      ? (menuSnap.data()[key] || {})
+      : {};
+
     const lunch = menu.lunch || "Sin comida planificada";
     const dinner = menu.dinner || "Sin cena planificada";
+
     const foodIcon = (name, type) => {
-      const t = String(name || "").toLocaleLowerCase("es-ES");
-      if (/sin .*planificad/.test(t)) return type === "lunch" ? "🍽️" : "🌙";
+      const t = String(name).toLocaleLowerCase("es-ES");
+
+if (/sin .*planificad/.test(t)) return type === "lunch" ? "🍽️" : "🌙";
       if (/ensalada|gazpacho|salmorejo|verdura|espinaca|tomate|aguacate/.test(t)) return "🥗";
       if (/pasta|espagueti|macarr|lasaña|fideo/.test(t)) return "🍝";
       if (/arroz|paella|risotto/.test(t)) return "🍚";
@@ -175,9 +197,32 @@ async function loadTodayMeals() {
       if (/fruta|yogur|postre|bizcocho|flan/.test(t)) return "🍓";
       return type === "lunch" ? "🍲" : "🥙";
     };
-    target.innerHTML = `<div class="hub-meal-row"><span>${foodIcon(lunch,"lunch")}</span><div><small>COMIDA</small><strong>${escapeHTML(lunch)}</strong></div></div><div class="hub-meal-row"><span>${foodIcon(dinner,"dinner")}</span><div><small>CENA</small><strong>${escapeHTML(dinner)}</strong></div></div>`;
+
+    target.innerHTML = `
+      <div class="hub-meal-row">
+        <span>${foodIcon(lunch, "lunch")}</span>
+        <div>
+          <small>COMIDA</small>
+          <strong>${escapeHTML(lunch)}</strong>
+        </div>
+      </div>
+
+      <div class="hub-meal-row">
+        <span>${foodIcon(dinner, "dinner")}</span>
+        <div>
+          <small>CENA</small>
+          <strong>${escapeHTML(dinner)}</strong>
+        </div>
+      </div>
+    `;
+
   } catch (err) {
-    target.innerHTML = '<p class="hub-empty">No se ha podido cargar el menú de hoy.</p>';
+    console.error("Error cargando menú:", err);
+
+    if (requestedHousehold === activeHousehold) {
+      target.innerHTML =
+        '<p class="hub-empty">No se ha podido cargar el menú de hoy.</p>';
+    }
   }
 }
 
