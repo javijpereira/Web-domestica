@@ -452,3 +452,76 @@ img,svg,video,canvas{max-width:100%}
 @supports(padding:max(0px)){
   .bottom-nav{padding-left:max(6px,env(safe-area-inset-left));padding-right:max(6px,env(safe-area-inset-right))}
 }
+
+
+/* =========================================================
+   FIX MODALES: menú semanal y alta de productos (móvil/iOS)
+   ========================================================= */
+#mealModal,
+#addProductModal {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  height: 100dvh !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: max(12px, env(safe-area-inset-top)) 12px
+           max(12px, env(safe-area-inset-bottom)) !important;
+  overflow-y: auto !important;
+  z-index: 1000005 !important;
+}
+
+#mealModal.hidden,
+#addProductModal.hidden {
+  display: none !important;
+}
+
+#mealModal .modal-card,
+#addProductModal .modal-content {
+  width: min(100%, 440px) !important;
+  max-width: 440px !important;
+  max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px) !important;
+  margin: auto !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  border-radius: 20px !important;
+}
+
+#mealModal .modal-actions,
+#addProductModal .modal-actions {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 10px !important;
+  position: sticky !important;
+  bottom: -1px !important;
+  padding-top: 14px !important;
+  margin-top: 8px !important;
+  background: inherit !important;
+}
+
+#mealModal .modal-actions button,
+#addProductModal .modal-actions button {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  min-height: 46px !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 699px) {
+  #mealModal,
+  #addProductModal {
+    align-items: center !important;
+  }
+  #mealModal .modal-card,
+  #addProductModal .modal-content {
+    width: min(100%, 440px) !important;
+    max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+  }
+}
+
