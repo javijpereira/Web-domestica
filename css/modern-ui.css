@@ -453,86 +453,100 @@ img,svg,video,canvas{max-width:100%}
   .bottom-nav{padding-left:max(6px,env(safe-area-inset-left));padding-right:max(6px,env(safe-area-inset-right))}
 }
 
+
 /* =========================================================
-   AGENDA: controles compactos y siempre en una sola fila
+   AGENDA MÓVIL: iconos pequeños, en una fila y diferenciados
    ========================================================= */
 #agendaScreen #agendaList li,
 #agendaScreen #todayEventsList li,
 #agendaScreen #futureEventsList li,
-#agendaScreen #pastEventsList li,
-#agendaScreen .past-event-item {
+#agendaScreen #pastEventsList li {
   display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
+  flex-flow: row nowrap !important;
   align-items: center !important;
   justify-content: space-between !important;
-  gap: 8px !important;
+  gap: 6px !important;
   min-width: 0 !important;
 }
 
 #agendaScreen .agenda-info {
-  flex: 1 1 auto !important;
+  flex: 1 1 0% !important;
   min-width: 0 !important;
   overflow-wrap: anywhere !important;
   word-break: normal !important;
 }
 
 #agendaScreen .agenda-actions {
-  display: flex !important;
+  display: inline-flex !important;
   flex: 0 0 auto !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
+  flex-flow: row nowrap !important;
   align-items: center !important;
   justify-content: flex-end !important;
-  gap: 4px !important;
+  gap: 3px !important;
   white-space: nowrap !important;
 }
 
-#agendaScreen .agenda-actions button {
+#agendaScreen .agenda-actions button,
+#agendaScreen .agenda-actions button.viewEventBtn,
+#agendaScreen .agenda-actions button.editEventBtn,
+#agendaScreen .agenda-actions button.deleteEventBtn {
   display: inline-flex !important;
-  flex: 0 0 32px !important;
-  width: 32px !important;
-  min-width: 32px !important;
-  max-width: 32px !important;
-  height: 32px !important;
-  min-height: 32px !important;
+  flex: 0 0 25px !important;
+  width: 25px !important;
+  min-width: 25px !important;
+  max-width: 25px !important;
+  height: 25px !important;
+  min-height: 25px !important;
+  max-height: 25px !important;
   padding: 0 !important;
   margin: 0 !important;
+  border: 0 !important;
+  border-radius: 7px !important;
   align-items: center !important;
   justify-content: center !important;
-  border-radius: 8px !important;
-  line-height: 1 !important;
   box-shadow: none !important;
-}
-
-#agendaScreen .agenda-actions button .material-icons {
-  font-size: 18px !important;
   line-height: 1 !important;
 }
 
-@media (max-width: 390px) {
+#agendaScreen .agenda-actions .viewEventBtn {
+  background: #e4f6e9 !important;
+  color: #16803c !important;
+}
+#agendaScreen .agenda-actions .editEventBtn {
+  background: #fff0dc !important;
+  color: #c87512 !important;
+}
+#agendaScreen .agenda-actions .deleteEventBtn {
+  background: #fde8e7 !important;
+  color: #c83232 !important;
+}
+#agendaScreen .agenda-actions button .material-icons {
+  font-size: 15px !important;
+  line-height: 1 !important;
+}
+
+@media (max-width: 380px) {
   #agendaScreen #agendaList li,
   #agendaScreen #todayEventsList li,
   #agendaScreen #futureEventsList li,
-  #agendaScreen #pastEventsList li,
-  #agendaScreen .past-event-item {
-    gap: 5px !important;
-    padding-left: 9px !important;
-    padding-right: 9px !important;
+  #agendaScreen #pastEventsList li {
+    gap: 4px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
   }
-
-  #agendaScreen .agenda-actions { gap: 3px !important; }
-
-  #agendaScreen .agenda-actions button {
-    flex-basis: 28px !important;
-    width: 28px !important;
-    min-width: 28px !important;
-    max-width: 28px !important;
-    height: 28px !important;
-    min-height: 28px !important;
+  #agendaScreen .agenda-actions { gap: 2px !important; }
+  #agendaScreen .agenda-actions button,
+  #agendaScreen .agenda-actions button.viewEventBtn,
+  #agendaScreen .agenda-actions button.editEventBtn,
+  #agendaScreen .agenda-actions button.deleteEventBtn {
+    flex-basis: 23px !important;
+    width: 23px !important;
+    min-width: 23px !important;
+    max-width: 23px !important;
+    height: 23px !important;
+    min-height: 23px !important;
+    max-height: 23px !important;
   }
-
-  #agendaScreen .agenda-actions button .material-icons { font-size: 17px !important; }
+  #agendaScreen .agenda-actions button .material-icons { font-size: 14px !important; }
 }
-
 
