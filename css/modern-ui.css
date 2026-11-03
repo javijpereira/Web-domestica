@@ -550,6 +550,7 @@ img,svg,video,canvas{max-width:100%}
   #agendaScreen .agenda-actions button .material-icons { font-size: 14px !important; }
 }
 
+
 /* PARCHE COMPLEMENTARIO: pegar AL FINAL de css/modern-ui.css.
    No sustituye la hoja completa ni modifica los estilos generales de los modales. */
 
@@ -654,6 +655,97 @@ img,svg,video,canvas{max-width:100%}
     min-width: 0 !important;
     margin: 0 !important;
   }
+}
+
+
+/* =========================================================
+   CORRECCIONES 2.5 — confirmación de listas, colores y día actual
+   ========================================================= */
+
+/* Confirmación de borrado: centrada y con acciones siempre accesibles */
+#deleteListModal.modal:not(.hidden) {
+  position: fixed !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: max(12px, env(safe-area-inset-top)) 12px
+           max(12px, env(safe-area-inset-bottom)) !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  z-index: 1000001 !important;
+}
+#deleteListModal .modal-content {
+  width: min(100%, 440px) !important;
+  max-width: 440px !important;
+  max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+  margin: auto !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+}
+#deleteListModal .modal-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  justify-content: stretch !important;
+  gap: 10px !important;
+  margin-top: 18px !important;
+}
+#deleteListModal .modal-actions button {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  min-height: 44px !important;
+  margin: 0 !important;
+}
+
+/* Día actual: sin círculo/punto, número rojo y en negrita.
+   Se aplica a ambos calendarios FullCalendar. */
+.fc .fc-day-today .fc-daygrid-day-number {
+  color: #e53935 !important;
+  font-weight: 800 !important;
+  position: relative !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.fc .fc-day-today .fc-daygrid-day-number::before,
+.fc .fc-day-today .fc-daygrid-day-number::after {
+  content: none !important;
+  display: none !important;
+}
+:root[data-theme="dark"] .fc .fc-day-today .fc-daygrid-day-number {
+  color: #ff625e !important;
+}
+
+/* Mantener el color de categoría de cada evento de agenda también en oscuro */
+:root[data-theme="dark"] #agendaScreen #agendaList li,
+:root[data-theme="dark"] #agendaScreen #todayEventsList li,
+:root[data-theme="dark"] #agendaScreen #futureEventsList li,
+:root[data-theme="dark"] #agendaScreen #pastEventsList li {
+  border-left-width: 6px !important;
+  border-left-style: solid !important;
+}
+
+
+/* Calendario laboral: atenuar los días que pertenecen al mes anterior o siguiente */
+#workCalendar .fc-daygrid-day.fc-day-other {
+  background-color: rgba(120, 135, 155, 0.07) !important;
+}
+
+#workCalendar .fc-daygrid-day.fc-day-other .fc-daygrid-day-number {
+  opacity: 0.38 !important;
+}
+
+#workCalendar .fc-daygrid-day.fc-day-other .fc-daygrid-day-events {
+  opacity: 0.55;
+}
+
+:root[data-theme="dark"] #workCalendar .fc-daygrid-day.fc-day-other {
+  background-color: rgba(0, 0, 0, 0.16) !important;
+}
+
+:root[data-theme="dark"] #workCalendar .fc-daygrid-day.fc-day-other .fc-daygrid-day-number {
+  opacity: 0.35 !important;
 }
 
 
