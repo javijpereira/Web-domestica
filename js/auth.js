@@ -860,7 +860,7 @@ snap.forEach(docu => {
   if (evDate >= weekStart && evDate <= weekEnd) {
 
     const li = document.createElement("li");
-    li.style.borderLeft = `6px solid ${ev.color}`;
+    li.style.setProperty("border-left", `6px solid ${ev.color}`, "important");
 
     li.innerHTML = `
       <div class="agenda-info">
@@ -921,7 +921,7 @@ snap.forEach(docu => {
 
       const li = document.createElement("li");
       li.classList.add("today-item");
-      li.style.borderLeft = `6px solid ${ev.color}`;
+      li.style.setProperty("border-left", `6px solid ${ev.color}`, "important");
 
       li.innerHTML = `
         <div class="agenda-info">
@@ -966,7 +966,7 @@ snap.forEach(docu => {
       pastEvents.forEach(ev => {
         const li = document.createElement("li");
         li.className = "past-event-item";
-        li.style.borderLeft = `4px solid ${ev.color || "#a7b4c8"}`;
+        li.style.setProperty("border-left", `4px solid ${ev.color || "#a7b4c8"}`, "important");
         li.innerHTML = `<div class="agenda-info"><strong>${ev.date} ${ev.time || ""}</strong><br>${ev.shortTitle || ev.description || "Evento"}</div><div class="agenda-actions"><button class="viewEventBtn" data-id="${ev.id}" aria-label="Ver evento"><i class="material-icons">visibility</i></button></div>`;
         pastList.appendChild(li);
       });
@@ -987,7 +987,7 @@ snap.forEach(docu => {
     futureByMonth[month].forEach(ev => {
 
       const li = document.createElement("li");
-      li.style.borderLeft = `6px solid ${ev.color}`;
+      li.style.setProperty("border-left", `6px solid ${ev.color}`, "important");
 
       li.innerHTML = `
         <div class="agenda-info">
@@ -2143,6 +2143,16 @@ document.addEventListener("click", (e) => {
   showLogin();
 
 });
+
+
+
+
+
+
+
+
+
+
 
 
 
