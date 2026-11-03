@@ -19,7 +19,7 @@ const transcript = $("voiceAssistantTranscript"), actions = $("voiceAssistantAct
 const recognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = null, busy = false;
 const context = {
-  lastIntent: null, personId: null, personName: null, date: null,
+  lastIntent: null, personId: null, personName: null, date: null, rangeStart: null, rangeEnd: null,
   listId: null, listName: null, lastAnswer: null, history: []
 };
 const CONTEXT_STORAGE_KEY = "micasa_voice_context_v2";
@@ -92,12 +92,36 @@ function parseDate(text, base = new Date()) {
 function isThisWeek(t) { return /\b(esta semana|esta semana|durante la semana|la semana)\b/.test(t); }
 function dateRangeFromText(t) {
   const now = new Date();
-  if (/\b(esta semana|esta semana)\b/.test(t)) return weekBounds(now);
-  if (/\b(la semana que viene|proxima semana)\b/.test(t)) {
-    const d = new Date(now); d.setDate(d.getDate()+7); return weekBounds(d);
+  if (/\b(esta semana|durante la semana)\b/.test(t)) {
+    const r=weekBounds(now); context.rangeStart=dateKey(r.start); context.rangeEnd=dateKey(r.end); return r;
+  }
+  if (/\b(la semana que viene|semana que viene|proxima semana|semana proxima)\b/.test(t)) {
+    const d = new Date(now); d.setDate(d.getDate()+7);
+    const r=weekBounds(d); context.rangeStart=dateKey(r.start); context.rangeEnd=dateKey(r.end); return r;
+  }
+  // En una pregunta de seguimiento, "¿y el viernes?" se interpreta
+  // dentro de la semana que se estaba consultando.
+  if (context.rangeStart && context.rangeEnd) {
+    const weekday = t.match(/\b(domingo|lunes|martes|miercoles|jueves|viernes|sabado)\b/);
+    if (weekday) {
+      const idx={domingo:0,lunes:1,martes:2,miercoles:3,jueves:4,viernes:5,sabado:6}[weekday[1]];
+      const start=new Date(`${context.rangeStart}T00:00:00`);
+      const end=new Date(`${context.rangeEnd}T00:00:00`);
+      for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)) {
+        if(d.getDay()===idx) {
+          const day=new Date(d);
+          const r={start:dateAtMidnight(day),end:dateAtMidnight(day)};
+          context.date=dateKey(day); return r;
+        }
+      }
+    }
   }
   const d = parseDate(t);
-  return d ? {start:dateAtMidnight(d),end:dateAtMidnight(d)} : null;
+  if(d) {
+    const r={start:dateAtMidnight(d),end:dateAtMidnight(d)};
+    context.date=dateKey(d); context.rangeStart=null; context.rangeEnd=null; return r;
+  }
+  return null;
 }
 async function getMembers() {
   const hid=householdId(); if(!hid) return [];
@@ -198,21 +222,41 @@ async function answerWork(raw,t) {
   const person=matchPerson(members,t) || (context.personId?members.find(m=>m.uid===context.personId):null) || (members.length===1?members[0]:null);
   if(!person) return "¿De qué persona quieres consultar los turnos? Dime su nombre y lo tendré en cuenta para las siguientes preguntas.";
   context.personId=person.uid; context.personName=person.name||person.displayName;
-  const range=dateRangeFromText(t);
-  if(range && range.start.getTime()!==range.end.getTime()) {
-    const days=[];
-    for(let d=new Date(range.start);d<=range.end;d.setDate(d.getDate()+1)) {
-      const snap=await getDoc(doc(db,"households",hid,"workSchedules",person.uid,"days",dateKey(d)));
-      if(!snap.exists() || !(snap.data().shifts||[]).length) days.push(new Date(d));
-    }
-    return days.length?`${context.personName} tiene como días libres registrados: ${days.map(dateLabel).join(", ")}.`:`No encuentro días libres registrados para ${context.personName} en ese periodo.`;
+  let range=dateRangeFromText(t);
+  // Si solo se cambia de persona ("¿y María?"), se conserva el periodo anterior.
+  if(!range && context.rangeStart && context.rangeEnd) {
+    range={start:new Date(`${context.rangeStart}T00:00:00`),end:new Date(`${context.rangeEnd}T00:00:00`)};
   }
-  const date=range?.start || resolveDate(t);
-  if(!date) return `¿Quieres consultar los turnos de ${context.personName} hoy, en una fecha concreta o esta semana?`;
-  const snap=await getDoc(doc(db,"households",hid,"workSchedules",person.uid,"days",dateKey(date)));
-  if(!snap.exists() || !(snap.data().shifts||[]).length) return `Según el calendario, ${context.personName} no tiene ningún turno guardado el ${dateLabel(date)}. Parece que libra, aunque no hay un estado de día libre explícito.`;
-  const shifts=snap.data().shifts;
-  return `${context.personName} trabaja el ${dateLabel(date)}: ${shifts.map(s=>`${s.name||"turno"}${s.start&&s.end?` de ${s.start} a ${s.end}`:""}`).join(" y ")}.`;
+  if(!range && context.date) {
+    const d=new Date(`${context.date}T00:00:00`);
+    range={start:d,end:d};
+  }
+  if(!range) return `¿Quieres consultar los turnos de ${context.personName} hoy, en una fecha concreta o esta semana?`;
+
+  const isRestQuestion=/\b(libra|libre|descansa|descanso|dias libres)\b/.test(t);
+  const isWorkQuestion=/\b(trabaja|trabajar|trabajando|turno|turnos)\b/.test(t) && !isRestQuestion;
+  const records=[];
+  for(let d=new Date(range.start);d<=range.end;d.setDate(d.getDate()+1)) {
+    const day=new Date(d);
+    const snap=await getDoc(doc(db,"households",hid,"workSchedules",person.uid,"days",dateKey(day)));
+    const shifts=snap.exists()?(snap.data().shifts||[]):[];
+    records.push({date:day,shifts});
+  }
+  const single=range.start.getTime()===range.end.getTime();
+  if(single) {
+    const item=records[0];
+    if(!item.shifts.length) return `${context.personName} libra el ${dateLabel(item.date)}.`;
+    return `${context.personName} trabaja el ${dateLabel(item.date)}${item.shifts.length?`: ${item.shifts.map(s=>`${s.name||"turno"}${s.start&&s.end?` de ${s.start} a ${s.end}`:""}`).join(" y ")}`:""}.`;
+  }
+  const selected=records.filter(x=>isWorkQuestion?x.shifts.length>0:!x.shifts.length);
+  if(!selected.length) {
+    return isWorkQuestion
+      ? `No encuentro turnos de trabajo de ${context.personName} en esa semana.`
+      : `${context.personName} no tiene días libres en esa semana.`;
+  }
+  const labels=selected.map(x=>dateLabel(x.date));
+  if(isWorkQuestion) return `${context.personName} trabaja ${labels.join(", ")}.`;
+  return `${context.personName} libra ${labels.length===1?"el ":"los días "}${labels.join(", ")}.`;
 }
 async function answerAgenda(raw,t) {
   const hid=householdId(); if(!hid) return "Inicia sesión para consultar la agenda.";
@@ -327,3 +371,4 @@ window.addEventListener("micasa:household-ready",()=>{
   if(status)status.textContent="Asistente listo. Puedo cruzar compras, agenda, turnos y menús. Recuerdo el contexto de la conversación.";
 });
 onAuthStateChanged(auth,user=>{if(!user)$("voiceAssistant")?.classList.add("hidden");});
+
